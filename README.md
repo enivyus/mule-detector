@@ -219,7 +219,7 @@ into a fresh database (replaying data the bank already holds publishes nothing, 
 ```bash
 docker compose up -d postgres redpanda redpanda-console      # console: http://localhost:8081
 cd core-banking && ./mvnw spring-boot:run -Dspring-boot.run.profiles=sim,kafka
-cd rule-engine && ./mvnw spring-boot:run                     # alerts: http://localhost:8082/alerts
+cd rule-engine && ./mvnw spring-boot:run                     # curl -u investigator:investigator-dev 127.0.0.1:8082/alerts
 cd simulator && python replay.py && python evaluate_stream.py   # after a rule change, just restart the engine
 ```
 
@@ -227,7 +227,7 @@ Graph analysis reads the same topic, so no new replay is needed:
 
 ```bash
 docker compose --profile full up -d neo4j                    # browser: http://localhost:7474
-cd graph-service && ./mvnw spring-boot:run                   # :8083
+cd graph-service && ./mvnw spring-boot:run                   # curl -u investigator:investigator-dev 127.0.0.1:8083/suspects
 cd simulator && python graph_rules.py && python evaluate_graph.py
 ```
 
@@ -240,7 +240,7 @@ cd dashboard && npm install && npm run dev                   # http://127.0.0.1:
 Auto-freeze is off by default (a frozen account would break a replay). To turn it on for live traffic:
 
 ```bash
-cd rule-engine && ./mvnw spring-boot:run -Dspring-boot.run.profiles=autofreeze   # frozen: GET :8082/freezes
+cd rule-engine && ./mvnw spring-boot:run -Dspring-boot.run.profiles=autofreeze   # frozen: curl -u investigator:investigator-dev 127.0.0.1:8082/freezes
 cd simulator && python evaluate_freeze.py   # what freezing would have stopped, from the alerts already there
 ```
 
