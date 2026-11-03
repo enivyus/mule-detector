@@ -199,6 +199,7 @@ td.signals .chip { margin: 2px 2px 2px 0; }
 td.action { text-align: right; white-space: nowrap; width: 1%; }
 td.action button { padding: 5px 7px; }
 .skeleton-row { cursor: default; }
+.row-meta { display: none; }
 .empty-table { padding: 32px 16px; display: grid; justify-items: center; gap: 10px; color: var(--muted); text-align: center; }
 
 /* Tier, status, signal chips */
@@ -310,11 +311,12 @@ td.action button { padding: 5px 7px; }
 
 /* Responsive: detail under the queue, then the sidebar becomes a top bar */
 @media (max-width: 1180px) {
-  .work { grid-template-columns: 1fr; }
+  /* minmax(0, …): a plain 1fr track grows to the table's min-content and widens the whole page on phones */
+  .work { grid-template-columns: minmax(0, 1fr); }
   .queue { position: static; max-height: 520px; }
 }
 @media (max-width: 860px) {
-  .shell { grid-template-columns: 1fr; }
+  .shell { grid-template-columns: minmax(0, 1fr); }
   .sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 16px; border-right: none; border-bottom: 1px solid var(--line); }
   .views { order: 3; flex-direction: row; width: 100%; overflow-x: auto; gap: 4px; }
   .nav-label { display: none; }
@@ -327,6 +329,9 @@ td.action button { padding: 5px 7px; }
   .overview { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .stat:nth-child(4) { border-left: none; }
   .stat:nth-child(n + 4) { border-top: 1px solid var(--line); }
+  .col-wide { display: none; }
+  .row-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 6px; font-weight: 400; }
+  td.signals { min-width: 0; }
   .why li, .audit li { grid-template-columns: 1fr; gap: 2px; }
   .timeline li { grid-template-columns: auto 1fr auto; row-gap: 0; }
   .timeline .when { grid-column: 1 / -1; }

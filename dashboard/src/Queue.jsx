@@ -27,14 +27,14 @@ export default function Queue({ rows, statuses, selected, onSelect, onStatus, on
       <div className="table-wrap">
         <table>
           <thead>
-            <tr><th>{t('colAccount')}</th><th>{t('colTier')}</th><th>{t('colSignals')}</th><th>{t('colStatus')}</th>
-              <th><span className="visually-hidden">{t('colAction')}</span></th></tr>
+            <tr><th>{t('colAccount')}</th><th className="col-wide">{t('colTier')}</th><th>{t('colSignals')}</th>
+              <th className="col-wide">{t('colStatus')}</th><th className="col-wide"><span className="visually-hidden">{t('colAction')}</span></th></tr>
           </thead>
           <tbody>
             {loading && rows.length === 0 && Array.from({ length: SKELETON_ROWS }, (_, i) => (
               <tr key={i} className="skeleton-row" aria-hidden="true">
-                <td><span className="skeleton" style={{ width: 92 }} /></td><td><span className="skeleton" style={{ width: 70 }} /></td>
-                <td><span className="skeleton" style={{ width: 140 }} /></td><td><span className="skeleton" style={{ width: 56 }} /></td><td />
+                <td><span className="skeleton" style={{ width: 92 }} /></td><td className="col-wide"><span className="skeleton" style={{ width: 70 }} /></td>
+                <td><span className="skeleton" style={{ width: 140 }} /></td><td className="col-wide"><span className="skeleton" style={{ width: 56 }} /></td><td className="col-wide" />
               </tr>
             ))}
             {rows.map((r) => {
@@ -42,11 +42,15 @@ export default function Queue({ rows, statuses, selected, onSelect, onStatus, on
               return (
                 <tr key={r.no} className={r.no === selected ? 'selected' : ''} onClick={() => onSelect(r.no)}
                     tabIndex={0} aria-selected={r.no === selected} onKeyDown={(e) => e.key === 'Enter' && onSelect(r.no)}>
-                  <td className="num">{r.no}</td>
-                  <td><span className={`tier ${r.tier}`}>{t(`tier_${r.tier}`)}</span></td>
+                  <td className="num">
+                    {r.no}
+                    {/* Phones drop the tier and status columns and show both here instead */}
+                    <span className="row-meta"><span className={`tier ${r.tier}`}>{t(`tier_${r.tier}`)}</span><Status status={status} /></span>
+                  </td>
+                  <td className="col-wide"><span className={`tier ${r.tier}`}>{t(`tier_${r.tier}`)}</span></td>
                   <td className="signals"><Signals names={r.signals} /></td>
-                  <td><Status status={status} /></td>
-                  <td className="action"><FreezeButton no={r.no} status={status} onStatus={onStatus} onToast={onToast} /></td>
+                  <td className="col-wide"><Status status={status} /></td>
+                  <td className="action col-wide"><FreezeButton no={r.no} status={status} onStatus={onStatus} onToast={onToast} /></td>
                 </tr>
               )
             })}
