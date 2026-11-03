@@ -52,8 +52,22 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 - Idempotency keys: a retried request never moves money twice
 - Money stored as integer satang, never floating point
 - Concurrency test: 1,000 simultaneous transfers, books must balance to the satang
-- **Not built yet: authentication.** Anyone who can reach the API can move money, so both services listen on
-  127.0.0.1 only. Login and customer/admin roles come before anything is exposed.
+- Every caller logs in (HTTP Basic, Spring Security), and each role can do only its own job:
+
+  | Role | User | Can |
+  |---|---|---|
+  | `CHANNEL` | the bank's app / ATM / branch (here: the simulator) | open accounts, move money, read accounts |
+  | `INVESTIGATOR` | fraud staff (the dashboard) | read accounts and statements, freeze, unfreeze, read the audit log |
+  | `RULE_ENGINE` | the rule engine | freeze only; lifting a freeze always takes a person |
+
+- **Audit log:** every freeze and unfreeze stores who did it (the logged-in user, never a field the caller sends),
+  when and why. A reason is required; the rule engine sends the rules that fired. There is no API to change or
+  delete a row.
+- rule-engine and graph-service name suspected accounts, so they need a login too; graph-service logs in to the
+  rule engine with its own user.
+- Still a prototype: Basic over plain HTTP with users from config, so every service listens on 127.0.0.1 only.
+  Before exposing anything: TLS and tokens from the bank's identity provider (OIDC). The channel is trusted to act
+  for any customer; a real one would carry the customer's own login.
 
 **Transaction simulator** (`simulator/`, Python)
 - A month of normal activity for 2,000 customers: salary, bills, shopping, transfers between friends
@@ -98,7 +112,9 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 **Investigator dashboard** (`dashboard/`, React + Cytoscape.js)
 - Thai / English switch; every signal explained in plain words (hover a chip, or read "why this account was flagged")
 - Overview cards, then the review queue of every suspect with tabs (freeze tier, review, frozen) and search
-- Freeze / unfreeze with a confirmation step (core-banking admin API)
+- Sign-in for investigators only; credentials stay in memory, so a reload asks again
+- Freeze / unfreeze with a confirmation step and a required reason, and the account's freeze history
+  (who, when, why) from the audit log
 - Account view: balance, signals, a timeline of money in and out; click an incoming payment to draw
   **follow the money** left to right (suspects red, frozen accounts outlined, edge width = amount), click any
   node to jump to it
@@ -152,18 +168,34 @@ docker compose up -d postgres
 cd core-banking && ./mvnw spring-boot:run
 ```
 
-API docs and a try-it-out UI: http://localhost:8080/swagger-ui.html (OpenAPI spec at `/v3/api-docs`).
+API docs and a try-it-out UI: http://localhost:8080/swagger-ui.html (OpenAPI spec at `/v3/api-docs`; use
+"Authorize" to log in).
+
+Local dev users, the same in every service (set `CHANNEL_PASSWORD`, `INVESTIGATOR_PASSWORD`,
+`RULE_ENGINE_PASSWORD` and `GRAPH_SERVICE_PASSWORD` to change them; the scripts read the same variables):
+
+| User | Password | Used by |
+|---|---|---|
+| `channel` | `channel-dev` | the simulator, curl below |
+| `investigator` | `investigator-dev` | the dashboard, the `evaluate_*.py` scripts |
+| `rule-engine` | `rule-engine-dev` | the rule engine, to freeze |
+| `graph-service` | `graph-service-dev` | graph-service, to read alerts |
 
 ```bash
 # Open two accounts
-curl -X POST localhost:8080/api/accounts -H "Content-Type: application/json" -d '{"ownerName":"Alice"}'
-curl -X POST localhost:8080/api/accounts -H "Content-Type: application/json" -d '{"ownerName":"Bob"}'
+curl -u channel:channel-dev -X POST localhost:8080/api/accounts -H "Content-Type: application/json" -d '{"ownerName":"Alice"}'
+curl -u channel:channel-dev -X POST localhost:8080/api/accounts -H "Content-Type: application/json" -d '{"ownerName":"Bob"}'
 
 # Deposit 1,000.00 THB, then transfer 250.00 THB (amounts are in satang)
-curl -X POST localhost:8080/api/accounts/<ALICE_NO>/deposit -H "Idempotency-Key: dep-1" \
+curl -u channel:channel-dev -X POST localhost:8080/api/accounts/<ALICE_NO>/deposit -H "Idempotency-Key: dep-1" \
      -H "Content-Type: application/json" -d '{"amountSatang":100000}'
-curl -X POST localhost:8080/api/transfers -H "Idempotency-Key: tr-1" -H "Content-Type: application/json" \
+curl -u channel:channel-dev -X POST localhost:8080/api/transfers -H "Idempotency-Key: tr-1" -H "Content-Type: application/json" \
      -d '{"fromAccountNo":"<ALICE_NO>","toAccountNo":"<BOB_NO>","amountSatang":25000}'
+
+# Freeze Bob as an investigator, then read who did it and why
+curl -u investigator:investigator-dev -X POST localhost:8080/api/admin/accounts/<BOB_NO>/freeze \
+     -H "Content-Type: application/json" -d '{"reason":"victim reported the transfer"}'
+curl -u investigator:investigator-dev localhost:8080/api/admin/accounts/<BOB_NO>/audit
 ```
 
 ```bash
@@ -202,7 +234,7 @@ cd simulator && python graph_rules.py && python evaluate_graph.py
 The dashboard talks to all three services through the Vite dev server:
 
 ```bash
-cd dashboard && npm install && npm run dev                   # http://127.0.0.1:5173
+cd dashboard && npm install && npm run dev                   # http://127.0.0.1:5173, log in as investigator
 ```
 
 Auto-freeze is off by default (a frozen account would break a replay). To turn it on for live traffic:
@@ -231,3 +263,4 @@ cd simulator && python simulate.py --seed 9999 --out ../data/demo && python repl
 - [x] Graph analysis in Neo4j (suspicion follows the money, money trail, Louvain communities)
 - [x] Risk tiers, review queue, auto-freeze (60% of cash-outs stopped, no genuine account frozen)
 - [x] Investigator dashboard (review queue, freeze/unfreeze, follow-the-money graph, communities)
+- [x] Login and roles in every service, audit log of every freeze and unfreeze

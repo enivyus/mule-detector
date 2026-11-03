@@ -41,6 +41,7 @@ Core banking API (Spring Boot, PostgreSQL, double-entry ledger)
 | `graph-service/` | Spring Boot :8083. Topic → Neo4j (`GraphLoader`); `GraphAnalysis`: `GET /suspects`, `GET /trail/{transferId}`, `POST /communities`. |
 | `rule-engine/` | Spring Boot :8082. Consumes topic `transactions`, streaming rules + score in `RuleEngine`, `GET /alerts`, `/suspects`, `/stats`. |
 | `dashboard/` | React + Cytoscape.js (Vite, :5173). Proxies `/bank`→8080, `/rules`→8082, `/graph`→8083. Never shows labels. |
+| `simulator/credentials.py` | HTTP Basic headers for the scripts (same env vars and dev defaults as the services). |
 | `docker-compose.yml` | postgres (default); redpanda, redpanda-console, neo4j under `--profile full`. |
 | `data/` | Generated CSVs (git-ignored). |
 
@@ -76,6 +77,9 @@ cd dashboard && npm install && npm run dev      # investigator dashboard on http
    the original transfer; same key + different payload → 409.
 7. `TransferCompletedEvent` is published inside the transaction. Any listener that talks to Kafka must use
    `@TransactionalEventListener(phase = AFTER_COMMIT)` so rolled-back transfers are never published.
+8. **Auth**: roles are enforced by URL in each service's `SecurityConfig`. CHANNEL moves money, INVESTIGATOR
+   reads/freezes/unfreezes, RULE_ENGINE may only freeze. Every status change writes a `freeze_audit` row in the same
+   transaction; the actor comes from the logged-in user, never from the request.
 8. **Simulated time**: `X-Simulated-Time` may set `created_at` only under the `sim` profile; otherwise 400. Never let
    production clients choose booking times.
 
