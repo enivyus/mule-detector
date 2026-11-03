@@ -1,0 +1,21 @@
+server:
+  port: 8083
+  address: 127.0.0.1  # no authentication; local only
+
+spring:
+  application:
+    name: graph-service
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    consumer:
+      group-id: graph-loader
+      auto-offset-reset: earliest
+      max-poll-records: 2000
+  neo4j:
+    uri: ${NEO4J_URI:bolt://localhost:7687}
+    authentication:
+      username: neo4j
+      password: ${NEO4J_PASSWORD:mulebank-dev}  # local dev default, same as docker-compose.yml
+
+mulebank:
+  rule-engine-url: ${RULE_ENGINE_URL:http://127.0.0.1:8082}
