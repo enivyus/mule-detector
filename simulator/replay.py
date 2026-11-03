@@ -123,7 +123,9 @@ def verify(api: Api, txns: list[dict], mapping: dict[str, str]) -> None:
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--data", type=Path, default=Path(__file__).resolve().parent.parent / "data")
-    p.add_argument("--api", default="http://localhost:8080")
+    # 127.0.0.1, not localhost: the API listens on IPv4 only, and on Windows "localhost" tries IPv6 first,
+    # costing ~2 s on every reconnect (Tomcat closes a keep-alive connection after 100 requests)
+    p.add_argument("--api", default="http://127.0.0.1:8080")
     args = p.parse_args()
 
     with open(args.data / "accounts.csv", encoding="utf-8") as f:

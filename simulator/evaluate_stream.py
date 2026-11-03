@@ -31,7 +31,7 @@ def get(url: str):
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--data", type=Path, default=Path(__file__).resolve().parent.parent / "data")
-    p.add_argument("--rules", default="http://localhost:8082")
+    p.add_argument("--rules", default="http://127.0.0.1:8082")  # IPv4, like the service (see replay.py)
     args = p.parse_args()
 
     accounts, txns = load(args.data)
