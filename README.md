@@ -23,8 +23,9 @@ from scam victims and quickly pass it through more accounts before it is cashed 
   | **Auto-freeze tier** (3+ rules) | **100%** (27 mules, 0 genuine accounts frozen) | 59% |
 
   Every mule lands in one of the two tiers; the review queue holds 26 accounts, 7 of them genuine.
-- **Money:** on seed 42, freezing at detection time would block at least 60% of what the rings cash out,
-  usually 8-52 minutes before their first withdrawal.
+- **Money, measured live:** replaying seed 9999 into an empty bank with auto-freeze on, the bank froze 23
+  accounts (all mules, no genuine customer) and refused **89% of the rings' cash-out withdrawals**
+  (1,283,410 of 1,448,206 THB) plus 30 victim payments (661,348 THB) that were still on their way to a mule.
 - **Honest about the numbers:** each rule exists in two implementations (stream/graph and a batch script) that
   must agree account by account; thresholds were chosen on seed 42, and each new result was scored once on a
   fresh seed. The first, easier version of the simulator flattered the detector; this README says by how much.
@@ -95,14 +96,22 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 - Replaying the topic after a restart never freezes again, so an account an investigator unfroze stays unfrozen
 
 **Investigator dashboard** (`dashboard/`, React + Cytoscape.js)
-- Review queue of every suspect, freeze tier first, with its signals and live account status
-- Freeze / unfreeze buttons (core-banking admin API)
-- Account view: balance, signals, large incoming payments; click one to draw **follow the money** as a
-  graph (suspects red, frozen accounts outlined, cash withdrawals grey) and click any node to jump to it
+- Thai / English switch; every signal explained in plain words (hover a chip, or read "why this account was flagged")
+- Overview cards, then the review queue of every suspect with tabs (freeze tier, review, frozen) and search
+- Freeze / unfreeze with a confirmation step (core-banking admin API)
+- Account view: balance, signals, a timeline of money in and out; click an incoming payment to draw
+  **follow the money** left to right (suspects red, frozen accounts outlined, edge width = amount), click any
+  node to jump to it
+- Light and dark mode, works on a narrow screen
 - Louvain community of the account and the other suspects in it
 - Shows only what the bank knows: no simulator labels reach the dashboard
 
-**Money stopped** (seed 42, `evaluate_freeze.py`, lower bound): the rings stole 1,985,407 THB and cashed out
+**Live demo** (seed 9999, `replay.py --live` with auto-freeze on): 23 accounts frozen, all mules (13 layer-1,
+4 layer-2, 6 cash-out). The bank refused 89% of the rings' cash-outs and 30 victim payments still heading to a
+mule. 68 everyday transfers were refused too, all touching those frozen mule accounts: the real owners of
+rented accounts still use them, and friends still pay them.
+
+**Money stopped, estimated from alerts** (seed 42, `evaluate_freeze.py`, lower bound): the rings stole 1,985,407 THB and cashed out
 1,764,355 THB. Freezing at detection time would have blocked at least **1,059,527 THB (60%)** of those cash-outs,
 counting only withdrawals by the frozen account itself. In 5 of 6 rings an account was frozen 8 to 52 minutes
 before the ring's first cash-out; in the sixth, 67 minutes after it.
