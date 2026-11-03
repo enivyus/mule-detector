@@ -35,6 +35,9 @@ Core banking API (Spring Boot, PostgreSQL, double-entry ledger)
 | `simulator/replay.py` | Replays the CSVs through the API (sim profile, `X-Simulated-Time`), writes `data/account_map_<hash>.csv`, verifies balances. |
 | `simulator/scored_rules.py` | Batch reference: baseline rules + fan_out + odd_hours, suspect when ≥ 2 rules fire. |
 | `simulator/evaluate_stream.py` | Scores `rule-engine` alerts against labels and checks parity with `scored_rules.py`. |
+| `simulator/graph_rules.py` | Batch reference for the graph step: `from_suspect`, iterated to a fixed point. |
+| `simulator/evaluate_graph.py` | Scores graph-service, parity with `graph_rules.py`, Louvain per ring, one money trail. |
+| `graph-service/` | Spring Boot :8083. Topic → Neo4j (`GraphLoader`); `GraphAnalysis`: `GET /suspects`, `GET /trail/{transferId}`, `POST /communities`. |
 | `rule-engine/` | Spring Boot :8082. Consumes topic `transactions`, streaming rules + score in `RuleEngine`, `GET /alerts`, `/suspects`, `/stats`. |
 | `docker-compose.yml` | postgres (default); redpanda, redpanda-console, neo4j under `--profile full`. |
 | `data/` | Generated CSVs (git-ignored). |
@@ -52,6 +55,8 @@ docker compose --profile full up -d           # + Redpanda (:9092, console :8081
 cd core-banking && ./mvnw spring-boot:run -Dspring-boot.run.profiles=sim,kafka   # publish events
 cd rule-engine && ./mvnw spring-boot:run        # streaming rules on :8082
 cd simulator && python evaluate_stream.py      # precision/recall + parity with the batch baseline
+cd graph-service && ./mvnw spring-boot:run      # topic -> Neo4j, graph suspects on :8083
+cd simulator && python evaluate_graph.py       # graph suspects + parity, Louvain per ring, a money trail
 ```
 
 ## Core banking invariants — do not break these
@@ -88,7 +93,7 @@ and ~5% of genuine customers are night owls. Amounts are integer satang (`_baht`
 
 Seed 42, 2,000 customers, 6 rings, 48 mules (20 rented): baseline precision ≈ 28%, recall 100%; score (≥ 2 rules)
 ≈ 89% / 81%; unseen seed 4242: 98% / 95%. The missed mules are rented L2/cash-out accounts with only pass_through:
-next, graph features (money arriving from an already-suspected account).
+graph step (`from_suspect`): seed 42 86% / 100%, unseen seed 1313 92% / 100% (score alone 93% / 89%).
 
 ## Detection rules (streaming in `RuleEngine`, batch reference in `scored_rules.py` — keep them identical)
 
@@ -99,6 +104,7 @@ next, graph features (money arriving from an already-suspected account).
 | fan_out | an incoming ≥ 1,000 THB followed within 1 h by transfers to ≥ 2 different personal accounts |
 | new_account_burst | account < 30 days old receives ≥ 20,000 THB from others in one Bangkok day |
 | odd_hours | ≥ 2 transfers in or out between 00:00 and 05:00 Bangkok |
+| from_suspect (graph, batch) | receives ≥ 1,000 THB from a suspect and ≥ 90% of that amount leaves within 2 h; iterate |
 
 Only personal (CUSTOMER) accounts are judged. Suspected mule = at least 2 different rules (`SCORE_THRESHOLD`).
 Any rule change goes into both implementations; `evaluate_stream.py` must still print "identical".
@@ -111,7 +117,7 @@ Any rule change goes into both implementations; `evaluate_stream.py` must still 
 | 2–3 | Core banking API: accounts, transfers, ledger, idempotency, tests | ✅ tests green, Swagger, paged statement, verified on Postgres |
 | 4 | Simulator: post generated transactions to the API (not only CSV) | ✅ replay.py, sim-time header, balances verified |
 | 5 | Publish events to Redpanda, streaming rule engine | ✅ publisher, 5 streaming rules + score, parity with batch verified |
-| 6–7 | Neo4j: load graph, community detection (Louvain), money-trail query | ⬜ |
+| 6–7 | Neo4j: load graph, community detection (Louvain), money-trail query | ✅ from_suspect, trail, Louvain; parity verified |
 | 8 | Risk score, alerts, auto-freeze | ⬜ |
 | 9 | Investigator dashboard | ⬜ |
 | 10 | Measure, README with numbers, demo video | ⬜ |

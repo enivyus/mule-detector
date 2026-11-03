@@ -50,6 +50,15 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 - Parity check: on the full month, every event reaches the engine (same count in the database, the
   topic and the engine), and it flags exactly the same accounts as the batch reference, rule by rule
 
+**Graph analysis** (`graph-service/`, Spring Boot, Neo4j + Graph Data Science)
+- Loads the same `transactions` topic into Neo4j as `(:Account)-[:SENT]->(:Account)` with its own consumer
+  group (idempotent: re-reading the whole topic leaves 52,622 relationships)
+- **Suspicion follows the money** (`GET /suspects`): an account that receives at least 1,000 THB from a suspect
+  and passes 90% of it on within 2 hours gets the signal `from_suspect`; repeated until nothing changes
+- **Follow the money** (`GET /trail/{transferId}`): victim → layer-1 → layer-2 → cash-out → withdrawal,
+  each hop later than the one before and within 2 hours; shops and the cash vault are not hops
+- **Communities** (`POST /communities`): Louvain over transfers between personal accounts, weighted by amount
+
 **Detection results** (seed 42: 2,000 customers, 6 rings, 48 mule accounts, 20 of them rented;
 streaming and batch identical)
 
@@ -59,15 +68,22 @@ streaming and batch identical)
 | Any of the five rules | 229 | 21% | 100% |
 | **Score: at least two rules** | **44** | **89%** | **81%** |
 | Score on seed 4242, never looked at before this run | 55 | 98% | 95% |
+| **Score + graph (`from_suspect`)** | **56** | **86%** | **100%** |
+| Score / score + graph on seed 1313, never looked at before this run | 55 / 62 | 93% / 92% | 89% / **100%** |
 
 Single rules on seed 42: pass-through 31% precision at 100% recall (ordinary people also spend money they
 just received), new-account burst 65% / 58% (rented mules are old accounts), odd hours 22% / 35% (night
 owls, daytime rings), fan-in and fan-out 100% precision but only 15% / 40% recall.
 
-**What the score misses.** All 9 missed mules on seed 42 are rented, old layer-2 or cash-out accounts whose
-only signal is pass-through. Looking at one account at a time cannot tell them from a customer who spends
-their salary quickly; what gives them away is *where the money came from* (another suspected mule).
-That is the job of the graph analysis in weeks 6-7.
+**What the graph adds.** Account by account, the score misses rented, old layer-2 and cash-out accounts
+whose only signal is pass-through: they look like a customer who spends their salary fast. What gives them
+away is where the money came from. Following the money from suspects catches all of them (9 on seed 42,
+6 on the unseen seed 1313) at the cost of a few genuine accounts that also received money from a suspect
+and passed it on (3 and 1).
+
+Louvain puts nearly every ring into a single community (47 of 48 mules on seed 42), but each
+of those communities also holds 18 to 37 genuine accounts, so it stays an investigator aid (who else is
+around this suspect?) and is not part of the score.
 
 History: on the first, easier simulator (every mule a new account, attacks starting at midnight, nobody else
 awake at night) the same score showed 98% / 100%. Making the data honest cost 19 points of recall.
@@ -118,6 +134,14 @@ cd rule-engine && ./mvnw spring-boot:run                     # alerts: http://lo
 cd simulator && python replay.py && python evaluate_stream.py   # after a rule change, just restart the engine
 ```
 
+Graph analysis reads the same topic, so no new replay is needed:
+
+```bash
+docker compose --profile full up -d neo4j                    # browser: http://localhost:7474
+cd graph-service && ./mvnw spring-boot:run                   # :8083
+cd simulator && python graph_rules.py && python evaluate_graph.py
+```
+
 ## Roadmap
 
 - [x] Core banking API with ledger, locking, idempotency
@@ -126,6 +150,6 @@ cd simulator && python replay.py && python evaluate_stream.py   # after a rule c
 - [x] Streaming rule engine on Redpanda (baseline rules, verified identical to batch)
 - [x] More streaming rules (fan-out, odd hours) combined into a score
 - [x] Harder simulator: old rented mule accounts, daytime rings, night-owl customers
-- [ ] Graph analysis in Neo4j (community detection, money trail)
+- [x] Graph analysis in Neo4j (suspicion follows the money, money trail, Louvain communities)
 - [ ] Risk scoring, alerts, auto-freeze
 - [ ] Investigator dashboard
