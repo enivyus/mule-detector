@@ -2,6 +2,7 @@ package com.muledetector.core.web;
 
 import com.muledetector.core.account.Account;
 import com.muledetector.core.account.AccountService;
+import com.muledetector.core.account.FreezeAudit;
 import com.muledetector.core.ledger.LedgerEntry;
 import com.muledetector.core.ledger.LedgerEntryRepository;
 import com.muledetector.core.transfer.Transfer;
@@ -14,13 +15,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
-// shortcut: no authentication or authorization; anyone who can reach the port can move money or freeze accounts.
-// The app binds to 127.0.0.1 for that reason. Add Spring Security (customer vs admin roles) before exposing it.
+/** Who may call what is decided in SecurityConfig, by URL. */
 @RestController
 @RequestMapping("/api")
 public class BankingController {
@@ -57,11 +60,25 @@ public class BankingController {
     public record OpenAccountRequest(@NotBlank @Size(max = 100) String ownerName, Account.Type type) {}
     public record AmountRequest(@Positive long amountSatang) {}
     public record TransferRequest(@NotBlank String fromAccountNo, @NotBlank String toAccountNo, @Positive long amountSatang) {}
+    public record FreezeRequest(@NotBlank @Size(max = 500) String reason) {}
+    public record AuditView(String action, String actor, String reason, OffsetDateTime at) {
+        static AuditView of(FreezeAudit f) {
+            return new AuditView(f.getAction().name(), f.getActor(), f.getReason(), f.getCreatedAt());
+        }
+    }
+    public record Me(String username, List<String> roles) {}
     public record AccountView(String accountNo, String ownerName, String type, String status, long balanceSatang) {
         static AccountView of(Account a) {
             return new AccountView(a.getAccountNo(), a.getOwnerName(), a.getType().name(), a.getStatus().name(),
                     a.getBalanceSatang());
         }
+    }
+
+    /** The caller's own name and roles: the dashboard checks a login with it and hides what the role cannot do. */
+    @GetMapping("/me")
+    public Me me(Authentication auth) {
+        return new Me(auth.getName(), auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).map(r -> r.replaceFirst("^ROLE_", "")).toList());
     }
 
     @PostMapping("/accounts")
@@ -108,14 +125,19 @@ public class BankingController {
         return transferService.transfer(key, req.fromAccountNo(), req.toAccountNo(), req.amountSatang(), simTime(at));
     }
 
-    /** Admin: freeze / unfreeze. Later called by the risk-scoring service when an account is flagged. */
+    /** Investigators and the rule engine freeze; only investigators unfreeze. The actor is the logged-in user. */
     @PostMapping("/admin/accounts/{accountNo}/freeze")
-    public AccountView freeze(@PathVariable String accountNo) {
-        return AccountView.of(accountService.setFrozen(accountNo, true));
+    public AccountView freeze(@PathVariable String accountNo, @Valid @RequestBody FreezeRequest req, Authentication auth) {
+        return AccountView.of(accountService.setFrozen(accountNo, true, auth.getName(), req.reason()));
     }
 
     @PostMapping("/admin/accounts/{accountNo}/unfreeze")
-    public AccountView unfreeze(@PathVariable String accountNo) {
-        return AccountView.of(accountService.setFrozen(accountNo, false));
+    public AccountView unfreeze(@PathVariable String accountNo, @Valid @RequestBody FreezeRequest req, Authentication auth) {
+        return AccountView.of(accountService.setFrozen(accountNo, false, auth.getName(), req.reason()));
+    }
+
+    @GetMapping("/admin/accounts/{accountNo}/audit")
+    public List<AuditView> audit(@PathVariable String accountNo) {
+        return accountService.auditOf(accountNo).stream().map(AuditView::of).toList();
     }
 }

@@ -22,12 +22,13 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 from baseline_rules import load
+from credentials import basic_auth
 from graph_rules import FROM_SUSPECT, detect
 from scored_rules import suspects
 
 
 def call(url: str, method: str = "GET"):
-    with urlopen(Request(url, method=method), timeout=120) as r:
+    with urlopen(Request(url, method=method, headers=basic_auth("investigator")), timeout=120) as r:
         return json.load(r)
 
 

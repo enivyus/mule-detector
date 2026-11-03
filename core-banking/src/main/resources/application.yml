@@ -1,6 +1,6 @@
 server:
   port: 8080
-  address: 127.0.0.1  # no authentication yet (see BankingController), so never listen beyond this machine
+  address: 127.0.0.1  # HTTP Basic over plain HTTP (see SecurityConfig), so never listen beyond this machine
 
 spring:
   application:
@@ -21,3 +21,9 @@ spring:
     producer:
       properties:
         max.block.ms: 5000  # fail fast instead of stalling requests for 60 s when the broker is down
+
+mulebank:
+  passwords:  # local dev defaults; set the env vars anywhere else
+    channel: ${CHANNEL_PASSWORD:channel-dev}
+    investigator: ${INVESTIGATOR_PASSWORD:investigator-dev}
+    rule-engine: ${RULE_ENGINE_PASSWORD:rule-engine-dev}

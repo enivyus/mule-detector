@@ -11,3 +11,9 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+
+mulebank:
+  passwords:
+    channel: channel-test
+    investigator: investigator-test
+    rule-engine: rule-engine-test

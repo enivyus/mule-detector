@@ -23,6 +23,8 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from credentials import basic_auth
+
 VAULT = "0000000000"
 TZ = "+07:00"  # simulated times are Bangkok local time; night-time rules depend on it
 
@@ -35,7 +37,7 @@ class Api:
 
     def call(self, method: str, path: str, body: dict | None = None, headers: dict | None = None) -> tuple[int, dict]:
         data = json.dumps(body).encode() if body is not None else None
-        h = {"Content-Type": "application/json", **(headers or {})}
+        h = {"Content-Type": "application/json", **basic_auth("channel"), **(headers or {})}
         for attempt in (1, 2):  # one reconnect if the keep-alive connection was dropped
             try:
                 self.conn.request(method, path, body=data, headers=h)

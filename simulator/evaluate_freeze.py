@@ -19,9 +19,10 @@ import json
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 from baseline_rules import load
+from credentials import basic_auth
 
 FREEZE_THRESHOLD = 3
 BANGKOK = timezone(timedelta(hours=7))  # no daylight saving; simulated times are naive Bangkok local
@@ -37,7 +38,7 @@ def main() -> None:
     key = hashlib.sha256((args.data / "transactions.csv").read_bytes()).hexdigest()[:8]
     with open(args.data / f"account_map_{key}.csv", encoding="utf-8") as f:
         to_sim = {r["api_account_no"]: r["sim_account_no"] for r in csv.DictReader(f)}
-    with urlopen(f"{args.rules}/alerts", timeout=30) as r:
+    with urlopen(Request(f"{args.rules}/alerts", headers=basic_auth("investigator")), timeout=30) as r:
         alerts = json.load(r)
 
     # Freeze time: the alert that brought the account to FREEZE_THRESHOLD different rules

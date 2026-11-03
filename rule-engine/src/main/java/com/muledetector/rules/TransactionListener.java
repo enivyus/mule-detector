@@ -46,7 +46,7 @@ public class TransactionListener extends AbstractConsumerSeekAware {
         // Only act on transfers published after this rebuild started: replaying history must not freeze again
         // (an investigator may have unfrozen a false positive since then)
         if (autoFreeze != null && !Instant.ofEpochMilli(publishedAtMillis).isBefore(rebuildStartedAt)) {
-            reached.forEach(no -> autoFreeze.freeze(no, e.occurredAt()));
+            reached.forEach(no -> autoFreeze.freeze(no, e.occurredAt(), engine.suspects().get(no)));
         }
     }
 

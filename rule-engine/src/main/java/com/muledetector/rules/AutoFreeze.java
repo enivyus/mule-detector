@@ -9,7 +9,10 @@ import org.springframework.web.client.RestClient;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Freezes an account in core-banking the moment it reaches RuleEngine.FREEZE_THRESHOLD rules, so money still
@@ -27,15 +30,20 @@ public class AutoFreeze {
     private final RestClient bank;
     private final List<Freeze> freezes = new ArrayList<>();
 
-    public AutoFreeze(RestClient.Builder http, @Value("${mulebank.core-banking-url}") String coreBankingUrl) {
-        this.bank = http.baseUrl(coreBankingUrl).build();
+    /** Logs in as core-banking's "rule-engine" user, whose role may freeze but never unfreeze. */
+    public AutoFreeze(RestClient.Builder http, @Value("${mulebank.core-banking-url}") String coreBankingUrl,
+                      @Value("${mulebank.core-banking-password}") String password) {
+        this.bank = http.baseUrl(coreBankingUrl).defaultHeaders(h -> h.setBasicAuth("rule-engine", password)).build();
     }
 
     /** Never throws: an exception would make Kafka redeliver the record and the engine count it twice. */
-    public synchronized void freeze(String accountNo, OffsetDateTime at) {
+    public synchronized void freeze(String accountNo, OffsetDateTime at, Collection<String> rules) {
         boolean ok = true;
         try {
-            bank.post().uri("/api/admin/accounts/{no}/freeze", accountNo).retrieve().toBodilessEntity();
+            // The reason lands in core-banking's audit log, so an investigator sees why without asking this service
+            String reason = "Auto-freeze: " + String.join(", ", new TreeSet<>(rules));
+            bank.post().uri("/api/admin/accounts/{no}/freeze", accountNo).body(Map.of("reason", reason))
+                    .retrieve().toBodilessEntity();
             log.warn("Auto-froze account {} (reached {} rules)", accountNo, RuleEngine.FREEZE_THRESHOLD);
         } catch (RuntimeException e) {
             ok = false;

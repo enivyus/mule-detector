@@ -82,7 +82,7 @@ class TransferServiceTest {
         assertThatThrownBy(() -> transferService.transfer("t-nsf", a.getAccountNo(), b.getAccountNo(), 501, null))
                 .isInstanceOf(ApiException.class).hasMessageContaining("Insufficient");
 
-        accountService.setFrozen(b.getAccountNo(), true);
+        accountService.setFrozen(b.getAccountNo(), true, "test", "test");
         assertThatThrownBy(() -> transferService.transfer("t-frozen", a.getAccountNo(), b.getAccountNo(), 100, null))
                 .isInstanceOf(ApiException.class).hasMessageContaining("frozen");
         assertThat(balance(a)).isEqualTo(500);

@@ -1,6 +1,6 @@
 server:
   port: 8083
-  address: 127.0.0.1  # no authentication; local only
+  address: 127.0.0.1  # HTTP Basic over plain HTTP (see SecurityConfig), so local only
 
 spring:
   application:
@@ -19,3 +19,6 @@ spring:
 
 mulebank:
   rule-engine-url: ${RULE_ENGINE_URL:http://127.0.0.1:8082}
+  rule-engine-password: ${GRAPH_SERVICE_PASSWORD:graph-service-dev}  # this service's own login at rule-engine
+  passwords:  # who may read suspects here; local dev default, set the env var anywhere else
+    investigator: ${INVESTIGATOR_PASSWORD:investigator-dev}

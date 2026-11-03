@@ -60,9 +60,11 @@ public class GraphAnalysis {
     private final Driver neo4j;
     private final RestClient ruleEngine;
 
-    public GraphAnalysis(Driver neo4j, @Value("${mulebank.rule-engine-url}") String ruleEngineUrl) {
+    public GraphAnalysis(Driver neo4j, @Value("${mulebank.rule-engine-url}") String ruleEngineUrl,
+                         @Value("${mulebank.rule-engine-password}") String password) {
         this.neo4j = neo4j;
-        this.ruleEngine = RestClient.create(ruleEngineUrl);
+        this.ruleEngine = RestClient.builder().baseUrl(ruleEngineUrl)
+                .defaultHeaders(h -> h.setBasicAuth("graph-service", password)).build();
     }
 
     // shortcut: runs on request over the whole graph, because an upstream account can become a suspect after

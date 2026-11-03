@@ -17,14 +17,15 @@ import json
 import sys
 from collections import defaultdict
 from pathlib import Path
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 from baseline_rules import load
+from credentials import basic_auth
 from scored_rules import SCORE_THRESHOLD, detect, suspects
 
 
 def get(url: str):
-    with urlopen(url, timeout=30) as r:
+    with urlopen(Request(url, headers=basic_auth("investigator")), timeout=30) as r:
         return json.load(r)
 
 
