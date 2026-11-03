@@ -84,7 +84,7 @@ Customers start with savings (40k–400k THB) and any transaction that would ove
 cleanly through the real ledger.
 
 Baseline (seed 42, 2,000 customers, 6 rings): precision ≈ 31%, recall 100%. Score (≥ 2 rules): precision ≈ 98%,
-recall 100% (seeds 7 and 123: 100% / 100%). These numbers are flattered by the simulator: every mule is a new account
+recall 100%; unseen seed 2026: 98% / 98% (seeds 7 and 123 were looked at while choosing the threshold). These numbers are flattered by the simulator: every mule is a new account
 and genuine customers never transact at night. Next: make the simulator harder (old rented mule accounts, daytime
 rings, night-owl customers), then add graph features.
 

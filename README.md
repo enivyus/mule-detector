@@ -54,7 +54,8 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 | Baseline: any of pass-through, fan-in, new-account burst | 139 | 31% | 100% |
 | Any of the five rules | 139 | 31% | 100% |
 | **Score: at least two rules** | **44** | **98%** | **100%** |
-| Score on held-out seeds 7 / 123 (rules not tuned on them) | 46 / 52 | 100% / 100% | 100% / 100% |
+| Score on seed 2026, never looked at before this run | 53 | 98% | 98% (1 mule missed) |
+| Score on seeds 7 / 123 (seen while choosing "two rules", so not truly held out) | 46 / 52 | 100% / 100% | 100% / 100% |
 
 Single rules on seed 42: pass-through 32% precision at 100% recall (ordinary people also spend money they
 just received), new-account burst 86% / 100%, fan-in and fan-out 100% precision but only 16% / 30% recall.
