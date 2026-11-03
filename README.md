@@ -33,6 +33,9 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 **Transaction simulator** (`simulator/`, Python)
 - A month of normal activity for 2,000 customers: salary, bills, shopping, transfers between friends
 - Hidden scam rings: victims → layer-1 mules → layer-2 mules → cash-out
+- Made hard on purpose: about 40% of mule accounts are old accounts rented from real customers (they keep
+  their owner's everyday activity), half the rings work office hours, and 5% of genuine customers are
+  night owls who also bank after midnight
 - Ground-truth labels for every account, so detection can be measured
 - Replay through the real API (`replay.py`) with the original timestamps: about 2,100 accounts and 53,000
   transactions in about 11 minutes, every balance checked against the CSV afterwards
@@ -44,26 +47,30 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
   pass-through, fan-in, fan-out, new-account burst, odd hours
 - An account is a **suspected mule when at least two different rules fire** (`GET /suspects`): one rule
   alone is a common coincidence for ordinary customers, two independent signals rarely are
-- Parity check: on the full month, all 52,815 events reach the engine (same count in the database, the
+- Parity check: on the full month, every event reaches the engine (same count in the database, the
   topic and the engine), and it flags exactly the same accounts as the batch reference, rule by rule
 
-**Detection results** (seed 42: 2,000 customers, 6 rings, 43 mule accounts; streaming and batch identical)
+**Detection results** (seed 42: 2,000 customers, 6 rings, 48 mule accounts, 20 of them rented;
+streaming and batch identical)
 
 | Version | Flagged | Precision | Recall |
 |---|---|---|---|
-| Baseline: any of pass-through, fan-in, new-account burst | 139 | 31% | 100% |
-| Any of the five rules | 139 | 31% | 100% |
-| **Score: at least two rules** | **44** | **98%** | **100%** |
-| Score on seed 2026, never looked at before this run | 53 | 98% | 98% (1 mule missed) |
-| Score on seeds 7 / 123 (seen while choosing "two rules", so not truly held out) | 46 / 52 | 100% / 100% | 100% / 100% |
+| Baseline: any of pass-through, fan-in, new-account burst | 171 | 28% | 100% |
+| Any of the five rules | 229 | 21% | 100% |
+| **Score: at least two rules** | **44** | **89%** | **81%** |
+| Score on seed 4242, never looked at before this run | 55 | 98% | 95% |
 
-Single rules on seed 42: pass-through 32% precision at 100% recall (ordinary people also spend money they
-just received), new-account burst 86% / 100%, fan-in and fan-out 100% precision but only 16% / 30% recall.
+Single rules on seed 42: pass-through 31% precision at 100% recall (ordinary people also spend money they
+just received), new-account burst 65% / 58% (rented mules are old accounts), odd hours 22% / 35% (night
+owls, daytime rings), fan-in and fan-out 100% precision but only 15% / 40% recall.
 
-**Caveat: these numbers are flattered by the simulator.** Every simulated mule is a newly opened account,
-and simulated customers never transact at night, so odd-hours alone already separates them perfectly on
-seed 42. Real mule accounts are often older accounts rented from real people, and real customers do
-use their phones at 2 a.m. The next step is to make the simulator harder before trusting the score.
+**What the score misses.** All 9 missed mules on seed 42 are rented, old layer-2 or cash-out accounts whose
+only signal is pass-through. Looking at one account at a time cannot tell them from a customer who spends
+their salary quickly; what gives them away is *where the money came from* (another suspected mule).
+That is the job of the graph analysis in weeks 6-7.
+
+History: on the first, easier simulator (every mule a new account, attacks starting at midnight, nobody else
+awake at night) the same score showed 98% / 100%. Making the data honest cost 19 points of recall.
 
 ## Run it
 
@@ -118,7 +125,7 @@ cd simulator && python replay.py && python evaluate_stream.py   # after a rule c
 - [x] Simulator posts to the API
 - [x] Streaming rule engine on Redpanda (baseline rules, verified identical to batch)
 - [x] More streaming rules (fan-out, odd hours) combined into a score
-- [ ] Harder simulator: old rented mule accounts, daytime rings, night-owl customers
+- [x] Harder simulator: old rented mule accounts, daytime rings, night-owl customers
 - [ ] Graph analysis in Neo4j (community detection, money trail)
 - [ ] Risk scoring, alerts, auto-freeze
 - [ ] Investigator dashboard

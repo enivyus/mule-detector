@@ -74,8 +74,15 @@ class Simulator:
         return self.start + timedelta(days=day, hours=self.rng.randint(hour_lo, hour_hi),
                                       minutes=self.rng.randint(0, 59), seconds=self.rng.randint(0, 59))
 
-    def _baht(self, lo: float, hi: float) -> int:
-        return int(round(self.rng.uniform(lo, hi), 2) * 100)
+    def _baht(self, lo: int, hi: int) -> int:
+        """A random amount between lo and hi THB, in whole satang (no float on the way)."""
+        return self.rng.randint(lo * 100, hi * 100)
+
+    def _when(self, c: Account, day: int, hour_lo: int = 7, hour_hi: int = 22) -> datetime:
+        """A night owl does half of their everyday banking at any hour, after midnight included."""
+        if c.account_no in self.night_owls and self.rng.random() < 0.5:
+            hour_lo, hour_hi = 0, 23
+        return self._at(day, hour_lo, hour_hi)
 
     def _add(self, *args, **kw) -> None:
         t = Txn(*args, **kw)
@@ -96,6 +103,10 @@ class Simulator:
         ]
         # Friend groups for p2p transfers
         self.friends = {c.account_no: self.rng.sample(self.customers, k=min(6, len(self.customers))) for c in self.customers}
+        # ~5% of real customers shop and send money after midnight too, so night activity alone is not proof
+        self.night_owls = {c.account_no for c in self.customers if self.rng.random() < 0.05}
+        self.taken: set[str] = set()  # customers already used as a victim or a rented mule
+        self.n_rented = 0
         # Savings deposited before the window opens, so a month of spending before payday does not overdraw
         self.savings = {}
         for c in self.customers:
@@ -118,7 +129,7 @@ class Simulator:
                 if date.day == payday:
                     self._add(self._at(day, 8, 10), employer.account_no, c.account_no, salary, "TRANSFER", "salary")
                 if self.rng.random() < 0.55:
-                    self._add(self._at(day), c.account_no, self.rng.choice(self.merchants).account_no,
+                    self._add(self._when(c, day), c.account_no, self.rng.choice(self.merchants).account_no,
                               self._baht(40, 1_500), "TRANSFER", "shopping")
                 if self.rng.random() < 0.08:
                     self._add(self._at(day), c.account_no, self.rng.choice(self.merchants).account_no,
@@ -126,7 +137,7 @@ class Simulator:
                 if self.rng.random() < 0.12:
                     friend = self.rng.choice(self.friends[c.account_no])
                     if friend.account_no != c.account_no:
-                        self._add(self._at(day, 9, 23), c.account_no, friend.account_no,
+                        self._add(self._when(c, day, 9, 23), c.account_no, friend.account_no,
                                   self._baht(50, 3_000), "TRANSFER", "p2p")
                 if self.rng.random() < 0.05:
                     self._add(self._at(day), c.account_no, VAULT, self._baht(500, 5_000), "WITHDRAWAL", "atm")
@@ -136,28 +147,50 @@ class Simulator:
         for r in range(self.n_rings):
             ring = f"R{r + 1:02d}"
             attack_day = self.rng.randint(3, self.days - 3)
-            attack_start = self.start + timedelta(days=attack_day)
+            # Attacks begin during the day; night_share below decides how many victims pay after midnight
+            attack_start = self.start + timedelta(days=attack_day, hours=self.rng.randint(8, 16))
 
-            # Mule accounts: opened recently, often rented from real people
+            # Some rings work office hours, others prefer the night
+            night_share = self.rng.choice([0.0, 0.0, 0.35, 0.6])
+
+            # Mule accounts: about 60% opened for the job, 40% existing accounts rented from real customers,
+            # which are old and keep their owner's everyday activity
             n_l1, n_l2 = self.rng.randint(2, 4), self.rng.randint(3, 6)
-            opened = lambda: attack_start - timedelta(days=self.rng.randint(2, 25))
-            l1 = [self._open("mule_l1", f"Mule {ring}-A{i}", opened(), is_mule=True, ring_id=ring) for i in range(n_l1)]
-            l2 = [self._open("mule_l2", f"Mule {ring}-B{i}", opened(), is_mule=True, ring_id=ring) for i in range(n_l2)]
-            cashout = self._open("cashout", f"Mule {ring}-C", opened(), is_mule=True, ring_id=ring)
+            rented: list[Account] = []
 
-            # Warm-up: tiny transfers so the accounts don't look completely empty
+            def recruit(role: str, name: str) -> Account:
+                free = [c for c in self.customers if c.account_no not in self.taken]
+                if self.rng.random() < 0.4 and free:
+                    acc = self.rng.choice(free)
+                    acc.role, acc.is_mule, acc.ring_id = role, True, ring
+                    self.taken.add(acc.account_no)
+                    rented.append(acc)
+                    self.n_rented += 1
+                    return acc
+                return self._open(role, name, attack_start - timedelta(days=self.rng.randint(2, 25)),
+                                  is_mule=True, ring_id=ring)
+
+            l1 = [recruit("mule_l1", f"Mule {ring}-A{i}") for i in range(n_l1)]
+            l2 = [recruit("mule_l2", f"Mule {ring}-B{i}") for i in range(n_l2)]
+            cashout = recruit("cashout", f"Mule {ring}-C")
+
+            # Warm-up: tiny deposits so newly opened mule accounts don't look completely empty
             for m in l1 + l2:
+                if m in rented:
+                    continue
                 for _ in range(self.rng.randint(0, 2)):
                     # Daytime, like ordinary deposits: a night-only habit here would leak the label
                     t = m.opened_at + timedelta(days=self.rng.randint(0, 1), hours=self.rng.randint(9, 20))
                     self._add(t, VAULT, m.account_no, self._baht(100, 500), "DEPOSIT", "warmup", ring)
 
             # Victims pay first-layer mules over a few hours
-            victims = self.rng.sample(self.customers, k=self.rng.randint(5, 15))
+            victims = self.rng.sample([c for c in self.customers if c.account_no not in self.taken],
+                                      k=self.rng.randint(5, 15))
+            self.taken.update(v.account_no for v in victims)
             for i, v in enumerate(victims):
                 mule = l1[i] if i < len(l1) else self.rng.choice(l1)  # every L1 mule takes at least one victim
                 t_in = attack_start + timedelta(minutes=self.rng.randint(0, 6 * 60))
-                if self.rng.random() < 0.35:  # some scams happen late at night
+                if self.rng.random() < night_share:
                     t_in = attack_start.replace(hour=self.rng.randint(0, 4)) + timedelta(minutes=self.rng.randint(0, 59))
                 # A victim cannot lose more than they have; cap at half their savings (spending continues meanwhile)
                 amount = min(self._baht(3_000, 60_000), self.savings[v.account_no] // 2)
@@ -220,7 +253,7 @@ class Simulator:
     def summary(self) -> str:
         mules = sum(a.is_mule for a in self.accounts.values())
         scam = sum(t.scenario.startswith("scam") for t in self.txns)
-        return (f"accounts: {len(self.accounts):,} (mules: {mules}, rings: {self.n_rings})\n"
+        return (f"accounts: {len(self.accounts):,} (mules: {mules}, of which rented: {self.n_rented}, rings: {self.n_rings})\n"
                 f"transactions: {len(self.txns):,} (scam-related: {scam:,}, dropped as overdraft: {self.dropped:,})")
 
 

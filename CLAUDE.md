@@ -82,11 +82,13 @@ Scam pattern: 5–15 victims → L1 mule (sometimes 00:00–04:59) → 90–98% 
 → cash-out account → withdrawal. ~10% of genuine customers are also new accounts, so "new account" alone is not proof.
 Customers start with savings (40k–400k THB) and any transaction that would overdraw is dropped, so the CSV replays
 cleanly through the real ledger.
+Harder on purpose: ~40% of mule accounts are existing customers' accounts rented for the ring (old, with normal
+activity; no warm-up), attacks start between 08:00 and 16:00 and each ring sends 0%, 35% or 60% of victims at night,
+and ~5% of genuine customers are night owls. Amounts are integer satang (`_baht` uses `randint`, no float).
 
-Baseline (seed 42, 2,000 customers, 6 rings): precision ≈ 31%, recall 100%. Score (≥ 2 rules): precision ≈ 98%,
-recall 100%; unseen seed 2026: 98% / 98% (seeds 7 and 123 were looked at while choosing the threshold). These numbers are flattered by the simulator: every mule is a new account
-and genuine customers never transact at night. Next: make the simulator harder (old rented mule accounts, daytime
-rings, night-owl customers), then add graph features.
+Seed 42, 2,000 customers, 6 rings, 48 mules (20 rented): baseline precision ≈ 28%, recall 100%; score (≥ 2 rules)
+≈ 89% / 81%; unseen seed 4242: 98% / 95%. The missed mules are rented L2/cash-out accounts with only pass_through:
+next, graph features (money arriving from an already-suspected account).
 
 ## Detection rules (streaming in `RuleEngine`, batch reference in `scored_rules.py` — keep them identical)
 
