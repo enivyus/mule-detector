@@ -25,9 +25,9 @@ class StatementPagingTest {
 
     @Test
     void statementIsPagedNewestFirst() throws Exception {
-        Account a = accountService.open("Paging");
+        Account a = accountService.open("Paging", Account.Type.CUSTOMER, null);
         for (long amount = 100; amount <= 300; amount += 100) {
-            transferService.deposit(UUID.randomUUID().toString(), a.getAccountNo(), amount);
+            transferService.deposit(UUID.randomUUID().toString(), a.getAccountNo(), amount, null);
         }
         String url = "/api/accounts/" + a.getAccountNo() + "/statement";
 
@@ -45,7 +45,7 @@ class StatementPagingTest {
 
     @Test
     void rejectsOutOfRangePageSize() throws Exception {
-        Account a = accountService.open("Paging");
+        Account a = accountService.open("Paging", Account.Type.CUSTOMER, null);
         mvc.perform(get("/api/accounts/" + a.getAccountNo() + "/statement").param("size", "500"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_PAGE"));

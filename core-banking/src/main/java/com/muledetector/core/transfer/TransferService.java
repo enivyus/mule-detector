@@ -38,22 +38,6 @@ public class TransferService {
         this.events = events;
     }
 
-    // Overloads call through `this`, which bypasses the proxy, so each needs its own @Transactional.
-    @Transactional
-    public Transfer transfer(String idempotencyKey, String fromAccountNo, String toAccountNo, long amountSatang) {
-        return transfer(idempotencyKey, fromAccountNo, toAccountNo, amountSatang, null);
-    }
-
-    @Transactional
-    public Transfer deposit(String idempotencyKey, String accountNo, long amountSatang) {
-        return deposit(idempotencyKey, accountNo, amountSatang, null);
-    }
-
-    @Transactional
-    public Transfer withdraw(String idempotencyKey, String accountNo, long amountSatang) {
-        return withdraw(idempotencyKey, accountNo, amountSatang, null);
-    }
-
     /** {@code occurredAt} overrides the booking time (simulation replay only); null means now. */
     @Transactional
     public Transfer transfer(String idempotencyKey, String fromAccountNo, String toAccountNo, long amountSatang,

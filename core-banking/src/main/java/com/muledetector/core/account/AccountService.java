@@ -17,11 +17,6 @@ public class AccountService {
         this.accounts = accounts;
     }
 
-    @Transactional
-    public Account open(String ownerName) {
-        return open(ownerName, Account.Type.CUSTOMER, null);
-    }
-
     /** {@code openedAt} overrides the opening time (simulation replay only); null means now. */
     @Transactional
     public Account open(String ownerName, Account.Type type, OffsetDateTime openedAt) {

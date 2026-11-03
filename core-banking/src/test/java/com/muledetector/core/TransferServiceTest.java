@@ -30,8 +30,8 @@ class TransferServiceTest {
     @Autowired LedgerEntryRepository ledger;
 
     private Account funded(String name, long satang) {
-        Account a = accountService.open(name);
-        transferService.deposit(UUID.randomUUID().toString(), a.getAccountNo(), satang);
+        Account a = accountService.open(name, Account.Type.CUSTOMER, null);
+        transferService.deposit(UUID.randomUUID().toString(), a.getAccountNo(), satang, null);
         return accounts.findById(a.getId()).orElseThrow();
     }
 
@@ -44,7 +44,7 @@ class TransferServiceTest {
         Account a = funded("Alice", 10_000);
         Account b = funded("Bob", 1);
 
-        transferService.transfer("t-basic", a.getAccountNo(), b.getAccountNo(), 2_500);
+        transferService.transfer("t-basic", a.getAccountNo(), b.getAccountNo(), 2_500, null);
 
         assertThat(balance(a)).isEqualTo(7_500);
         assertThat(balance(b)).isEqualTo(2_501);
@@ -57,8 +57,8 @@ class TransferServiceTest {
         Account a = funded("Carol", 10_000);
         Account b = funded("Dave", 1);
 
-        var first = transferService.transfer("t-retry", a.getAccountNo(), b.getAccountNo(), 1_000);
-        var second = transferService.transfer("t-retry", a.getAccountNo(), b.getAccountNo(), 1_000);
+        var first = transferService.transfer("t-retry", a.getAccountNo(), b.getAccountNo(), 1_000, null);
+        var second = transferService.transfer("t-retry", a.getAccountNo(), b.getAccountNo(), 1_000, null);
 
         assertThat(second.getId()).isEqualTo(first.getId());
         assertThat(balance(a)).isEqualTo(9_000);
@@ -68,9 +68,9 @@ class TransferServiceTest {
     void reusingKeyForDifferentRequestIsRejected() {
         Account a = funded("Erin", 10_000);
         Account b = funded("Frank", 1);
-        transferService.transfer("t-reuse", a.getAccountNo(), b.getAccountNo(), 1_000);
+        transferService.transfer("t-reuse", a.getAccountNo(), b.getAccountNo(), 1_000, null);
 
-        assertThatThrownBy(() -> transferService.transfer("t-reuse", a.getAccountNo(), b.getAccountNo(), 2_000))
+        assertThatThrownBy(() -> transferService.transfer("t-reuse", a.getAccountNo(), b.getAccountNo(), 2_000, null))
                 .isInstanceOf(ApiException.class).hasMessageContaining("different request");
     }
 
@@ -79,11 +79,11 @@ class TransferServiceTest {
         Account a = funded("Grace", 500);
         Account b = funded("Heidi", 1);
 
-        assertThatThrownBy(() -> transferService.transfer("t-nsf", a.getAccountNo(), b.getAccountNo(), 501))
+        assertThatThrownBy(() -> transferService.transfer("t-nsf", a.getAccountNo(), b.getAccountNo(), 501, null))
                 .isInstanceOf(ApiException.class).hasMessageContaining("Insufficient");
 
         accountService.setFrozen(b.getAccountNo(), true);
-        assertThatThrownBy(() -> transferService.transfer("t-frozen", a.getAccountNo(), b.getAccountNo(), 100))
+        assertThatThrownBy(() -> transferService.transfer("t-frozen", a.getAccountNo(), b.getAccountNo(), 100, null))
                 .isInstanceOf(ApiException.class).hasMessageContaining("frozen");
         assertThat(balance(a)).isEqualTo(500);
     }
@@ -93,13 +93,13 @@ class TransferServiceTest {
         Account a = funded("Ivan", 10_000);
         String vault = "0000000000";
 
-        assertThatThrownBy(() -> transferService.deposit(UUID.randomUUID().toString(), a.getAccountNo(), Long.MAX_VALUE))
+        assertThatThrownBy(() -> transferService.deposit(UUID.randomUUID().toString(), a.getAccountNo(), Long.MAX_VALUE, null))
                 .isInstanceOf(ApiException.class).hasMessageContaining("at most");
-        assertThatThrownBy(() -> transferService.deposit("k".repeat(65), a.getAccountNo(), 100))
+        assertThatThrownBy(() -> transferService.deposit("k".repeat(65), a.getAccountNo(), 100, null))
                 .isInstanceOf(ApiException.class).hasMessageContaining("at most 64");
-        assertThatThrownBy(() -> transferService.transfer(UUID.randomUUID().toString(), vault, a.getAccountNo(), 100))
+        assertThatThrownBy(() -> transferService.transfer(UUID.randomUUID().toString(), vault, a.getAccountNo(), 100, null))
                 .isInstanceOf(ApiException.class).hasMessageContaining("cash vault");
-        assertThatThrownBy(() -> transferService.transfer(UUID.randomUUID().toString(), a.getAccountNo(), vault, 100))
+        assertThatThrownBy(() -> transferService.transfer(UUID.randomUUID().toString(), a.getAccountNo(), vault, 100, null))
                 .isInstanceOf(ApiException.class).hasMessageContaining("cash vault");
         assertThat(balance(a)).isEqualTo(10_000);
     }
@@ -128,7 +128,7 @@ class TransferServiceTest {
                 do { to = rnd.nextInt(nAccounts); } while (to == from);
                 try {
                     transferService.transfer(UUID.randomUUID().toString(),
-                            pool.get(from).getAccountNo(), pool.get(to).getAccountNo(), rnd.nextLong(1, 20_000));
+                            pool.get(from).getAccountNo(), pool.get(to).getAccountNo(), rnd.nextLong(1, 20_000), null);
                     ok.incrementAndGet();
                 } catch (ApiException e) {
                     rejected.incrementAndGet(); // insufficient funds is a valid outcome

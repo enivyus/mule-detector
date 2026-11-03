@@ -43,17 +43,22 @@ class TransferEventPublisherTest {
 
     @Test
     void publishesCommittedTransfersOnlyAsPlainJson() {
-        Account a = accountService.open("Publisher");
+        Account a = accountService.open("Publisher", Account.Type.CUSTOMER, null);
         producer.clear();
 
-        transferService.deposit(UUID.randomUUID().toString(), a.getAccountNo(), 1_000);
-        assertThatThrownBy(() -> transferService.withdraw(UUID.randomUUID().toString(), a.getAccountNo(), 5_000))
+        transferService.deposit(UUID.randomUUID().toString(), a.getAccountNo(), 1_000, null);
+        assertThatThrownBy(() -> transferService.withdraw(UUID.randomUUID().toString(), a.getAccountNo(), 5_000, null))
                 .isInstanceOf(ApiException.class);  // insufficient funds: rolled back, must not be published
 
         List<ProducerRecord<String, String>> sent = producer.history();
         assertThat(sent).hasSize(1);
         assertThat(sent.get(0).topic()).isEqualTo("transactions");
         assertThat(sent.get(0).headers().toArray()).isEmpty();  // no __TypeId__: other services must not need our classes
+        // Every field rule-engine's TransferEvent reads; renaming one would silently switch a rule off there
+        for (String field : List.of("transferId", "fromAccountNo", "toAccountNo", "amountSatang", "occurredAt",
+                "fromAccountType", "toAccountType", "toOpenedAt")) {
+            assertThat(sent.get(0).value()).contains("\"" + field + "\":");
+        }
         assertThat(sent.get(0).value())
                 .contains("\"toAccountNo\":\"" + a.getAccountNo() + "\"")
                 .contains("\"kind\":\"DEPOSIT\"")
