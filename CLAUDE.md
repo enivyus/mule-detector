@@ -80,7 +80,7 @@ cd dashboard && npm install && npm run dev      # investigator dashboard on http
 8. **Auth**: roles are enforced by URL in each service's `SecurityConfig`. CHANNEL moves money, INVESTIGATOR
    reads/freezes/unfreezes, RULE_ENGINE may only freeze. Every status change writes a `freeze_audit` row in the same
    transaction; the actor comes from the logged-in user, never from the request.
-8. **Simulated time**: `X-Simulated-Time` may set `created_at` only under the `sim` profile; otherwise 400. Never let
+9. **Simulated time**: `X-Simulated-Time` may set `created_at` only under the `sim` profile; otherwise 400. Never let
    production clients choose booking times.
 
 `TransferServiceTest.concurrentTransfersKeepBooksBalanced` fires 1,000 transfers from 16 threads and checks the
