@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { api, bangkokTime, streamRules, thb, tier, FREEZE_THRESHOLD } from './api.js'
 import { useT } from './i18n.js'
 import FreezeButton from './FreezeButton.jsx'
@@ -19,6 +19,11 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
   const [findingCommunity, setFindingCommunity] = useState(false)
   const [audit, setAudit] = useState(null)
   const liveStatus = statuses[no]?.status
+  const panel = useRef(null)
+  // When the detail stacks under the queue, bring it into view on select
+  useEffect(() => {
+    if (window.matchMedia('(max-width: 1180px)').matches) panel.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [])
 
   useEffect(() => {
     api.account(no).then((a) => { setAccount(a); onStatus(no, a) })
@@ -57,7 +62,7 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
   const fired = streamRules(signals).length
 
   return (
-    <section className="panel account">
+    <section className="panel account" ref={panel}>
       <header className="account-head">
         <div className="account-id">
           <h2 className="num">{no}</h2>
@@ -98,7 +103,7 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
                 </li>
               ))}
             </ol>
-          : <p className="muted small">{audit ? t('historyNone') : t('loading')}</p>}
+          : <p className="muted small">{!audit ? t('loading') : status === 'FROZEN' ? t('historyMissing') : t('historyNone')}</p>}
       </section>
 
       <section className="block">

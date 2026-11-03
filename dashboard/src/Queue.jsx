@@ -48,7 +48,7 @@ export default function Queue({ rows, statuses, selected, onSelect, onStatus, on
                     <span className="row-meta"><span className={`tier ${r.tier}`}>{t(`tier_${r.tier}`)}</span><Status status={status} /></span>
                   </td>
                   <td className="col-wide"><span className={`tier ${r.tier}`}>{t(`tier_${r.tier}`)}</span></td>
-                  <td className="signals"><Signals names={r.signals} /></td>
+                  <td className="signals"><Signals names={r.signals} max={1} /></td>
                   <td className="col-wide"><Status status={status} /></td>
                   <td className="action col-wide"><FreezeButton no={r.no} status={status} onStatus={onStatus} onToast={onToast} /></td>
                 </tr>

@@ -28,7 +28,7 @@ export default function FreezeButton({ no, status, onStatus, onToast, size = 'sm
   return (
     <>
       {/* In the queue the button is icon-only to keep rows short; the label stays for screen readers and as a tooltip */}
-      <button className={`${frozen ? '' : 'danger'} ${size} icon-text`} disabled={busy}
+      <button className={`${frozen ? (size === 'small' ? '' : 'primary') : 'danger'} ${size} icon-text`} disabled={busy}
               aria-label={`${frozen ? t('unfreeze') : t('freeze')} ${no}`} title={frozen ? t('unfreeze') : t('freeze')}
               onClick={(e) => { e.stopPropagation(); setAsking(true) }}>
         {frozen ? <UnlockIcon size={14} /> : <LockIcon size={14} />}

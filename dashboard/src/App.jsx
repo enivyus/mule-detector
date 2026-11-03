@@ -93,6 +93,7 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
             </button>
           ))}
         </nav>
+        <p className="synthetic">{t('synthetic')}</p>
         <div className="account-menu">
           <span className="avatar" aria-hidden="true">{me.username[0].toUpperCase()}</span>
           <span className="who"><b>{me.username}</b><span>{t('roleInvestigator')}</span></span>
