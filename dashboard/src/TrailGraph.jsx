@@ -16,6 +16,7 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
   const box = useRef(null)
   const cyRef = useRef(null)
   const [cropped, setCropped] = useState(false)
+  const scheme = useColorScheme()
 
   // Column = how many hops from where the money started; cash withdrawn always sits at the far right
   const layout = useMemo(() => {
@@ -51,7 +52,7 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
       },
     }))
 
-    // Cytoscape draws on a canvas and cannot read CSS variables, so take the theme's colours once
+    // Cytoscape draws on a canvas and cannot read CSS variables: take the theme's values here, and redraw on a theme switch
     const text = css('--ink'), line = css('--line-strong'), panel = css('--surface')
     const cy = cytoscape({
       container: box.current,
@@ -60,14 +61,14 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
       wheelSensitivity: 0.3,
       style: [
         { selector: 'node', style: {
-          label: 'data(label)', 'font-size': 14, 'font-family': 'Inter, "Noto Sans Thai", system-ui, sans-serif',
+          label: 'data(label)', 'font-size': 14, 'font-family': css('--font'),
           'text-valign': 'bottom', 'text-margin-y': 5, color: text,
           width: 28, height: 28, 'background-color': css('--person') } },
         { selector: '.suspect', style: { 'background-color': css('--danger') } },
         { selector: '.vault', style: { shape: 'round-rectangle', width: 44, 'background-color': css('--muted') } },
         { selector: '.frozen', style: { 'border-width': 5, 'border-color': text } },
         { selector: 'edge', style: {
-          label: 'data(label)', 'font-size': 12, 'text-wrap': 'wrap', color: text, 'curve-style': 'bezier',
+          label: 'data(label)', 'font-size': 12, 'font-family': css('--font'), 'text-wrap': 'wrap', color: text, 'curve-style': 'bezier',
           'target-arrow-shape': 'triangle', width: 'data(width)', 'line-color': line, 'target-arrow-color': line,
           'text-background-color': panel, 'text-background-opacity': 0.85, 'text-background-padding': 2 } },
       ],
@@ -84,7 +85,7 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
     cy.on('tap', 'node', (e) => e.target.id() !== VAULT && onSelect(e.target.id()))
     cyRef.current = cy
     return () => cy.destroy()
-  }, [hops, layout, suspects, statuses, onSelect, t, locale])
+  }, [hops, layout, suspects, statuses, onSelect, t, locale, scheme])
 
   return (
     <div className="graph-wrap">
@@ -101,4 +102,17 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
       {cropped && <p className="graph-cue">{t('trailCropped')}</p>}
     </div>
   )
+}
+
+/** 'dark' or 'light', following the OS setting live, so the canvas can redraw in the new theme. */
+function useColorScheme() {
+  const query = '(prefers-color-scheme: dark)'
+  const [scheme, setScheme] = useState(() => (window.matchMedia(query).matches ? 'dark' : 'light'))
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const change = () => setScheme(mq.matches ? 'dark' : 'light')
+    mq.addEventListener('change', change)
+    return () => mq.removeEventListener('change', change)
+  }, [])
+  return scheme
 }

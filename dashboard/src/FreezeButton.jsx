@@ -16,9 +16,9 @@ export default function FreezeButton({ no, status, onStatus, onToast, size = 'sm
     try {
       const account = await (frozen ? api.unfreeze(no, reason) : api.freeze(no, reason))
       onStatus(no, account)
-      onToast({ tone: frozen ? 'ok' : 'warn', text: frozen ? t('unfroze', no) : t('froze', no) })
+      onToast({ tone: 'done', text: frozen ? t('unfroze', no) : t('froze', no) })
     } catch {
-      onToast({ tone: 'bad', text: t('actionFailed') })
+      onToast({ tone: 'error', text: t('actionFailed') })
     } finally {
       setBusy(false)
       setAsking(false)

@@ -19,6 +19,7 @@ colors:
   danger: "#c42b3c"
   danger-hover: "#a82232"
   danger-soft: "#fdecee"
+  danger-ink: "#ffffff"
   warn: "#8a5100"
   warn-dot: "#d98a0b"
   warn-soft: "#fff3d9"
@@ -45,6 +46,7 @@ colors:
   danger-dark: "#ff6b7b"
   danger-hover-dark: "#ff8693"
   danger-soft-dark: "#3a1a20"
+  danger-ink-dark: "#1a0a0d"
   warn-dark: "#f0b55a"
   warn-dot-dark: "#f0b55a"
   warn-soft-dark: "#33270f"
@@ -120,7 +122,7 @@ components:
     backgroundColor: "{colors.accent-hover}"
   button-danger:
     backgroundColor: "{colors.danger}"
-    textColor: "{colors.surface}"
+    textColor: "{colors.danger-ink}"
     typography: "{typography.body-sm}"
     rounded: "{rounded.md}"
     padding: "5px 12px"
@@ -198,6 +200,11 @@ components:
     textColor: "{colors.canvas}"
     typography: "{typography.body-sm}"
     rounded: "{rounded.md}"
+  toast-error:
+    backgroundColor: "{colors.danger}"
+    textColor: "{colors.danger-ink}"
+    typography: "{typography.body-sm}"
+    rounded: "{rounded.md}"
     padding: "10px 16px"
 ---
 
@@ -227,7 +234,7 @@ Cool, low-chroma neutrals with one indigo accent and four semantic states, each 
 - **Signal Indigo** (`accent`, dark `accent-dark`): primary buttons (sign in, unfreeze, confirm), the focus outline, the focus ring on fields and search, links, the avatar, and text selection (`accent-soft`). The selected queue row uses its near-neutral cousin `selected`.
 
 ### Semantic states
-- **Freeze Red** (`danger`): the freeze tier (tier pill, sidebar dot, overview figure), the Freeze button, suspect nodes in the trail, FREEZE audit entries, sign-out, error banners, and the toast that confirms a freeze.
+- **Freeze Red** (`danger`): the freeze tier (tier pill, sidebar dot, overview figure), the Freeze button, suspect nodes in the trail, FREEZE audit entries, sign-out, error banners, and the error toast when the bank refuses a request. Text on a danger fill is `danger-ink`.
 - **Review Amber** (`warn` text, `warn-dot` marker, `warn-soft` tint): the review tier and its overview figure.
 - **Active Green** (`ok`, `ok-soft`): ACTIVE status, UNFREEZE audit entries, and incoming money in the timeline.
 - **Frozen Slate** (`frozen`, `frozen-soft`): FROZEN status, which always pairs with the lock icon. It is never shown as colour alone.
@@ -247,7 +254,7 @@ Cool, low-chroma neutrals with one indigo accent and four semantic states, each 
 
 **The State-Carries-Meaning Rule.** Red, amber, green and slate appear only where they encode tier, status or money direction; red also marks destructive actions (freeze, sign-out) and errors. Each state comes as a solid for text or marks and a soft tint for the pill behind it.
 
-**The Twin Theme Rule.** Every colour token has a dark counterpart with the same role. In dark mode the accent and danger buttons take dark text. Never add a colour that exists in only one scheme.
+**The Twin Theme Rule.** Every colour token has a dark counterpart with the same role. In dark mode the accent and danger fills take dark text, through `accent-ink` and `danger-ink`. Never add a colour that exists in only one scheme.
 
 ## Typography
 
@@ -305,7 +312,7 @@ Icons come from one stroke set on a 24px grid: 1.5 stroke, round caps and joins,
 Quiet and precise. A white bordered default; solid fills only for the one primary or destructive action.
 - **Shape:** gently rounded (6px), 1px `line-strong` border, 13px/500 on a 20px line, padding 5px 12px. The small size is 12px, padding 3px 9px. The wide size is full width, padding 8px 12px.
 - **Primary:** accent fill, accent-ink text. Sign in, Unfreeze, and confirm in the dialog.
-- **Danger:** danger fill, white text (dark text in dark mode). Freeze, and its confirmation.
+- **Danger:** danger fill, `danger-ink` text. The Freeze button and the confirm button of its dialog.
 - **Ghost / Icon:** transparent with ink-2 text, washing to `hover` with ink text. Icon buttons pad 6px.
 - **Link:** accent text, underlined at 3px offset.
 - **States:** background, border and colour transition at 150ms ease-out. Active shows `line`. Disabled is 0.55 opacity. A busy action shows a spinning refresh icon.
@@ -334,10 +341,10 @@ Quiet and precise. A white bordered default; solid fills only for the one primar
 13px rows with a sticky 12px muted header. Hover washes the row, the selected row takes `selected`, and rows are keyboard-focusable. Tier first, then rule count. Amounts are tabular at 500.
 
 ### Trail graph (signature)
-Cytoscape draws on canvas and cannot read CSS variables. At mount it reads `--ink`, `--line-strong`, `--surface`, `--person`, `--danger` and `--muted` from the document with `getComputedStyle`, so the graph follows the active theme. Person nodes are blue and suspects red. The cash vault is a muted rounded rectangle, and frozen accounts get a 5px ink ring. Edge width scales with the square root of the amount. Labels use the Inter / Noto Sans Thai stack (14px nodes, 12px edges) on an 85% surface plate. A legend bar with a Fit button sits above the 1px framed canvas.
+Cytoscape draws on canvas and cannot read CSS variables. At mount, and again whenever the OS colour scheme changes, it reads `--ink`, `--line-strong`, `--surface`, `--person`, `--danger`, `--muted` and `--font` from the document with `getComputedStyle`, so the graph follows the active theme without a reload. Person nodes are blue and suspects red. The cash vault is a muted rounded rectangle, and frozen accounts get a 5px ink ring on the 28px node; the legend's 14px dot carries a 3px ring in the same proportion. Edge width scales with the square root of the amount. Node and edge labels use the `--font` stack (14px nodes, 12px edges) on an 85% surface plate. A legend bar with a Fit button sits above the 1px framed canvas.
 
 ### Dialog and toast
-The dialog is a 440px surface, padding 20px, with float shadow over a navy overlay. It rises 6px over 180ms on `cubic-bezier(0.16, 1, 0.3, 1)`. A reason is required before confirming. The toast is centred 20px from the bottom on ink, and the freeze confirmation shows on danger.
+The dialog is a 440px surface, padding 20px, with float shadow over a navy overlay. It rises 6px over 180ms on `cubic-bezier(0.16, 1, 0.3, 1)`. A reason is required before confirming. The toast is centred 20px from the bottom. A completed freeze or unfreeze shows on ink; only a refused request shows the error toast on danger.
 
 ## Do's and Don'ts
 
