@@ -35,6 +35,7 @@ Core banking API (Spring Boot, PostgreSQL, double-entry ledger)
 | `simulator/replay.py` | Replays the CSVs through the API (sim profile, `X-Simulated-Time`), writes `data/account_map_<hash>.csv`, verifies balances. |
 | `simulator/scored_rules.py` | Batch reference: baseline rules + fan_out + odd_hours, suspect when ≥ 2 rules fire. |
 | `simulator/evaluate_stream.py` | Scores `rule-engine` alerts against labels and checks parity with `scored_rules.py`. |
+| `simulator/evaluate_freeze.py` | Lower bound of cash-out money auto-freeze would stop, from rule-engine alerts. |
 | `simulator/graph_rules.py` | Batch reference for the graph step: `from_suspect`, iterated to a fixed point. |
 | `simulator/evaluate_graph.py` | Scores graph-service, parity with `graph_rules.py`, Louvain per ring, one money trail. |
 | `graph-service/` | Spring Boot :8083. Topic → Neo4j (`GraphLoader`); `GraphAnalysis`: `GET /suspects`, `GET /trail/{transferId}`, `POST /communities`. |
@@ -106,7 +107,10 @@ graph step (`from_suspect`): seed 42 86% / 100%, unseen seed 1313 92% / 100% (sc
 | odd_hours | ≥ 2 transfers in or out between 00:00 and 05:00 Bangkok |
 | from_suspect (graph, batch) | receives ≥ 1,000 THB from a suspect and ≥ 90% of that amount leaves within 2 h; iterate |
 
-Only personal (CUSTOMER) accounts are judged. Suspected mule = at least 2 different rules (`SCORE_THRESHOLD`).
+Only personal (CUSTOMER) accounts are judged. Suspected mule = at least 2 different rules (`SCORE_THRESHOLD`);
+`from_suspect` implies `pass_through`, so it alone makes a suspect. **Freeze tier** = at least 3 different *stream*
+rules (`FREEZE_THRESHOLD`), never graph suspicion: 0 genuine accounts on seeds 42 and 5150. Auto-freeze runs only
+under the `autofreeze` profile and only for transfers published after the latest rebuild; it must never throw.
 Any rule change goes into both implementations; `evaluate_stream.py` must still print "identical".
 
 ## Plan (10 weeks)
@@ -118,7 +122,7 @@ Any rule change goes into both implementations; `evaluate_stream.py` must still 
 | 4 | Simulator: post generated transactions to the API (not only CSV) | ✅ replay.py, sim-time header, balances verified |
 | 5 | Publish events to Redpanda, streaming rule engine | ✅ publisher, 5 streaming rules + score, parity with batch verified |
 | 6–7 | Neo4j: load graph, community detection (Louvain), money-trail query | ✅ from_suspect, trail, Louvain; parity verified |
-| 8 | Risk score, alerts, auto-freeze | ⬜ |
+| 8 | Risk score, alerts, auto-freeze | ✅ freeze tier (≥ 3 stream rules) + review queue; ≥ 60% of cash-outs stopped |
 | 9 | Investigator dashboard | ⬜ |
 | 10 | Measure, README with numbers, demo video | ⬜ |
 

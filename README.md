@@ -54,10 +54,26 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 - Loads the same `transactions` topic into Neo4j as `(:Account)-[:SENT]->(:Account)` with its own consumer
   group (idempotent: re-reading the whole topic leaves 52,622 relationships)
 - **Suspicion follows the money** (`GET /suspects`): an account that receives at least 1,000 THB from a suspect
-  and passes 90% of it on within 2 hours gets the signal `from_suspect`; repeated until nothing changes
+  and passes 90% of it on within 2 hours gets the signal `from_suspect`; repeated until nothing changes.
+  Such an account always breaks pass-through too, so `from_suspect` alone makes it a suspect: in effect it
+  counts as one strong signal, not as two independent ones
 - **Follow the money** (`GET /trail/{transferId}`): victim → layer-1 → layer-2 → cash-out → withdrawal,
   each hop later than the one before and within 2 hours; shops and the cash vault are not hops
 - **Communities** (`POST /communities`): Louvain over transfers between personal accounts, weighted by amount
+
+**Risk tiers and auto-freeze** (`rule-engine`, profile `autofreeze`)
+- **Freeze:** an account that breaks at least **three** different stream rules is frozen in core-banking the
+  moment the third rule fires (`POST /api/admin/accounts/{no}/freeze`), while the money is still moving
+- **Review queue:** two rules, or suspicion from the graph, never freezes; an investigator decides
+- On seed 42 and on the unseen seed 5150, **no genuine account reaches the freeze tier** (26 and 23 accounts
+  frozen, all mules); the review queue holds the rest (30 accounts with 8 genuine, 39 with 7); no mule is in
+  neither tier
+- Replaying the topic after a restart never freezes again, so an account an investigator unfroze stays unfrozen
+
+**Money stopped** (seed 42, `evaluate_freeze.py`, lower bound): the rings stole 1,985,407 THB and cashed out
+1,764,355 THB. Freezing at detection time would have blocked at least **1,059,527 THB (60%)** of those cash-outs,
+counting only withdrawals by the frozen account itself. In 5 of 6 rings an account was frozen 8 to 52 minutes
+before the ring's first cash-out; in the sixth, 67 minutes after it.
 
 **Detection results** (seed 42: 2,000 customers, 6 rings, 48 mule accounts, 20 of them rented;
 streaming and batch identical)
@@ -142,6 +158,13 @@ cd graph-service && ./mvnw spring-boot:run                   # :8083
 cd simulator && python graph_rules.py && python evaluate_graph.py
 ```
 
+Auto-freeze is off by default (a frozen account would break a replay). To turn it on for live traffic:
+
+```bash
+cd rule-engine && ./mvnw spring-boot:run -Dspring-boot.run.profiles=autofreeze   # frozen: GET :8082/freezes
+cd simulator && python evaluate_freeze.py   # what freezing would have stopped, from the alerts already there
+```
+
 ## Roadmap
 
 - [x] Core banking API with ledger, locking, idempotency
@@ -151,5 +174,5 @@ cd simulator && python graph_rules.py && python evaluate_graph.py
 - [x] More streaming rules (fan-out, odd hours) combined into a score
 - [x] Harder simulator: old rented mule accounts, daytime rings, night-owl customers
 - [x] Graph analysis in Neo4j (suspicion follows the money, money trail, Louvain communities)
-- [ ] Risk scoring, alerts, auto-freeze
+- [x] Risk tiers, review queue, auto-freeze (60% of cash-outs stopped, no genuine account frozen)
 - [ ] Investigator dashboard
