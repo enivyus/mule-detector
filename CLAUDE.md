@@ -40,6 +40,7 @@ Core banking API (Spring Boot, PostgreSQL, double-entry ledger)
 | `simulator/evaluate_graph.py` | Scores graph-service, parity with `graph_rules.py`, Louvain per ring, one money trail. |
 | `graph-service/` | Spring Boot :8083. Topic → Neo4j (`GraphLoader`); `GraphAnalysis`: `GET /suspects`, `GET /trail/{transferId}`, `POST /communities`. |
 | `rule-engine/` | Spring Boot :8082. Consumes topic `transactions`, streaming rules + score in `RuleEngine`, `GET /alerts`, `/suspects`, `/stats`. |
+| `dashboard/` | React + Cytoscape.js (Vite, :5173). Proxies `/bank`→8080, `/rules`→8082, `/graph`→8083. Never shows labels. |
 | `docker-compose.yml` | postgres (default); redpanda, redpanda-console, neo4j under `--profile full`. |
 | `data/` | Generated CSVs (git-ignored). |
 
@@ -58,6 +59,7 @@ cd rule-engine && ./mvnw spring-boot:run        # streaming rules on :8082
 cd simulator && python evaluate_stream.py      # precision/recall + parity with the batch baseline
 cd graph-service && ./mvnw spring-boot:run      # topic -> Neo4j, graph suspects on :8083
 cd simulator && python evaluate_graph.py       # graph suspects + parity, Louvain per ring, a money trail
+cd dashboard && npm install && npm run dev      # investigator dashboard on http://127.0.0.1:5173
 ```
 
 ## Core banking invariants — do not break these
@@ -123,7 +125,7 @@ Any rule change goes into both implementations; `evaluate_stream.py` must still 
 | 5 | Publish events to Redpanda, streaming rule engine | ✅ publisher, 5 streaming rules + score, parity with batch verified |
 | 6–7 | Neo4j: load graph, community detection (Louvain), money-trail query | ✅ from_suspect, trail, Louvain; parity verified |
 | 8 | Risk score, alerts, auto-freeze | ✅ freeze tier (≥ 3 stream rules) + review queue; ≥ 60% of cash-outs stopped |
-| 9 | Investigator dashboard | ⬜ |
+| 9 | Investigator dashboard | ✅ review queue, freeze/unfreeze, trail graph, community |
 | 10 | Measure, README with numbers, demo video | ⬜ |
 
 Keep the MVP working end-to-end before adding Kafka/Neo4j.

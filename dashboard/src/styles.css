@@ -1,0 +1,40 @@
+:root {
+  --bg: #f5f6f8;
+  --panel: #ffffff;
+  --text: #1d2127;
+  --muted: #6b7380;
+  --line: #e2e5ea;
+  --freeze: #d0453c;
+  --review: #d08a2c;
+  --accent: #2f5fb3;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+body { margin: 0; background: var(--bg); }
+.app { padding: 16px; }
+header { display: flex; align-items: center; gap: 12px; }
+h1 { font-size: 20px; margin: 0 0 12px; }
+h2 { font-size: 16px; margin: 0 0 12px; }
+h3 { font-size: 14px; margin: 16px 0 8px; }
+main { display: grid; grid-template-columns: minmax(420px, 1fr) 1.3fr; gap: 16px; align-items: start; }
+@media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
+.queue { max-height: calc(100vh - 90px); overflow: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tbody tr { cursor: pointer; }
+tbody tr:hover, tr.selected { background: #eef3fb; }
+.mono { font-family: ui-monospace, Consolas, monospace; }
+.muted { color: var(--muted); font-weight: normal; }
+.small { font-size: 12px; }
+.error { color: var(--freeze); }
+.chip { display: inline-block; background: #eef0f3; border-radius: 10px; padding: 1px 8px; margin: 1px 4px 1px 0; font-size: 12px; }
+.badge { color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 12px; }
+.badge.freeze { background: var(--freeze); }
+.badge.review { background: var(--review); }
+button { font: inherit; font-size: 13px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 4px; background: #fff; cursor: pointer; }
+button:disabled { opacity: 0.5; }
+button.link { border: none; background: none; color: var(--accent); padding: 0 4px 0 0; text-decoration: underline; }
+.incoming { list-style: none; padding: 0; margin: 0; max-height: 160px; overflow: auto; font-size: 13px; }
+.graph { height: 460px; border: 1px solid var(--line); border-radius: 6px; }

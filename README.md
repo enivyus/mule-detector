@@ -70,6 +70,14 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
   neither tier
 - Replaying the topic after a restart never freezes again, so an account an investigator unfroze stays unfrozen
 
+**Investigator dashboard** (`dashboard/`, React + Cytoscape.js)
+- Review queue of every suspect, freeze tier first, with its signals and live account status
+- Freeze / unfreeze buttons (core-banking admin API)
+- Account view: balance, signals, large incoming payments; click one to draw **follow the money** as a
+  graph (suspects red, frozen accounts outlined, cash withdrawals grey) and click any node to jump to it
+- Louvain community of the account and the other suspects in it
+- Shows only what the bank knows: no simulator labels reach the dashboard
+
 **Money stopped** (seed 42, `evaluate_freeze.py`, lower bound): the rings stole 1,985,407 THB and cashed out
 1,764,355 THB. Freezing at detection time would have blocked at least **1,059,527 THB (60%)** of those cash-outs,
 counting only withdrawals by the frozen account itself. In 5 of 6 rings an account was frozen 8 to 52 minutes
@@ -158,6 +166,12 @@ cd graph-service && ./mvnw spring-boot:run                   # :8083
 cd simulator && python graph_rules.py && python evaluate_graph.py
 ```
 
+The dashboard talks to all three services through the Vite dev server:
+
+```bash
+cd dashboard && npm install && npm run dev                   # http://127.0.0.1:5173
+```
+
 Auto-freeze is off by default (a frozen account would break a replay). To turn it on for live traffic:
 
 ```bash
@@ -175,4 +189,4 @@ cd simulator && python evaluate_freeze.py   # what freezing would have stopped, 
 - [x] Harder simulator: old rented mule accounts, daytime rings, night-owl customers
 - [x] Graph analysis in Neo4j (suspicion follows the money, money trail, Louvain communities)
 - [x] Risk tiers, review queue, auto-freeze (60% of cash-outs stopped, no genuine account frozen)
-- [ ] Investigator dashboard
+- [x] Investigator dashboard (review queue, freeze/unfreeze, follow-the-money graph, communities)
