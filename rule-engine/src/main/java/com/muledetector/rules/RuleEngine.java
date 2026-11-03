@@ -112,6 +112,9 @@ public class RuleEngine {
 
     private void incoming(String accountNo, TransferEvent e, Instant at) {
         State s = state(accountNo);
+        // Expired entries can no longer fire; drop them here too, or an account that only receives keeps them forever
+        s.passThrough.removeIf(p -> at.isAfter(p.at.plus(WINDOW)));
+        s.fanOut.removeIf(p -> at.isAfter(p.at.plus(FAN_OUT_WINDOW)));
         boolean sameSecondAsLastOut = at.equals(s.lastOutAt);
 
         if (e.amountSatang() >= LARGE_INCOMING_SATANG) {

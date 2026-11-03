@@ -109,6 +109,15 @@ class RuleEngineTest {
     }
 
     @Test
+    void fanOutCountsTransfersBookedInTheSameSecondBeforeTheIncoming() {
+        transfer(VAULT, "M", 5_000_000, OLD);           // existing balance
+        transfer("M", "P1", 300_000, T0);
+        transfer("M", "P2", 300_000, T0);
+        transfer("V1", "M", 1_000_000, T0);
+        assertThat(rulesFor("M")).contains(FAN_OUT);
+    }
+
+    @Test
     void noFanOutAfterTheWindow() {
         transfer("V1", "M", 1_000_000, T0);
         transfer("M", "P1", 300_000, T0.plusMinutes(10));
