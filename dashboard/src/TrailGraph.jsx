@@ -6,7 +6,7 @@ import { FitIcon } from './icons.jsx'
 
 const VAULT = '0000000000'
 const MIN_READABLE_ZOOM = 0.8
-const COLUMN_GAP = 200  // three columns fit a ~460px detail column at the zoom floor
+const COLUMN_GAP = 220  // three columns fit a ~460px detail column at the zoom floor
 const ROW_GAP = 110
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 
@@ -67,7 +67,7 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
         { selector: '.vault', style: { shape: 'round-rectangle', width: 44, 'background-color': css('--muted') } },
         { selector: '.frozen', style: { 'border-width': 5, 'border-color': text } },
         { selector: 'edge', style: {
-          label: 'data(label)', 'font-size': 13, 'text-wrap': 'wrap', color: text, 'curve-style': 'bezier',
+          label: 'data(label)', 'font-size': 12, 'text-wrap': 'wrap', color: text, 'curve-style': 'bezier',
           'target-arrow-shape': 'triangle', width: 'data(width)', 'line-color': line, 'target-arrow-color': line,
           'text-background-color': panel, 'text-background-opacity': 0.85, 'text-background-padding': 2 } },
       ],
