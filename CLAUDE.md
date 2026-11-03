@@ -62,8 +62,7 @@ docker compose --profile full up -d           # + Redpanda (:9092, console :8081
    `@TransactionalEventListener(phase = AFTER_COMMIT)` so rolled-back transfers are never published.
 
 `TransferServiceTest.concurrentTransfersKeepBooksBalanced` fires 1,000 transfers from 16 threads and checks the
-invariants. It must stay green. Note: the scaffold was written without a chance to run Maven — on the first run,
-fix anything that does not compile or pass before adding features.
+invariants. It must stay green.
 
 ## Simulator labels
 
@@ -90,7 +89,7 @@ Baseline (seed 42, 2,000 customers, 6 rings): precision ≈ 29%, recall 100%. Go
 | Week | Work | Status |
 |---|---|---|
 | 1 | Research mule patterns, schema, docker-compose | ✅ scaffold done |
-| 2–3 | Core banking API: accounts, transfers, ledger, idempotency, tests | 🟡 first version done, needs first run + Swagger + statement paging |
+| 2–3 | Core banking API: accounts, transfers, ledger, idempotency, tests | 🟡 tests green, Swagger done; needs statement paging + run on Postgres |
 | 4 | Simulator: post generated transactions to the API (not only CSV) | 🟡 CSV version done |
 | 5 | Publish events to Redpanda, streaming rule engine | ⬜ |
 | 6–7 | Neo4j: load graph, community detection (Louvain), money-trail query | ⬜ |

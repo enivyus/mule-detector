@@ -46,6 +46,8 @@ docker compose up -d postgres
 cd core-banking && ./mvnw spring-boot:run
 ```
 
+API docs and a try-it-out UI: http://localhost:8080/swagger-ui.html (OpenAPI spec at `/v3/api-docs`).
+
 ```bash
 # Open two accounts
 curl -X POST localhost:8080/api/accounts -H "Content-Type: application/json" -d '{"ownerName":"Alice"}'
