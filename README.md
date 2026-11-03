@@ -27,6 +27,8 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 - Idempotency keys: a retried request never moves money twice
 - Money stored as integer satang, never floating point
 - Concurrency test: 1,000 simultaneous transfers, books must balance to the satang
+- **Not built yet: authentication.** Anyone who can reach the API can move money, so both services listen on
+  127.0.0.1 only. Login and customer/admin roles come before anything is exposed.
 
 **Transaction simulator** (`simulator/`, Python)
 - A month of normal activity for 2,000 customers: salary, bills, shopping, transfers between friends

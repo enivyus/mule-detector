@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 
+// shortcut: no authentication or authorization; anyone who can reach the port can move money or freeze accounts.
+// The app binds to 127.0.0.1 for that reason. Add Spring Security (customer vs admin roles) before exposing it.
 @RestController
 @RequestMapping("/api")
 public class BankingController {

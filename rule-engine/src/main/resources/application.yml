@@ -1,5 +1,6 @@
 server:
   port: 8082  # 8080 is core-banking, 8081 is the Redpanda console
+  address: 127.0.0.1  # alerts name accounts; local only until there is authentication
 
 spring:
   application:

@@ -1,5 +1,6 @@
 server:
   port: 8080
+  address: 127.0.0.1  # no authentication yet (see BankingController), so never listen beyond this machine
 
 spring:
   application:
