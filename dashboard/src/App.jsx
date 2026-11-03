@@ -3,6 +3,7 @@ import { api, logout, tier } from './api.js'
 import { LangContext, saveLang, savedLang, useT } from './i18n.js'
 import Login from './Login.jsx'
 import Queue from './Queue.jsx'
+import SettingsMenu from './SettingsMenu.jsx'
 import AccountPanel from './AccountPanel.jsx'
 
 export default function App() {
@@ -75,8 +76,7 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
         <div className="top-actions">
           <span className="muted small">{t('signedInAs', me.username)}</span>
           <button onClick={load} disabled={loading}>{loading ? t('loading') : t('refresh')}</button>
-          <button className="lang" onClick={onSwitchLang} aria-label="Switch language">{t('language')}</button>
-          <button onClick={onSignOut}>{t('signOut')}</button>
+          <SettingsMenu onSwitchLang={onSwitchLang} onSignOut={onSignOut} />
         </div>
       </header>
 

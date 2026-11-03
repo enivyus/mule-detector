@@ -43,7 +43,7 @@ const text = {
     loginHint: 'Fraud investigators only. Every freeze and unfreeze is recorded under your name.',
     username: 'Username', password: 'Password', signIn: 'Sign in', signingIn: 'Signing in…',
     badLogin: 'Wrong username or password.', notInvestigator: 'This user is not an investigator.',
-    signedInAs: (name) => `Signed in as ${name}`, signOut: 'Sign out',
+    signedInAs: (name) => `Signed in as ${name}`, signOut: 'Sign out', settings: 'Settings',
     language: 'ภาษาไทย',
   },
   th: {
@@ -87,7 +87,7 @@ const text = {
     loginHint: 'สำหรับเจ้าหน้าที่ฝ่ายทุจริตเท่านั้น การอายัดและปลดอายัดทุกครั้งจะบันทึกชื่อของคุณ',
     username: 'ชื่อผู้ใช้', password: 'รหัสผ่าน', signIn: 'เข้าสู่ระบบ', signingIn: 'กำลังเข้าสู่ระบบ…',
     badLogin: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', notInvestigator: 'ผู้ใช้นี้ไม่ใช่เจ้าหน้าที่สืบสวน',
-    signedInAs: (name) => `เข้าสู่ระบบในชื่อ ${name}`, signOut: 'ออกจากระบบ',
+    signedInAs: (name) => `เข้าสู่ระบบในชื่อ ${name}`, signOut: 'ออกจากระบบ', settings: 'ตั้งค่า',
     language: 'English',
   },
 }
