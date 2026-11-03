@@ -1,0 +1,11 @@
+server:
+  port: 8082  # 8080 is core-banking, 8081 is the Redpanda console
+
+spring:
+  application:
+    name: rule-engine
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    consumer:
+      group-id: rule-engine
+      auto-offset-reset: earliest
