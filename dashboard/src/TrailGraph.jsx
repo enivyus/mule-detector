@@ -53,7 +53,7 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
     }))
 
     // Cytoscape draws on a canvas and cannot read CSS variables: take the theme's values here, and redraw on a theme switch
-    const text = css('--ink'), line = css('--line-strong'), panel = css('--surface')
+    const text = css('--ink'), panel = css('--surface'), course = css('--course')
     const cy = cytoscape({
       container: box.current,
       elements: [...nodes, ...edges],
@@ -63,13 +63,14 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
         { selector: 'node', style: {
           label: 'data(label)', 'font-size': 14, 'font-family': css('--font'),
           'text-valign': 'bottom', 'text-margin-y': 5, color: text,
-          width: 28, height: 28, 'background-color': css('--person') } },
-        { selector: '.suspect', style: { 'background-color': css('--danger') } },
-        { selector: '.vault', style: { shape: 'round-rectangle', width: 44, 'background-color': css('--muted') } },
-        { selector: '.frozen', style: { 'border-width': 5, 'border-color': text } },
+          width: 26, height: 26, 'background-color': panel, 'border-width': 3, 'border-color': course } },
+        { selector: '.suspect', style: { 'background-color': css('--danger'), 'border-color': text } },
+        // Frozen accounts become squares, the map's symbol for a closed point; the vault is a muted block
+        { selector: '.frozen', style: { shape: 'rectangle' } },
+        { selector: '.vault', style: { shape: 'rectangle', width: 40, height: 20, 'background-color': css('--muted'), 'border-width': 0 } },
         { selector: 'edge', style: {
           label: 'data(label)', 'font-size': 12, 'font-family': css('--font'), 'text-wrap': 'wrap', color: text, 'curve-style': 'bezier',
-          'target-arrow-shape': 'triangle', width: 'data(width)', 'line-color': line, 'target-arrow-color': line,
+          'target-arrow-shape': 'triangle', width: 'data(width)', 'line-color': course, 'target-arrow-color': course,
           'text-background-color': panel, 'text-background-opacity': 0.85, 'text-background-padding': 2 } },
       ],
     })
@@ -90,10 +91,11 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
   return (
     <div className="graph-wrap">
       <div className="graph-bar">
-        <span className="legend"><i className="dot suspect" />{t('legendSuspect')}</span>
-        <span className="legend"><i className="dot person" />{t('legendPerson')}</span>
-        <span className="legend"><i className="dot frozen" />{t('legendFrozen')}</span>
-        <span className="legend"><i className="dot vault" />{t('legendCash')}</span>
+        <span className="legend"><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="var(--danger)" stroke="var(--ink)" strokeWidth="2" /></svg>{t('legendSuspect')}</span>
+        <span className="legend"><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="var(--surface)" stroke="var(--course)" strokeWidth="2" /></svg>{t('legendPerson')}</span>
+        <span className="legend"><svg width="14" height="14" aria-hidden="true"><rect x="1.5" y="1.5" width="11" height="11" fill="var(--surface)" stroke="var(--ink)" strokeWidth="2" /></svg>{t('legendFrozen')}</span>
+        <span className="legend"><svg width="20" height="12" aria-hidden="true"><rect x="0" y="1" width="20" height="10" fill="var(--muted)" /></svg>{t('legendCash')}</span>
+        <span className="legend course"><svg width="22" height="12" aria-hidden="true"><path d="M1 6h16" stroke="var(--course)" strokeWidth="3" /><path d="m15 2 5 4-5 4Z" fill="var(--course)" /></svg>{t('legendRoute')}</span>
         <span className="grow" />
         <button className="small ghost icon-text" onClick={() => cyRef.current?.fit(undefined, 30)}><FitIcon size={14} />{t('fit')}</button>
       </div>

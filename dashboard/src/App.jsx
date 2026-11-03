@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { api, logout } from './api.js'
+import { api, logout, bangkokDate } from './api.js'
 import { LangContext, saveLang, savedLang, useT } from './i18n.js'
 import Login from './Login.jsx'
 import Queue, { VIEWS, queueRows } from './Queue.jsx'
 import SettingsMenu from './SettingsMenu.jsx'
 import AccountPanel from './AccountPanel.jsx'
-import { MarkIcon, RefreshIcon, SearchIcon } from './icons.jsx'
+import { MarkIcon, RefreshIcon, SearchIcon, ViewSymbol } from './icons.jsx'
 
 export default function App() {
   const [lang, setLang] = useState(savedLang)
@@ -66,14 +66,16 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
     return rows.filter((r) => keep(r, statuses[r.no]?.status) && r.no.includes(query.trim()))
   }, [rows, statuses, view, query])
 
+  // The freeze tier leads: it is the number that says how much money is in danger right now
   const overview = [
+    ['kpiFreezeTier', rows.filter((r) => r.tier === 'freeze').length, 'freeze lead'],
     ['kpiSuspects', counts.all, ''],
-    ['kpiFreezeTier', rows.filter((r) => r.tier === 'freeze').length, 'freeze'],
     ['kpiReview', counts.review, 'review'],
     ['kpiFrozen', counts.frozen, 'frozen'],
     ['kpiAutoFrozen', autoFrozen.filter((f) => f.ok).length, ''],
   ]
-  const viewTitle = VIEWS.find(([id]) => id === view)[1]
+  const viewIndex = VIEWS.findIndex(([id]) => id === view)
+  const viewTitle = VIEWS[viewIndex][1]
 
   return (
     <div className="shell">
@@ -87,7 +89,7 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
           {VIEWS.map(([id, key]) => (
             <button key={id} className={`view ${view === id ? 'active' : ''}`} aria-current={view === id ? 'page' : undefined}
                     onClick={() => setView(id)}>
-              <span className={`view-dot ${id}`} aria-hidden="true" />
+              <ViewSymbol kind={id} />
               <span className="view-name">{t(key)}</span>
               <span className="view-count">{loading ? '–' : counts[id]}</span>
             </button>
@@ -102,11 +104,16 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
       </aside>
 
       <div className="workspace">
+        <div className="ticks" aria-hidden="true" />
         <header className="topbar">
           <div className="page-title">
             <h1>{t(viewTitle)}</h1>
             <p>{t('subtitle')}</p>
           </div>
+          <dl className="sheet-meta">
+            <div><dt>{t('sheetLabel')}</dt><dd>{viewIndex + 1} / {VIEWS.length}</dd></div>
+            <div><dt>{t('dateLabel')}</dt><dd>{bangkokDate(lang)}</dd></div>
+          </dl>
           <label className="search">
             <SearchIcon size={16} />
             <input type="search" placeholder={t('search')} aria-label={t('search')} value={query}

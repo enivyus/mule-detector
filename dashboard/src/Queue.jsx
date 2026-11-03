@@ -1,8 +1,8 @@
-import { tier } from './api.js'
+import { streamRules, tier } from './api.js'
 import { useT } from './i18n.js'
 import FreezeButton from './FreezeButton.jsx'
 import Signals from './Signals.jsx'
-import { LockIcon } from './icons.jsx'
+import { RiskContours, ViewSymbol } from './icons.jsx'
 
 /** Queue views shown in the sidebar: id, label key, which rows belong. Frozen accounts leave the work views. */
 export const VIEWS = [
@@ -27,13 +27,13 @@ export default function Queue({ rows, statuses, selected, onSelect, onStatus, on
       <div className="table-wrap">
         <table>
           <thead>
-            <tr><th>{t('colAccount')}</th><th className="col-wide">{t('colTier')}</th><th>{t('colSignals')}</th>
+            <tr><th>{t('colAccount')}</th><th className="col-height">{t('colHeight')}</th><th className="col-wide">{t('colTier')}</th><th>{t('colSignals')}</th>
               <th className="col-wide">{t('colStatus')}</th><th className="col-wide"><span className="visually-hidden">{t('colAction')}</span></th></tr>
           </thead>
           <tbody>
             {loading && rows.length === 0 && Array.from({ length: SKELETON_ROWS }, (_, i) => (
               <tr key={i} className="skeleton-row" aria-hidden="true">
-                <td><span className="skeleton" style={{ width: 92 }} /></td><td className="col-wide"><span className="skeleton" style={{ width: 70 }} /></td>
+                <td><span className="skeleton" style={{ width: 92 }} /></td><td className="col-height"><span className="skeleton" style={{ width: 22 }} /></td><td className="col-wide"><span className="skeleton" style={{ width: 70 }} /></td>
                 <td><span className="skeleton" style={{ width: 140 }} /></td><td className="col-wide"><span className="skeleton" style={{ width: 56 }} /></td><td className="col-wide" />
               </tr>
             ))}
@@ -45,9 +45,13 @@ export default function Queue({ rows, statuses, selected, onSelect, onStatus, on
                   <td className="num">
                     {r.no}
                     {/* Phones drop the tier and status columns and show both here instead */}
-                    <span className="row-meta"><span className={`tier ${r.tier}`}>{t(`tier_${r.tier}`)}</span><Status status={status} /></span>
+                    <span className="row-meta"><Tier tier={r.tier} /><Status status={status} /></span>
                   </td>
-                  <td className="col-wide"><span className={`tier ${r.tier}`}>{t(`tier_${r.tier}`)}</span></td>
+                  <td className="col-height" title={t('rulesOf', streamRules(r.signals).length)}>
+                    <RiskContours rules={streamRules(r.signals).length} />
+                    <span className="visually-hidden">{t('rulesOf', streamRules(r.signals).length)}</span>
+                  </td>
+                  <td className="col-wide"><Tier tier={r.tier} /></td>
                   <td className="signals"><Signals names={r.signals} max={1} /></td>
                   <td className="col-wide"><Status status={status} /></td>
                   <td className="action col-wide"><FreezeButton no={r.no} status={status} onStatus={onStatus} onToast={onToast} /></td>
@@ -72,8 +76,13 @@ export function Status({ status, big }) {
   if (!status) return <span className="status pending">…</span>
   return (
     <span className={`status ${status} ${big ? 'big' : ''}`}>
-      {status === 'FROZEN' ? <LockIcon size={big ? 14 : 12} /> : <span className="status-dot" aria-hidden="true" />}
+      <ViewSymbol kind={status === 'FROZEN' ? 'frozen' : 'all'} size={big ? 12 : 10} />
       {t(`status_${status}`)}
     </span>
   )
+}
+
+export function Tier({ tier: level }) {
+  const { t } = useT()
+  return <span className={`tier ${level}`}><ViewSymbol kind={level} size={11} />{t(`tier_${level}`)}</span>
 }

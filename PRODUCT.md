@@ -49,9 +49,10 @@ real-time rules fire (no genuine account frozen in tests), everything else goes 
 None binding beyond the product name, which may be refined. Must support both light and dark mode, following the
 system setting.
 
-The owner chose the fintech category standard over themed directions (after three re-rolls): the dashboard should sit
-alongside Stripe Dashboard and professional fraud consoles such as Sardine and Unit21, at their craft level, with no
-themed costume.
+The owner first chose the fintech category standard, then rejected the built result as generic "AI slop": it looked
+like any SaaS dashboard, its icons and fonts had no character, nothing was memorable, and everything carried the same
+weight. The dashboard must now have a distinct identity a viewer remembers, while still reading as a working tool a
+bank would use, with a clear first place to look.
 
 ## Evidence on Hand
 

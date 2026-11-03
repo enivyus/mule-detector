@@ -4,8 +4,8 @@ import { useT } from './i18n.js'
 import FreezeButton from './FreezeButton.jsx'
 import Signals from './Signals.jsx'
 import TrailGraph from './TrailGraph.jsx'
-import { Status } from './Queue.jsx'
-import { ArrowLeftIcon, ArrowRightIcon } from './icons.jsx'
+import { Status, Tier } from './Queue.jsx'
+import { ArrowLeftIcon, ArrowRightIcon, RiskContours } from './icons.jsx'
 
 const LARGE_SATANG = 100_000 // 1,000 THB, the same floor the rules use
 
@@ -67,11 +67,12 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
       <button className="back ghost small icon-text" onClick={() => onSelect(null)}><ArrowLeftIcon size={14} />{t('backToQueue')}</button>
       <header className="account-head">
         <div className="account-id">
+          <span className="summit" title={t('rulesOf', fired)}><RiskContours rules={fired} size={44} /></span>
           <h2 className="num">{no}</h2>
           <div className="account-tags">
             <span className="muted">{t(`type_${account.type}`)}</span>
             <Status status={status} big />
-            {signals.length > 0 && <span className={`tier ${tier(signals)}`}>{t(`tier_${tier(signals)}`)}</span>}
+            {signals.length > 0 && <Tier tier={tier(signals)} />}
           </div>
         </div>
         <FreezeButton no={no} status={status} size="normal"
