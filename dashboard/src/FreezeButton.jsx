@@ -42,14 +42,14 @@ function Confirm({ text, action, danger, busy, onYes, onNo }) {
   const { t } = useT()
   const [reason, setReason] = useState('')
   const box = useRef(null)
-  useEffect(() => {
-    box.current?.focus()
-    const esc = (e) => e.key === 'Escape' && onNo()
-    window.addEventListener('keydown', esc)
-    return () => window.removeEventListener('keydown', esc)
-  }, [onNo])
+  useEffect(() => { box.current?.focus() }, [])
+  // Keys stop here: in the queue the dialog sits inside a row whose Enter key selects it
+  const keys = (e) => {
+    e.stopPropagation()
+    if (e.key === 'Escape') onNo()
+  }
   return (
-    <div className="overlay" onClick={(e) => { e.stopPropagation(); onNo() }}>
+    <div className="overlay" onClick={(e) => { e.stopPropagation(); onNo() }} onKeyDown={keys}>
       <div className="dialog" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
         <p>{text}</p>
         <label className="field">
