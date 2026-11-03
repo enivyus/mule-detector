@@ -32,6 +32,7 @@ Core banking API (Spring Boot, PostgreSQL, double-entry ledger)
 | `core-banking/src/main/resources/db/migration/` | Flyway migrations. Never edit an applied migration; add `V2__...sql`. |
 | `simulator/simulate.py` | Generates `data/accounts.csv` and `data/transactions.csv` with ground-truth labels. Stdlib only. |
 | `simulator/baseline_rules.py` | Simple rules scored against labels (precision/recall). The baseline to beat. |
+| `simulator/replay.py` | Replays the CSVs through the API (sim profile, `X-Simulated-Time`), writes `data/account_map.csv`, verifies balances. |
 | `docker-compose.yml` | postgres (default); redpanda, redpanda-console, neo4j under `--profile full`. |
 | `data/` | Generated CSVs (git-ignored). |
 
@@ -43,6 +44,7 @@ cd core-banking && ./mvnw spring-boot:run       # API on :8080
 cd core-banking && ./mvnw test                  # tests run on H2 (PostgreSQL mode), no Docker needed
 cd simulator && python simulate.py            # generate data
 cd simulator && python baseline_rules.py      # score baseline rules
+cd simulator && python replay.py              # load CSVs into the API (API must run with -Dspring-boot.run.profiles=sim)
 docker compose --profile full up -d           # + Redpanda (:9092, console :8081) + Neo4j (:7474)
 ```
 
@@ -60,6 +62,8 @@ docker compose --profile full up -d           # + Redpanda (:9092, console :8081
    the original transfer; same key + different payload → 409.
 7. `TransferCompletedEvent` is published inside the transaction. Any listener that talks to Kafka must use
    `@TransactionalEventListener(phase = AFTER_COMMIT)` so rolled-back transfers are never published.
+8. **Simulated time**: `X-Simulated-Time` may set `created_at` only under the `sim` profile; otherwise 400. Never let
+   production clients choose booking times.
 
 `TransferServiceTest.concurrentTransfersKeepBooksBalanced` fires 1,000 transfers from 16 threads and checks the
 invariants. It must stay green.
@@ -92,7 +96,7 @@ Baseline (seed 42, 2,000 customers, 6 rings): precision ≈ 33%, recall 100%. Go
 |---|---|---|
 | 1 | Research mule patterns, schema, docker-compose | ✅ scaffold done |
 | 2–3 | Core banking API: accounts, transfers, ledger, idempotency, tests | ✅ tests green, Swagger, paged statement, verified on Postgres |
-| 4 | Simulator: post generated transactions to the API (not only CSV) | 🟡 CSV version done |
+| 4 | Simulator: post generated transactions to the API (not only CSV) | ✅ replay.py, sim-time header, balances verified |
 | 5 | Publish events to Redpanda, streaming rule engine | ⬜ |
 | 6–7 | Neo4j: load graph, community detection (Louvain), money-trail query | ⬜ |
 | 8 | Risk score, alerts, auto-freeze | ⬜ |

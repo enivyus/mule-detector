@@ -32,6 +32,8 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 - A month of normal activity for 2,000 customers: salary, bills, shopping, transfers between friends
 - Hidden scam rings: victims → layer-1 mules → layer-2 mules → cash-out
 - Ground-truth labels for every account, so detection can be measured
+- Replay through the real API (`replay.py`) with the original timestamps: 2,123 accounts and 52,911
+  transactions in about 11 minutes, every balance checked against the CSV afterwards
 
 **Baseline rules** (`simulator/baseline_rules.py`)
 
@@ -66,11 +68,19 @@ python simulate.py          # writes data/accounts.csv, data/transactions.csv
 python baseline_rules.py    # precision / recall of the baseline rules
 ```
 
+To load the same month into the bank, start the API with the `sim` profile. Only that profile
+accepts the `X-Simulated-Time` header, which keeps each transaction's original time:
+
+```bash
+cd core-banking && ./mvnw spring-boot:run -Dspring-boot.run.profiles=sim
+cd simulator && python replay.py   # safe to rerun: idempotency keys + data/account_map.csv
+```
+
 ## Roadmap
 
 - [x] Core banking API with ledger, locking, idempotency
 - [x] Labeled transaction simulator + baseline rules
-- [ ] Simulator posts to the API
+- [x] Simulator posts to the API
 - [ ] Streaming rule engine on Redpanda
 - [ ] Graph analysis in Neo4j (community detection, money trail)
 - [ ] Risk scoring, alerts, auto-freeze
