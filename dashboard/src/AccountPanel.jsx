@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { api, bangkokTime, streamRules, thb, tier } from './api.js'
+import { api, bangkokTime, streamRules, thb, tier, FREEZE_THRESHOLD } from './api.js'
 import { useT } from './i18n.js'
 import FreezeButton from './FreezeButton.jsx'
 import Signals from './Signals.jsx'
 import TrailGraph from './TrailGraph.jsx'
+import { Status } from './Queue.jsx'
+import { ArrowRightIcon } from './icons.jsx'
 
 const LARGE_SATANG = 100_000 // 1,000 THB, the same floor the rules use
 
@@ -41,82 +43,106 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
     }
   }
 
-  if (!account) return <section className="panel empty">{t('loading')}</section>
+  if (!account) {
+    return (
+      <section className="panel account" aria-busy="true">
+        <span className="skeleton" style={{ width: 180, height: 24 }} />
+        <span className="skeleton" style={{ width: 260, marginTop: 12 }} />
+        <span className="skeleton" style={{ width: '100%', height: 120, marginTop: 24 }} />
+      </section>
+    )
+  }
   const signals = suspects[no] ?? []
-  const status = statuses[no]?.status ?? account.status
+  const status = liveStatus ?? account.status
+  const fired = streamRules(signals).length
 
   return (
     <section className="panel account">
-      <div className="account-head">
-        <div>
-          <h2 className="mono">{no}</h2>
-          <p className="muted">{t(`type_${account.type}`)}</p>
+      <header className="account-head">
+        <div className="account-id">
+          <h2 className="num">{no}</h2>
+          <div className="account-tags">
+            <span className="muted">{t(`type_${account.type}`)}</span>
+            <Status status={status} big />
+            {signals.length > 0 && <span className={`tier ${tier(signals)}`}>{t(`tier_${tier(signals)}`)}</span>}
+          </div>
         </div>
-        <div className="account-facts">
-          <div><span className="muted">{t('balance')}</span><b>฿{thb(account.balanceSatang)}</b></div>
-          <span className={`status big ${status}`}>{t(`status_${status}`)}</span>
-          {signals.length > 0 && <span className={`badge ${tier(signals)}`}>{t(`tier_${tier(signals)}`)}</span>}
-          <FreezeButton no={no} status={status} size="normal"
-                        onStatus={(n, a) => { setAccount(a); onStatus(n, a) }} onToast={onToast} />
-        </div>
-      </div>
+        <FreezeButton no={no} status={status} size="normal"
+                      onStatus={(n, a) => { setAccount(a); onStatus(n, a) }} onToast={onToast} />
+      </header>
 
-      <h3>{t('why')}</h3>
-      {signals.length
-        ? <>
-            <ul className="why">
-              {signals.map((s) => <li key={s}><Signals names={[s]} /> {signal(s)[1]}</li>)}
+      <dl className="facts">
+        <div><dt>{t('balance')}</dt><dd className="num">฿{thb(account.balanceSatang)}</dd></div>
+        <div><dt>{t('rulesFired')}</dt><dd className="num">{fired} / 5</dd></div>
+        <div><dt>{t('autoFreezeAt')}</dt><dd className="num">{FREEZE_THRESHOLD} / 5</dd></div>
+      </dl>
+
+      <section className="block">
+        <h3>{t('why')}</h3>
+        {signals.length
+          ? <ul className="why">
+              {signals.map((s) => <li key={s}><Signals names={[s]} /><span>{signal(s)[1]}</span></li>)}
             </ul>
-            <p className="muted small">{t('streamCount', streamRules(signals).length)}</p>
-          </>
-        : <p className="muted">{t('whyNone')}</p>}
+          : <p className="muted">{t('whyNone')}</p>}
+      </section>
 
-      <h3>{t('history')}</h3>
-      {audit?.length
-        ? <ol className="audit">
-            {audit.map((a, i) => (
-              <li key={i}>
-                <span className="when">{bangkokTime(a.at, locale)}</span>
-                <span className={`status ${a.action === 'FREEZE' ? 'FROZEN' : 'ACTIVE'}`}>{t(`action_${a.action}`)}</span>
-                <span><b>{a.actor}</b>: {a.reason}</span>
+      <section className="block">
+        <h3>{t('history')}</h3>
+        {audit?.length
+          ? <ol className="audit">
+              {audit.map((a, i) => (
+                <li key={i}>
+                  <span className="when">{bangkokTime(a.at, locale)}</span>
+                  <span className={`audit-action ${a.action}`}>{t(`action_${a.action}`)}</span>
+                  <span><b>{a.actor}</b> · {a.reason}</span>
+                </li>
+              ))}
+            </ol>
+          : <p className="muted small">{audit ? t('historyNone') : t('loading')}</p>}
+      </section>
+
+      <section className="block">
+        <h3>{t('timeline')}</h3>
+        <p className="hint">{t('timelineHint')}</p>
+        <ol className="timeline">
+          {entries === null && <li className="muted">{t('loading')}</li>}
+          {entries?.length === 0 && <li className="muted">{t('noEntries')}</li>}
+          {entries?.map((e) => {
+            const incoming = e.direction === 'CREDIT'
+            const followable = incoming && e.amountSatang >= LARGE_SATANG
+            return (
+              <li key={e.id} className={`${incoming ? 'in' : 'out'} ${following === e.transferId ? 'current' : ''}`}>
+                <span className="when">{bangkokTime(e.createdAt, locale)}</span>
+                <span className="dir">{incoming ? t('in') : t('out')}</span>
+                <span className="amount num">{incoming ? '+' : '−'}฿{thb(e.amountSatang)}</span>
+                {followable
+                  ? <button className="small ghost" onClick={() => follow(e.transferId)}>{t('follow')}<ArrowRightIcon size={14} /></button>
+                  : <span />}
               </li>
-            ))}
-          </ol>
-        : <p className="muted small">{audit ? t('historyNone') : t('loading')}</p>}
+            )
+          })}
+        </ol>
+      </section>
 
-      <h3>{t('timeline')} <span className="muted small">{t('timelineHint')}</span></h3>
-      <ol className="timeline">
-        {entries === null && <li className="muted">{t('loading')}</li>}
-        {entries?.length === 0 && <li className="muted">{t('noEntries')}</li>}
-        {entries?.map((e) => {
-          const incoming = e.direction === 'CREDIT'
-          const followable = incoming && e.amountSatang >= LARGE_SATANG
-          return (
-            <li key={e.id} className={`${incoming ? 'in' : 'out'} ${following === e.transferId ? 'current' : ''}`}>
-              <span className="when">{bangkokTime(e.createdAt, locale)}</span>
-              <span className="dir">{incoming ? t('in') : t('out')}</span>
-              <span className="amount">{incoming ? '+' : '−'}฿{thb(e.amountSatang)}</span>
-              {followable && <button className="small" onClick={() => follow(e.transferId)}>{t('follow')} →</button>}
-            </li>
-          )
-        })}
-      </ol>
+      {hops.length > 0 && (
+        <section className="block">
+          <h3>{t('trail')}</h3>
+          <TrailGraph hops={hops} suspects={suspects} statuses={statuses} onSelect={onSelect} />
+          <p className="hint">{t('trailHint')}</p>
+        </section>
+      )}
 
-      {hops.length > 0 && <>
-        <h3>{t('trail')}</h3>
-        <TrailGraph hops={hops} suspects={suspects} statuses={statuses} onSelect={onSelect} />
-        <p className="muted small">{t('trailHint')}</p>
-      </>}
-
-      <h3>{t('community')}</h3>
-      {community
-        ? <p>{t('communityText', community.id, community.size, community.suspects.length)}
-            {community.suspects.length > 0 && ': '}
-            {community.suspects.map((m) => <button key={m} className="link mono" onClick={() => onSelect(m)}>{m}</button>)}
-          </p>
-        : <button onClick={findCommunity} disabled={findingCommunity}>
-            {findingCommunity ? t('loading') : t('runLouvain')}
-          </button>}
+      <section className="block">
+        <h3>{t('community')}</h3>
+        {community
+          ? <p>{t('communityText', community.id, community.size, community.suspects.length)}
+              {community.suspects.length > 0 && ': '}
+              {community.suspects.map((m) => <button key={m} className="link num" onClick={() => onSelect(m)}>{m}</button>)}
+            </p>
+          : <button onClick={findCommunity} disabled={findingCommunity}>
+              {findingCommunity ? t('loading') : t('runLouvain')}
+            </button>}
+      </section>
     </section>
   )
 }

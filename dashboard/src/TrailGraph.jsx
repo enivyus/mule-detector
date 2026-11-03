@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import cytoscape from 'cytoscape'
 import { bangkokTime, thb } from './api.js'
 import { useT } from './i18n.js'
+import { FitIcon } from './icons.jsx'
 
 const VAULT = '0000000000'
 const MIN_READABLE_ZOOM = 0.8
@@ -44,7 +45,7 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
     }))
 
     // Cytoscape draws on a canvas and cannot read CSS variables, so take the theme's colours once
-    const text = css('--text'), line = css('--line-strong'), panel = css('--panel')
+    const text = css('--ink'), line = css('--line-strong'), panel = css('--surface')
     const cy = cytoscape({
       container: box.current,
       elements: [...nodes, ...edges],
@@ -52,10 +53,10 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
       wheelSensitivity: 0.3,
       style: [
         { selector: 'node', style: {
-          label: 'data(label)', 'font-size': 10, 'font-family': 'ui-monospace, Consolas, monospace',
+          label: 'data(label)', 'font-size': 10, 'font-family': 'Inter, "Noto Sans Thai", system-ui, sans-serif',
           'text-valign': 'bottom', 'text-margin-y': 5, color: text,
           width: 28, height: 28, 'background-color': css('--person') } },
-        { selector: '.suspect', style: { 'background-color': css('--freeze') } },
+        { selector: '.suspect', style: { 'background-color': css('--danger') } },
         { selector: '.vault', style: { shape: 'round-rectangle', width: 44, 'background-color': css('--muted'),
           'font-family': 'system-ui, sans-serif' } },
         { selector: '.frozen', style: { 'border-width': 5, 'border-color': text } },
@@ -84,8 +85,8 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
         <span className="legend"><i className="dot person" />{t('legendPerson')}</span>
         <span className="legend"><i className="dot frozen" />{t('legendFrozen')}</span>
         <span className="legend"><i className="dot vault" />{t('legendCash')}</span>
-        <span className="muted small grow">{t('openNode')}</span>
-        <button className="small" onClick={() => cyRef.current?.fit(undefined, 30)}>{t('fit')}</button>
+        <span className="grow" />
+        <button className="small ghost icon-text" onClick={() => cyRef.current?.fit(undefined, 30)}><FitIcon size={14} />{t('fit')}</button>
       </div>
       <div ref={box} className="graph" />
     </div>

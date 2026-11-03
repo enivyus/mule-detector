@@ -1,67 +1,75 @@
-import { useMemo, useState } from 'react'
 import { tier } from './api.js'
 import { useT } from './i18n.js'
 import FreezeButton from './FreezeButton.jsx'
 import Signals from './Signals.jsx'
+import { LockIcon } from './icons.jsx'
 
-const TABS = [
+/** Queue views shown in the sidebar: id, label key, which rows belong. Frozen accounts leave the work views. */
+export const VIEWS = [
   ['all', 'tabAll', () => true],
   ['freeze', 'tabFreeze', (r, st) => r.tier === 'freeze' && st !== 'FROZEN'],
   ['review', 'tabReview', (r, st) => r.tier === 'review' && st !== 'FROZEN'],
   ['frozen', 'tabFrozen', (r, st) => st === 'FROZEN'],
 ]
 
-export default function Queue({ suspects, statuses, selected, onSelect, onStatus, onToast, loading }) {
-  const { t } = useT()
-  const [tab, setTab] = useState('all')
-  const [query, setQuery] = useState('')
+/** Freeze tier first, then the accounts that broke the most rules. */
+export const queueRows = (suspects) => Object.entries(suspects)
+  .map(([no, signals]) => ({ no, signals, tier: tier(signals) }))
+  .sort((a, b) => (a.tier === b.tier ? b.signals.length - a.signals.length : a.tier === 'freeze' ? -1 : 1))
 
-  const rows = useMemo(() => Object.entries(suspects)
-    .map(([no, signals]) => ({ no, signals, tier: tier(signals) }))
-    .sort((a, b) => (a.tier === b.tier ? b.signals.length - a.signals.length : a.tier === 'freeze' ? -1 : 1)),
-  [suspects])
-  const counts = Object.fromEntries(TABS.map(([id, , keep]) => [id, rows.filter((r) => keep(r, statuses[r.no]?.status)).length]))
-  const keep = TABS.find(([id]) => id === tab)[2]
-  const shown = rows.filter((r) => keep(r, statuses[r.no]?.status) && r.no.includes(query.trim()))
+const SKELETON_ROWS = 8
+
+export default function Queue({ rows, statuses, selected, onSelect, onStatus, onToast, loading, query, onClearQuery }) {
+  const { t } = useT()
 
   return (
     <section className="panel queue">
-      <div className="queue-head">
-        <div className="tabs" role="tablist">
-          {TABS.map(([id, key]) => (
-            <button key={id} role="tab" aria-selected={tab === id} className={tab === id ? 'tab active' : 'tab'}
-                    onClick={() => setTab(id)}>
-              {t(key)} <span className="count">{counts[id]}</span>
-            </button>
-          ))}
-        </div>
-        <input type="search" placeholder={t('search')} aria-label={t('search')} value={query}
-               onChange={(e) => setQuery(e.target.value)} inputMode="numeric" />
-      </div>
-
       <div className="table-wrap">
         <table>
           <thead>
-            <tr><th>{t('colAccount')}</th><th>{t('colTier')}</th><th>{t('colSignals')}</th><th>{t('colStatus')}</th><th /></tr>
+            <tr><th>{t('colAccount')}</th><th>{t('colTier')}</th><th>{t('colSignals')}</th><th>{t('colStatus')}</th>
+              <th><span className="visually-hidden">{t('colAction')}</span></th></tr>
           </thead>
           <tbody>
-            {shown.map((r) => {
+            {loading && rows.length === 0 && Array.from({ length: SKELETON_ROWS }, (_, i) => (
+              <tr key={i} className="skeleton-row" aria-hidden="true">
+                <td><span className="skeleton" style={{ width: 92 }} /></td><td><span className="skeleton" style={{ width: 70 }} /></td>
+                <td><span className="skeleton" style={{ width: 140 }} /></td><td><span className="skeleton" style={{ width: 56 }} /></td><td />
+              </tr>
+            ))}
+            {rows.map((r) => {
               const status = statuses[r.no]?.status
               return (
                 <tr key={r.no} className={r.no === selected ? 'selected' : ''} onClick={() => onSelect(r.no)}
-                    tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onSelect(r.no)}>
-                  <td className="mono">{r.no}</td>
-                  <td><span className={`badge ${r.tier}`}>{t(`tier_${r.tier}`)}</span></td>
+                    tabIndex={0} aria-selected={r.no === selected} onKeyDown={(e) => e.key === 'Enter' && onSelect(r.no)}>
+                  <td className="num">{r.no}</td>
+                  <td><span className={`tier ${r.tier}`}>{t(`tier_${r.tier}`)}</span></td>
                   <td className="signals"><Signals names={r.signals} /></td>
-                  <td><span className={`status ${status}`}>{status ? t(`status_${status}`) : '…'}</span></td>
-                  <td><FreezeButton no={r.no} status={status} onStatus={onStatus} onToast={onToast} /></td>
+                  <td><Status status={status} /></td>
+                  <td className="action"><FreezeButton no={r.no} status={status} onStatus={onStatus} onToast={onToast} /></td>
                 </tr>
               )
             })}
           </tbody>
         </table>
-        {!loading && shown.length === 0 && <p className="muted center">{t('noMatch')}</p>}
+        {!loading && rows.length === 0 && (
+          <div className="empty-table">
+            <p>{query ? t('noMatchQuery', query) : t('noMatch')}</p>
+            {query && <button className="small" onClick={onClearQuery}>{t('clearSearch')}</button>}
+          </div>
+        )}
       </div>
     </section>
+  )
+}
+
+export function Status({ status, big }) {
+  const { t } = useT()
+  if (!status) return <span className="status pending">…</span>
+  return (
+    <span className={`status ${status} ${big ? 'big' : ''}`}>
+      {status === 'FROZEN' ? <LockIcon size={big ? 14 : 12} /> : <span className="status-dot" aria-hidden="true" />}
+      {t(`status_${status}`)}
+    </span>
   )
 }

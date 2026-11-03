@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { api } from './api.js'
 import { useT } from './i18n.js'
+import { LockIcon, UnlockIcon } from './icons.jsx'
 
 /** Freeze / unfreeze with a confirmation step: freezing a genuine customer is the costly mistake. */
 export default function FreezeButton({ no, status, onStatus, onToast, size = 'small' }) {
@@ -26,9 +27,12 @@ export default function FreezeButton({ no, status, onStatus, onToast, size = 'sm
 
   return (
     <>
-      <button className={`${frozen ? '' : 'danger'} ${size}`} disabled={busy}
+      {/* In the queue the button is icon-only to keep rows short; the label stays for screen readers and as a tooltip */}
+      <button className={`${frozen ? '' : 'danger'} ${size} icon-text`} disabled={busy}
+              aria-label={`${frozen ? t('unfreeze') : t('freeze')} ${no}`} title={frozen ? t('unfreeze') : t('freeze')}
               onClick={(e) => { e.stopPropagation(); setAsking(true) }}>
-        {frozen ? t('unfreeze') : t('freeze')}
+        {frozen ? <UnlockIcon size={14} /> : <LockIcon size={14} />}
+        {size === 'small' ? null : frozen ? t('unfreeze') : t('freeze')}
       </button>
       {asking && <Confirm text={frozen ? t('confirmUnfreeze', no) : t('confirmFreeze', no)}
                           action={frozen ? t('unfreeze') : t('freeze')} danger={!frozen} busy={busy}
@@ -50,7 +54,8 @@ function Confirm({ text, action, danger, busy, onYes, onNo }) {
   }
   return (
     <div className="overlay" onClick={(e) => { e.stopPropagation(); onNo() }} onKeyDown={keys}>
-      <div className="dialog" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+      <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title" onClick={(e) => e.stopPropagation()}>
+        <h2 id="confirm-title">{action}</h2>
         <p>{text}</p>
         <label className="field">
           {t('reasonLabel')}

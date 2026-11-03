@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { api, logout, tier } from './api.js'
+import { api, logout } from './api.js'
 import { LangContext, saveLang, savedLang, useT } from './i18n.js'
 import Login from './Login.jsx'
-import Queue from './Queue.jsx'
+import Queue, { VIEWS, queueRows } from './Queue.jsx'
 import SettingsMenu from './SettingsMenu.jsx'
 import AccountPanel from './AccountPanel.jsx'
+import { MarkIcon, RefreshIcon, SearchIcon } from './icons.jsx'
 
 export default function App() {
   const [lang, setLang] = useState(savedLang)
@@ -26,6 +27,8 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
   const [statuses, setStatuses] = useState({})
   const [autoFrozen, setAutoFrozen] = useState([])
   const [selected, setSelected] = useState(null)
+  const [view, setView] = useState('all')
+  const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [toast, setToast] = useState(null)
@@ -55,50 +58,84 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
 
   const setStatus = useCallback((no, account) => setStatuses((prev) => ({ ...prev, [no]: account })), [])
 
-  const kpis = useMemo(() => {
-    const all = Object.entries(suspects)
-    return [
-      ['kpiSuspects', all.length, ''],
-      ['kpiFreezeTier', all.filter(([, s]) => tier(s) === 'freeze').length, 'freeze'],
-      ['kpiReview', all.filter(([no, s]) => tier(s) === 'review' && statuses[no]?.status !== 'FROZEN').length, 'review'],
-      ['kpiFrozen', all.filter(([no]) => statuses[no]?.status === 'FROZEN').length, 'frozen'],
-      ['kpiAutoFrozen', autoFrozen.filter((f) => f.ok).length, ''],
-    ]
-  }, [suspects, statuses, autoFrozen])
+  const rows = useMemo(() => queueRows(suspects), [suspects])
+  const counts = useMemo(() => Object.fromEntries(VIEWS.map(([id, , keep]) =>
+    [id, rows.filter((r) => keep(r, statuses[r.no]?.status)).length])), [rows, statuses])
+  const shown = useMemo(() => {
+    const keep = VIEWS.find(([id]) => id === view)[2]
+    return rows.filter((r) => keep(r, statuses[r.no]?.status) && r.no.includes(query.trim()))
+  }, [rows, statuses, view, query])
+
+  const overview = [
+    ['kpiSuspects', counts.all, ''],
+    ['kpiFreezeTier', rows.filter((r) => r.tier === 'freeze').length, 'freeze'],
+    ['kpiReview', counts.review, 'review'],
+    ['kpiFrozen', counts.frozen, 'frozen'],
+    ['kpiAutoFrozen', autoFrozen.filter((f) => f.ok).length, ''],
+  ]
+  const viewTitle = VIEWS.find(([id]) => id === view)[1]
 
   return (
-    <div className="app">
-      <header className="top">
-        <div>
-          <h1>{t('title')}</h1>
-          <p className="muted">{t('subtitle')}</p>
+    <div className="shell">
+      <aside className="sidebar">
+        <div className="brand">
+          <span className="brand-mark"><MarkIcon size={18} /></span>
+          <span className="brand-name">{t('title')}</span>
         </div>
-        <div className="top-actions">
-          <span className="muted small">{t('signedInAs', me.username)}</span>
-          <button onClick={load} disabled={loading}>{loading ? t('loading') : t('refresh')}</button>
+        <nav className="views" aria-label={t('queue')}>
+          <span className="nav-label">{t('queue')}</span>
+          {VIEWS.map(([id, key]) => (
+            <button key={id} className={`view ${view === id ? 'active' : ''}`} aria-current={view === id ? 'page' : undefined}
+                    onClick={() => setView(id)}>
+              <span className={`view-dot ${id}`} aria-hidden="true" />
+              <span className="view-name">{t(key)}</span>
+              <span className="view-count">{loading ? '–' : counts[id]}</span>
+            </button>
+          ))}
+        </nav>
+        <div className="account-menu">
+          <span className="avatar" aria-hidden="true">{me.username[0].toUpperCase()}</span>
+          <span className="who"><b>{me.username}</b><span>{t('roleInvestigator')}</span></span>
           <SettingsMenu onSwitchLang={onSwitchLang} onSignOut={onSignOut} />
         </div>
-      </header>
+      </aside>
 
-      {error && <p className="banner error" role="alert">{t('error')}</p>}
-
-      <section className="kpis" aria-label="Overview">
-        {kpis.map(([key, value, tone]) => (
-          <div key={key} className={`kpi ${tone}`}>
-            <span className="kpi-value">{loading && !value ? '–' : value}</span>
-            <span className="kpi-label">{t(key)}</span>
+      <div className="workspace">
+        <header className="topbar">
+          <div className="page-title">
+            <h1>{t(viewTitle)}</h1>
+            <p>{t('subtitle')}</p>
           </div>
-        ))}
-      </section>
+          <label className="search">
+            <SearchIcon size={16} />
+            <input type="search" placeholder={t('search')} aria-label={t('search')} value={query}
+                   onChange={(e) => setQuery(e.target.value)} inputMode="numeric" />
+          </label>
+          <button className="icon-text" onClick={load} disabled={loading}>
+            <RefreshIcon size={16} className={loading ? 'spin' : ''} />{loading ? t('loading') : t('refresh')}
+          </button>
+        </header>
 
-      <main className="layout">
-        <Queue suspects={suspects} statuses={statuses} selected={selected} onSelect={setSelected}
-               onStatus={setStatus} onToast={setToast} loading={loading} />
-        {selected
-          ? <AccountPanel key={selected} no={selected} suspects={suspects} statuses={statuses}
-                          onSelect={setSelected} onStatus={setStatus} onToast={setToast} />
-          : <section className="panel empty">{t('pick')}</section>}
-      </main>
+        {error && <p className="banner error" role="alert">{t('error')}</p>}
+
+        <section className="overview" aria-label={t('overview')}>
+          {overview.map(([key, value, tone]) => (
+            <div key={key} className={`stat ${tone}`}>
+              <span className="stat-label">{t(key)}</span>
+              <span className="stat-value">{loading ? <span className="skeleton num" /> : value}</span>
+            </div>
+          ))}
+        </section>
+
+        <main className="work">
+          <Queue rows={shown} statuses={statuses} selected={selected} onSelect={setSelected}
+                 onStatus={setStatus} onToast={setToast} loading={loading} query={query} onClearQuery={() => setQuery('')} />
+          {selected
+            ? <AccountPanel key={selected} no={selected} suspects={suspects} statuses={statuses}
+                            onSelect={setSelected} onStatus={setStatus} onToast={setToast} />
+            : <section className="panel empty"><p>{t('pick')}</p></section>}
+        </main>
+      </div>
 
       {toast && <div className={`toast ${toast.tone}`} role="status">{toast.text}</div>}
     </div>

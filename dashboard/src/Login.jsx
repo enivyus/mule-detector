@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { LoginError, login } from './api.js'
 import { useT } from './i18n.js'
+import { GlobeIcon, MarkIcon } from './icons.jsx'
 
 export default function Login({ onLogin, onLoggedOut, onSwitchLang }) {
   const { t } = useT()
@@ -24,12 +25,16 @@ export default function Login({ onLogin, onLoggedOut, onSwitchLang }) {
 
   return (
     <div className="login">
-      <form className="panel" onSubmit={submit}>
-        <button type="button" className="lang small" onClick={onSwitchLang} aria-label="Switch language">{t('language')}</button>
-        <div>
-          <h1>{t('title')}</h1>
-          <p className="muted small">{t('loginHint')}</p>
+      <form className="login-card" onSubmit={submit}>
+        <div className="login-top">
+          <span className="brand-mark"><MarkIcon size={20} /></span>
+          <button type="button" className="ghost small icon-text" onClick={onSwitchLang}><GlobeIcon size={14} />{t('language')}</button>
         </div>
+        <div>
+          <h1>{t('loginTitle')}</h1>
+          <p className="muted">{t('title')}</p>
+        </div>
+        <p className="login-hint">{t('loginHint')}</p>
         <label className="field">
           {t('username')}
           <input autoFocus autoComplete="username" value={user} onChange={(e) => setUser(e.target.value)} required />
@@ -40,7 +45,7 @@ export default function Login({ onLogin, onLoggedOut, onSwitchLang }) {
                  onChange={(e) => setPassword(e.target.value)} required />
         </label>
         {error && <p className="banner error" role="alert">{t(error)}</p>}
-        <button className="primary" disabled={busy}>{busy ? t('signingIn') : t('signIn')}</button>
+        <button className="primary wide" disabled={busy}>{busy ? t('signingIn') : t('signIn')}</button>
       </form>
     </div>
   )

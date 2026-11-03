@@ -21,3 +21,8 @@ Thumbs.db
 
 # Secrets
 .env
+
+# Impeccable working files (decision sketches, review captures); surface briefs stay tracked
+.impeccable/mocks/
+.impeccable/review/
+.impeccable/config.local.json
