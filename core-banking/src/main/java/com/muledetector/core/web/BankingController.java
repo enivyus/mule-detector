@@ -9,6 +9,7 @@ import com.muledetector.core.transfer.TransferService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
@@ -51,7 +52,7 @@ public class BankingController {
     }
 
     /** {@code type} is CUSTOMER (default) or BUSINESS. */
-    public record OpenAccountRequest(@NotBlank String ownerName, Account.Type type) {}
+    public record OpenAccountRequest(@NotBlank @Size(max = 100) String ownerName, Account.Type type) {}
     public record AmountRequest(@Positive long amountSatang) {}
     public record TransferRequest(@NotBlank String fromAccountNo, @NotBlank String toAccountNo, @Positive long amountSatang) {}
     public record AccountView(String accountNo, String ownerName, String type, String status, long balanceSatang) {

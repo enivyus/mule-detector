@@ -88,6 +88,22 @@ class TransferServiceTest {
         assertThat(balance(a)).isEqualTo(500);
     }
 
+    @Test
+    void rejectsHugeAmountsLongKeysAndVaultTransfers() {
+        Account a = funded("Ivan", 10_000);
+        String vault = "0000000000";
+
+        assertThatThrownBy(() -> transferService.deposit(UUID.randomUUID().toString(), a.getAccountNo(), Long.MAX_VALUE))
+                .isInstanceOf(ApiException.class).hasMessageContaining("at most");
+        assertThatThrownBy(() -> transferService.deposit("k".repeat(65), a.getAccountNo(), 100))
+                .isInstanceOf(ApiException.class).hasMessageContaining("at most 64");
+        assertThatThrownBy(() -> transferService.transfer(UUID.randomUUID().toString(), vault, a.getAccountNo(), 100))
+                .isInstanceOf(ApiException.class).hasMessageContaining("cash vault");
+        assertThatThrownBy(() -> transferService.transfer(UUID.randomUUID().toString(), a.getAccountNo(), vault, 100))
+                .isInstanceOf(ApiException.class).hasMessageContaining("cash vault");
+        assertThat(balance(a)).isEqualTo(10_000);
+    }
+
     /**
      * 1,000 random transfers between 10 accounts from 16 threads at once.
      * Money must be conserved, no balance may go negative, and the cached balance must match the ledger.

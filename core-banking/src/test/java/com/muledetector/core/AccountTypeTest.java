@@ -30,6 +30,12 @@ class AccountTypeTest {
     }
 
     @Test
+    void rejectsOwnerNamesLongerThanTheColumn() throws Exception {
+        open("{\"ownerName\":\"" + "x".repeat(101) + "\"}").andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+    }
+
+    @Test
     void refusesToOpenSystemAccounts() throws Exception {
         open("{\"ownerName\":\"Vault 2\",\"type\":\"SYSTEM\"}").andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_ACCOUNT_TYPE"));

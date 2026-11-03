@@ -22,6 +22,9 @@ import java.time.OffsetDateTime;
 @Service
 public class TransferService {
 
+    static final int MAX_KEY_LENGTH = 64;                        // transfers.idempotency_key VARCHAR(64)
+    static final long MAX_AMOUNT_SATANG = 1_000_000_000_000L;   // 10 billion THB: far from long overflow
+
     private final AccountRepository accounts;
     private final TransferRepository transfers;
     private final LedgerEntryRepository ledger;
@@ -74,8 +77,15 @@ public class TransferService {
         if (key == null || key.isBlank()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "IDEMPOTENCY_KEY_REQUIRED", "Idempotency-Key header is required");
         }
+        if (key.length() > MAX_KEY_LENGTH) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "IDEMPOTENCY_KEY_TOO_LONG",
+                    "Idempotency-Key must be at most " + MAX_KEY_LENGTH + " characters");
+        }
         if (amount <= 0) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_AMOUNT", "Amount must be positive");
+        }
+        if (amount > MAX_AMOUNT_SATANG) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "AMOUNT_TOO_LARGE", "Amount must be at most 10,000,000,000 THB");
         }
         if (fromId.equals(toId)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "SAME_ACCOUNT", "Cannot transfer to the same account");
@@ -101,6 +111,10 @@ public class TransferService {
             return replay(existing.get(), fromId, toId, amount, kind);
         }
 
+        // Cash enters and leaves the bank only through deposit/withdraw, so every booking keeps its real kind
+        if (kind == Transfer.Kind.TRANSFER && (from.isSystem() || to.isSystem())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "SYSTEM_ACCOUNT", "Use deposit or withdraw for the cash vault");
+        }
         if (!from.isActive() || !to.isActive()) {
             throw new ApiException(HttpStatus.UNPROCESSABLE_ENTITY, "ACCOUNT_FROZEN", "Account is frozen");
         }

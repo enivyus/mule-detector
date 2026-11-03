@@ -48,8 +48,9 @@ public class Account {
     public boolean isSystem() { return type == Type.SYSTEM; }
     public boolean isActive() { return status == Status.ACTIVE; }
 
-    public void debit(long amount) { this.balanceSatang -= amount; }
-    public void credit(long amount) { this.balanceSatang += amount; }
+    // Exact arithmetic: an overflow must roll the transfer back, never wrap the cached balance away from the ledger
+    public void debit(long amount) { this.balanceSatang = Math.subtractExact(balanceSatang, amount); }
+    public void credit(long amount) { this.balanceSatang = Math.addExact(balanceSatang, amount); }
     public void freeze() { this.status = Status.FROZEN; }
     public void unfreeze() { this.status = Status.ACTIVE; }
 
