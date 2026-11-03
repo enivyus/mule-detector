@@ -28,5 +28,6 @@ export const tier = (signals) => (streamRules(signals).length >= FREEZE_THRESHOL
 export const thb = (satang) =>
   (satang / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-export const bangkokTime = (iso) =>
-  new Date(iso).toLocaleString('en-GB', { timeZone: 'Asia/Bangkok', dateStyle: 'medium', timeStyle: 'short' })
+// Bank time is Bangkok time; th-TH shows the Buddhist year, as Thai staff expect
+export const bangkokTime = (iso, locale = 'en-GB') =>
+  new Date(iso).toLocaleString(locale, { timeZone: 'Asia/Bangkok', dateStyle: 'medium', timeStyle: 'short' })

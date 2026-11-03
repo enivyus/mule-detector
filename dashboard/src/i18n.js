@@ -1,0 +1,117 @@
+import { createContext, useContext } from 'react'
+
+// Every word on screen, in English and Thai. Signal names match the rule names the services return.
+const text = {
+  en: {
+    title: 'Mule investigator',
+    subtitle: 'Accounts suspected of passing on scam money',
+    refresh: 'Refresh',
+    error: 'Could not reach the services. Are core-banking, rule-engine and graph-service running?',
+    kpiSuspects: 'Suspects', kpiFreezeTier: 'Freeze tier', kpiReview: 'Waiting for review',
+    kpiFrozen: 'Frozen now', kpiAutoFrozen: 'Auto-frozen since start',
+    tabAll: 'All', tabFreeze: 'Freeze tier', tabReview: 'Review', tabFrozen: 'Frozen',
+    search: 'Search account number',
+    colAccount: 'Account', colTier: 'Tier', colSignals: 'Signals', colStatus: 'Status',
+    tier_freeze: 'Freeze tier', tier_review: 'Review',
+    status_ACTIVE: 'Active', status_FROZEN: 'Frozen',
+    type_CUSTOMER: 'Personal account', type_BUSINESS: 'Business account', type_SYSTEM: 'Cash vault',
+    noMatch: 'No accounts match.',
+    pick: 'Pick an account from the queue to see why it was flagged and where its money went.',
+    loading: 'Loading…',
+    balance: 'Balance',
+    why: 'Why this account was flagged',
+    whyNone: 'No rule fired for this account.',
+    streamCount: (n) => `${n} of 5 real-time rules fired; 3 or more means the account is frozen automatically.`,
+    timeline: 'Money in and out', timelineHint: 'Click an incoming payment of 1,000 THB or more to follow it.',
+    in: 'In', out: 'Out', follow: 'Follow',
+    noEntries: 'No entries yet.',
+    trail: 'Follow the money',
+    trailHint: 'Each step is money that left within 2 hours of arriving. Money is fungible, so a step can include other people’s money passing through the same account.',
+    legendSuspect: 'Suspect', legendPerson: 'Other account', legendFrozen: 'Frozen', legendCash: 'Cash withdrawn',
+    fit: 'Fit to screen', openNode: 'Click an account to open it.',
+    community: 'Community', runLouvain: 'Find this account’s community',
+    communityText: (id, size, n) => `Community ${id}: ${size} personal accounts, ${n} other suspects`,
+    freeze: 'Freeze', unfreeze: 'Unfreeze', cancel: 'Cancel',
+    confirmFreeze: (no) => `Freeze account ${no}? The owner can no longer send or receive money until it is unfrozen.`,
+    confirmUnfreeze: (no) => `Unfreeze account ${no}? Money can move again straight away.`,
+    froze: (no) => `Account ${no} is frozen.`, unfroze: (no) => `Account ${no} is active again.`,
+    actionFailed: 'The bank refused the request.',
+    language: 'ภาษาไทย',
+  },
+  th: {
+    title: 'ระบบสืบสวนบัญชีม้า',
+    subtitle: 'บัญชีที่ต้องสงสัยว่ารับและส่งต่อเงินจากการหลอกลวง',
+    refresh: 'โหลดใหม่',
+    error: 'เชื่อมต่อระบบไม่ได้ ตรวจว่า core-banking, rule-engine และ graph-service เปิดอยู่',
+    kpiSuspects: 'ผู้ต้องสงสัย', kpiFreezeTier: 'ระดับควรอายัด', kpiReview: 'รอเจ้าหน้าที่ตรวจ',
+    kpiFrozen: 'ถูกอายัดอยู่', kpiAutoFrozen: 'อายัดอัตโนมัติตั้งแต่เปิดระบบ',
+    tabAll: 'ทั้งหมด', tabFreeze: 'ควรอายัด', tabReview: 'รอตรวจ', tabFrozen: 'อายัดแล้ว',
+    search: 'ค้นหาเลขบัญชี',
+    colAccount: 'เลขบัญชี', colTier: 'ระดับ', colSignals: 'สัญญาณ', colStatus: 'สถานะ',
+    tier_freeze: 'ระดับอายัด', tier_review: 'รอตรวจ',
+    status_ACTIVE: 'ปกติ', status_FROZEN: 'ถูกอายัด',
+    type_CUSTOMER: 'บัญชีบุคคล', type_BUSINESS: 'บัญชีนิติบุคคล', type_SYSTEM: 'บัญชีเงินสดของธนาคาร',
+    noMatch: 'ไม่พบบัญชีที่ตรงกัน',
+    pick: 'เลือกบัญชีจากคิว เพื่อดูว่าทำไมถูกจับ และเงินไหลไปที่ไหน',
+    loading: 'กำลังโหลด…',
+    balance: 'ยอดเงิน',
+    why: 'ทำไมบัญชีนี้ถูกจับ',
+    whyNone: 'บัญชีนี้ไม่ติดกฎข้อไหน',
+    streamCount: (n) => `ติดกฎแบบ real-time ${n} จาก 5 ข้อ (ตั้งแต่ 3 ข้อขึ้นไประบบจะอายัดอัตโนมัติ)`,
+    timeline: 'เงินเข้าและออก', timelineHint: 'คลิกเงินเข้าตั้งแต่ 1,000 บาท เพื่อตามรอยว่าเงินไปไหนต่อ',
+    in: 'เข้า', out: 'ออก', follow: 'ตามรอย',
+    noEntries: 'ยังไม่มีรายการ',
+    trail: 'ตามรอยเงิน',
+    trailHint: 'แต่ละขั้นคือเงินที่ออกไปภายใน 2 ชั่วโมงหลังเงินเข้า เงินแต่ละบาทแยกกันไม่ได้ จึงอาจรวมเงินของคนอื่นที่ผ่านบัญชีเดียวกันด้วย',
+    legendSuspect: 'ผู้ต้องสงสัย', legendPerson: 'บัญชีอื่น', legendFrozen: 'ถูกอายัด', legendCash: 'ถอนเป็นเงินสด',
+    fit: 'พอดีจอ', openNode: 'คลิกบัญชีในกราฟเพื่อเปิดดู',
+    community: 'กลุ่มบัญชี (community)', runLouvain: 'หากลุ่มของบัญชีนี้',
+    communityText: (id, size, n) => `กลุ่ม ${id}: บัญชีบุคคล ${size} บัญชี มีผู้ต้องสงสัยอื่นอีก ${n} บัญชี`,
+    freeze: 'อายัด', unfreeze: 'ปลดอายัด', cancel: 'ยกเลิก',
+    confirmFreeze: (no) => `อายัดบัญชี ${no} ใช่ไหม? เจ้าของบัญชีจะโอนเข้าหรือออกไม่ได้จนกว่าจะปลดอายัด`,
+    confirmUnfreeze: (no) => `ปลดอายัดบัญชี ${no} ใช่ไหม? เงินจะเคลื่อนไหวได้ทันที`,
+    froze: (no) => `อายัดบัญชี ${no} แล้ว`, unfroze: (no) => `บัญชี ${no} กลับมาใช้งานได้แล้ว`,
+    actionFailed: 'ธนาคารปฏิเสธคำขอ',
+    language: 'English',
+  },
+}
+
+const signals = {
+  en: {
+    pass_through: ['Pass-through', 'Passed on at least 90% of a payment of 1,000 THB or more within 2 hours'],
+    fan_in: ['Many senders', 'Received money from 4 or more different people within 2 hours'],
+    fan_out: ['Split and sent on', 'Sent a fresh payment on to 2 or more people within an hour'],
+    new_account_burst: ['New account, big money', 'Under 30 days old and received 20,000 THB or more in one day'],
+    odd_hours: ['Night activity', '2 or more transfers between midnight and 5 a.m.'],
+    from_suspect: ['From a suspect', 'Received money from a suspected account and passed it straight on'],
+  },
+  th: {
+    pass_through: ['เงินผ่านมือ', 'รับเงินตั้งแต่ 1,000 บาท แล้วโอนออกไปแทบทั้งหมด (90% ขึ้นไป) ภายใน 2 ชั่วโมง'],
+    fan_in: ['รับจากหลายคน', 'ได้รับเงินจากคนต่างกัน 4 คนขึ้นไปภายใน 2 ชั่วโมง'],
+    fan_out: ['กระจายเงินออก', 'แบ่งเงินที่เพิ่งได้รับ โอนต่อให้ 2 คนขึ้นไปภายใน 1 ชั่วโมง'],
+    new_account_burst: ['บัญชีใหม่รับเงินก้อนใหญ่', 'บัญชีเปิดไม่ถึง 30 วัน แต่รับเงินตั้งแต่ 20,000 บาทในวันเดียว'],
+    odd_hours: ['ทำธุรกรรมกลางดึก', 'โอนเข้าหรือออกช่วงเที่ยงคืนถึงตี 5 ตั้งแต่ 2 ครั้ง'],
+    from_suspect: ['รับเงินจากผู้ต้องสงสัย', 'รับเงินจากบัญชีต้องสงสัย แล้วส่งต่อทันที'],
+  },
+}
+
+export const LangContext = createContext('en')
+
+export function useT() {
+  const lang = useContext(LangContext)
+  const dict = text[lang]
+  return {
+    lang,
+    t: (key, ...args) => (typeof dict[key] === 'function' ? dict[key](...args) : dict[key] ?? key),
+    signal: (name) => signals[lang][name] ?? [name, name],
+    locale: lang === 'th' ? 'th-TH' : 'en-GB',
+  }
+}
+
+export function savedLang() {
+  try { return localStorage.getItem('lang') === 'th' ? 'th' : 'en' } catch { return 'en' }
+}
+
+export function saveLang(lang) {
+  try { localStorage.setItem('lang', lang) } catch { /* private mode: the choice just isn't remembered */ }
+}
