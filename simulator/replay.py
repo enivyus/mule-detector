@@ -7,9 +7,9 @@ The API must run with the sim profile, which honors the X-Simulated-Time header:
     cd core-banking && ./mvnw spring-boot:run -Dspring-boot.run.profiles=sim
     cd simulator && python replay.py --data ../data
 
-Safe to rerun: accounts already opened are read from account_map.csv (next to the CSVs), and
-every transaction uses an idempotency key derived from the dataset and its txn_id, so a retry
-never moves money twice. Standard library only.
+Safe to rerun: accounts already opened are read from account_map_<dataset hash>.csv (next to
+the CSVs), and every transaction uses an idempotency key derived from the same hash and its
+txn_id, so a retry never moves money twice. Standard library only.
 """
 from __future__ import annotations
 
@@ -60,6 +60,9 @@ def open_accounts(api: Api, accounts: list[dict], map_path: Path) -> dict[str, s
     if map_path.exists():
         with open(map_path, encoding="utf-8") as f:
             mapping.update({r["sim_account_no"]: r["api_account_no"] for r in csv.DictReader(f)})
+        probe = next((no for no in mapping.values() if no != VAULT), None)
+        if probe and api.call("GET", f"/api/accounts/{probe}")[0] == 404:
+            fail(f"{map_path.name} points at accounts this database does not have (was it reset?). Delete it and rerun.")
     todo = [a for a in accounts if a["account_no"] not in mapping]
     new_file = not map_path.exists()
     with open(map_path, "a", newline="", encoding="utf-8") as f:
@@ -129,7 +132,8 @@ def main() -> None:
     key_prefix = hashlib.sha256(tx_path.read_bytes()).hexdigest()[:8]
 
     api = Api(args.api)
-    mapping = open_accounts(api, accounts, args.data / "account_map.csv")
+    # One map per dataset: a regenerated CSV reuses many sim account numbers and must not inherit old accounts
+    mapping = open_accounts(api, accounts, args.data / f"account_map_{key_prefix}.csv")
     replay_txns(api, txns, mapping, key_prefix)
     verify(api, txns, mapping)
 

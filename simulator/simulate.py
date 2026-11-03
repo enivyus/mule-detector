@@ -100,13 +100,14 @@ class Simulator:
         self.savings = {}
         for c in self.customers:
             self.savings[c.account_no] = self._baht(40_000, 400_000)
-            t = max(c.opened_at, self.start - timedelta(days=1)) + timedelta(minutes=self.rng.randint(1, 600))
+            # Business hours on the day before the window; accounts open at midnight, so this is always after opening
+            t = self.start - timedelta(days=1) + timedelta(hours=self.rng.randint(9, 16), minutes=self.rng.randint(0, 59))
             self._add(t, VAULT, c.account_no, self.savings[c.account_no], "DEPOSIT", "funding")
 
     # ---------- normal behaviour ----------
     def simulate_normal(self) -> None:
         for emp in self.employers:  # employers are funded by deposits
-            self._add(self.start, VAULT, emp.account_no, 10_000_000_000, "DEPOSIT", "funding")
+            self._add(self.start - timedelta(hours=15), VAULT, emp.account_no, 10_000_000_000, "DEPOSIT", "funding")
 
         for c in self.customers:
             employer = self.rng.choice(self.employers)
@@ -147,7 +148,8 @@ class Simulator:
             # Warm-up: tiny transfers so the accounts don't look completely empty
             for m in l1 + l2:
                 for _ in range(self.rng.randint(0, 2)):
-                    t = m.opened_at + timedelta(hours=self.rng.randint(1, 40))
+                    # Daytime, like ordinary deposits: a night-only habit here would leak the label
+                    t = m.opened_at + timedelta(days=self.rng.randint(0, 1), hours=self.rng.randint(9, 20))
                     self._add(t, VAULT, m.account_no, self._baht(100, 500), "DEPOSIT", "warmup", ring)
 
             # Victims pay first-layer mules over a few hours
