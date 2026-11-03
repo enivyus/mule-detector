@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:mulebank;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;LOCK_TIMEOUT=10000
+    username: sa
+    password:
+    hikari:
+      maximum-pool-size: 20
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true

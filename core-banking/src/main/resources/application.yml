@@ -1,0 +1,16 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: core-banking
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/mulebank}
+    username: ${DB_USER:mulebank}
+    password: ${DB_PASSWORD:mulebank}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
