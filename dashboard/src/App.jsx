@@ -5,6 +5,7 @@ import Login from './Login.jsx'
 import Queue, { VIEWS, queueRows } from './Queue.jsx'
 import SettingsMenu from './SettingsMenu.jsx'
 import AccountPanel from './AccountPanel.jsx'
+import MapKey from './MapKey.jsx'
 import { MarkIcon, RefreshIcon, SearchIcon, ViewSymbol } from './icons.jsx'
 
 export default function App() {
@@ -63,7 +64,7 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
     [id, rows.filter((r) => keep(r, statuses[r.no]?.status)).length])), [rows, statuses])
   const shown = useMemo(() => {
     const keep = VIEWS.find(([id]) => id === view)[2]
-    return rows.filter((r) => keep(r, statuses[r.no]?.status) && r.no.includes(query.trim()))
+    return rows.filter((r) => keep(r, statuses[r.no]?.status) && r.no.includes(query.replace(/\s/g, '')))
   }, [rows, statuses, view, query])
 
   // The freeze tier leads: it is the number that says how much money is in danger right now
@@ -130,7 +131,10 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
           {overview.map(([key, value, tone]) => (
             <div key={key} className={`stat ${tone}`}>
               <span className="stat-label">{t(key)}</span>
-              <span className="stat-value">{loading ? <span className="skeleton num" /> : value}</span>
+              <span className="stat-value">
+                <svg className="benchmark" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 10H1Z" fill="none" stroke="currentColor" strokeWidth="1.5" /><circle cx="6" cy="7" r="1.3" fill="currentColor" /></svg>
+                {loading ? <span className="skeleton num" /> : value}
+              </span>
             </div>
           ))}
         </section>
@@ -141,7 +145,7 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
           {selected
             ? <AccountPanel key={selected} no={selected} suspects={suspects} statuses={statuses}
                             onSelect={setSelected} onStatus={setStatus} onToast={setToast} />
-            : <section className="panel empty"><p>{t('pick')}</p></section>}
+            : <MapKey />}
         </main>
       </div>
 

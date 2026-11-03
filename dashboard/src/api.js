@@ -59,6 +59,9 @@ export const FREEZE_THRESHOLD = 3
 export const streamRules = (signals) => signals.filter((s) => s !== 'from_suspect')
 export const tier = (signals) => (streamRules(signals).length >= FREEZE_THRESHOLD ? 'freeze' : 'review')
 
+// 10-digit account numbers read as 4-3-3 groups; the data and every API call keep the plain digits
+export const groupNo = (no) => no.replace(/^(\d{4})(\d{3})(\d{3})$/, '$1 $2 $3')
+
 export const thb = (satang) =>
   (satang / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 

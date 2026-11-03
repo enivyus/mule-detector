@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { api } from './api.js'
+import { api, groupNo } from './api.js'
 import { useT } from './i18n.js'
 import { LockIcon, UnlockIcon } from './icons.jsx'
 
@@ -16,7 +16,7 @@ export default function FreezeButton({ no, status, onStatus, onToast, size = 'sm
     try {
       const account = await (frozen ? api.unfreeze(no, reason) : api.freeze(no, reason))
       onStatus(no, account)
-      onToast({ tone: 'done', text: frozen ? t('unfroze', no) : t('froze', no) })
+      onToast({ tone: 'done', text: frozen ? t('unfroze', groupNo(no)) : t('froze', groupNo(no)) })
     } catch {
       onToast({ tone: 'error', text: t('actionFailed') })
     } finally {
@@ -34,7 +34,7 @@ export default function FreezeButton({ no, status, onStatus, onToast, size = 'sm
         {frozen ? <UnlockIcon size={14} /> : <LockIcon size={14} />}
         {size === 'small' ? null : frozen ? t('unfreeze') : t('freeze')}
       </button>
-      {asking && <Confirm text={frozen ? t('confirmUnfreeze', no) : t('confirmFreeze', no)}
+      {asking && <Confirm text={frozen ? t('confirmUnfreeze', groupNo(no)) : t('confirmFreeze', groupNo(no))}
                           action={frozen ? t('unfreeze') : t('freeze')} danger={!frozen} busy={busy}
                           onYes={run} onNo={() => setAsking(false)} />}
     </>

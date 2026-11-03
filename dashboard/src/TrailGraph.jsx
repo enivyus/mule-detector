@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import cytoscape from 'cytoscape'
-import { bangkokTime, thb } from './api.js'
+import { groupNo, thb } from './api.js'
 import { useT } from './i18n.js'
 import { FitIcon } from './icons.jsx'
 
 const VAULT = '0000000000'
 const MIN_READABLE_ZOOM = 0.8
-const COLUMN_GAP = 220  // three columns fit a ~460px detail column at the zoom floor
+const COLUMN_GAP = 150  // four columns with grouped labels fit a ~460px detail column at the zoom floor; longer trails pan
 const ROW_GAP = 110
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 
@@ -16,6 +16,7 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
   const box = useRef(null)
   const cyRef = useRef(null)
   const [cropped, setCropped] = useState(false)
+  const [drawnHeight, setDrawnHeight] = useState(null)
   const scheme = useColorScheme()
 
   // Column = how many hops from where the money started; cash withdrawn always sits at the far right
@@ -41,13 +42,14 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
     const nodes = [...layout.positions.keys()].map((no) => {
       const cls = [no === VAULT ? 'vault' : suspects[no] ? 'suspect' : 'person']
       if (statuses[no]?.status === 'FROZEN') cls.push('frozen')
-      return { data: { id: no, label: no === VAULT ? t('legendCash') : no }, classes: cls.join(' '), position: layout.positions.get(no) }
+      return { data: { id: no, label: no === VAULT ? t('legendCash') : groupNo(no) }, classes: cls.join(' '), position: layout.positions.get(no) }
     })
     const max = Math.max(...hops.map((h) => h.amountSatang))
     const edges = hops.map((h) => ({
       data: {
         id: `t${h.transferId}`, source: h.fromAccountNo, target: h.toAccountNo,
-        label: `฿${thb(h.amountSatang)}\n${bangkokTime(h.at, locale)}`,
+        // Amount and clock time only: short enough to sit between two columns; the full time is in the timeline
+        label: `฿${thb(h.amountSatang)}\n${new Date(h.at).toLocaleTimeString(locale, { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' })}`,
         width: 1.5 + 6 * Math.sqrt(h.amountSatang / max),
       },
     }))
@@ -63,13 +65,13 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
         { selector: 'node', style: {
           label: 'data(label)', 'font-size': 14, 'font-family': css('--font'),
           'text-valign': 'bottom', 'text-margin-y': 5, color: text,
-          width: 26, height: 26, 'background-color': panel, 'border-width': 3, 'border-color': course } },
+          width: 22, height: 22, 'background-color': panel, 'border-width': 3, 'border-color': course } },
         { selector: '.suspect', style: { 'background-color': css('--danger'), 'border-color': text } },
         // Frozen accounts become squares, the map's symbol for a closed point; the vault is a muted block
         { selector: '.frozen', style: { shape: 'rectangle' } },
         { selector: '.vault', style: { shape: 'rectangle', width: 40, height: 20, 'background-color': css('--muted'), 'border-width': 0 } },
         { selector: 'edge', style: {
-          label: 'data(label)', 'font-size': 12, 'font-family': css('--font'), 'text-wrap': 'wrap', color: text, 'curve-style': 'bezier',
+          label: 'data(label)', 'font-size': 12, 'font-family': css('--font'), 'text-wrap': 'wrap', 'text-margin-y': -14, color: text, 'curve-style': 'bezier',
           'target-arrow-shape': 'triangle', width: 'data(width)', 'line-color': course, 'target-arrow-color': course,
           'text-background-color': panel, 'text-background-opacity': 0.85, 'text-background-padding': 2 } },
       ],
@@ -78,15 +80,18 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
     // trail's top-left corner, where the money starts; "fit to screen" still shows the whole trail
     const tooWide = cy.zoom() < MIN_READABLE_ZOOM
     setCropped(tooWide)
-    if (tooWide) {
-      cy.zoom(MIN_READABLE_ZOOM)
-      const bb = cy.elements().boundingBox()
-      cy.pan({ x: 30 - bb.x1 * MIN_READABLE_ZOOM, y: 30 - bb.y1 * MIN_READABLE_ZOOM })
-    }
+    if (tooWide) cy.zoom(MIN_READABLE_ZOOM)
+    // Start at the top-left corner, where the money starts, and make the canvas exactly as tall as what it draws
+    const bb = cy.elements().boundingBox()
+    const zoom = cy.zoom()
+    cy.pan({ x: Math.max(24, (cy.width() - bb.w * zoom) / 2) - bb.x1 * zoom, y: 24 - bb.y1 * zoom })
+    setDrawnHeight(Math.ceil(bb.h * zoom + 48))
     cy.on('tap', 'node', (e) => e.target.id() !== VAULT && onSelect(e.target.id()))
     cyRef.current = cy
     return () => cy.destroy()
   }, [hops, layout, suspects, statuses, onSelect, t, locale, scheme])
+
+  useEffect(() => { cyRef.current?.resize() }, [drawnHeight])
 
   return (
     <div className="graph-wrap">
@@ -100,7 +105,7 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
         <button className="small ghost icon-text" onClick={() => cyRef.current?.fit(undefined, 30)}><FitIcon size={14} />{t('fit')}</button>
       </div>
       {/* Cytoscape rewrites its container's inline style, so the height lives on a wrapper */}
-      <div style={{ height: layout.height }}><div ref={box} className="graph" /></div>
+      <div style={{ height: drawnHeight ?? layout.height }}><div ref={box} className="graph" /></div>
       {cropped && <p className="graph-cue">{t('trailCropped')}</p>}
     </div>
   )

@@ -49,7 +49,7 @@
   :root {
     --canvas: #0f1215;
     --surface: #161a1f;
-    --sidebar: #0b0e11;
+    --sidebar: #191e24;
     --ink: #ecebe3;
     --ink-2: #c9c7bc;
     --muted: #9e9c90;
@@ -191,19 +191,29 @@ button.link { border: none; background: none; color: var(--water); padding: 0 6p
 
 /* Spot heights: the freeze-tier total leads; the others are read second */
 .overview { display: grid; grid-template-columns: 1.6fr repeat(4, minmax(0, 1fr)); border-bottom: 1px solid var(--ink); }
-.stat { padding: 4px 18px 14px; display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--line-strong); }
+.overview { align-items: end; }
+.stat { padding: 4px 18px 12px; display: flex; flex-direction: column; gap: 4px; border-left: 1px solid var(--line-strong); }
 .stat:first-child { border-left: none; padding-left: 0; }
-.stat-value { order: -1; margin-top: auto; font-family: var(--font-num); font-size: 36px; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.stat-label { font-size: 13px; color: var(--ink-2); }
-.stat.lead .stat-value { font-size: 64px; line-height: 1; color: var(--danger); }
+/* Value first on a shared bottom line; every label reserves two lines so a wrapping label cannot lift its value */
+.stat-value { order: -1; display: flex; align-items: flex-end; gap: 8px; font-family: var(--font-num); font-size: 36px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat-label { font-size: 13px; color: var(--ink-2); line-height: 1.35; min-height: 2.7em; }
+.benchmark { flex: none; margin-bottom: 4px; color: var(--muted); }
+.stat.lead .stat-value { font-size: 76px; color: var(--danger); }
+.stat.lead .benchmark { color: var(--danger); width: 16px; height: 16px; margin-bottom: 8px; }
 .stat.lead .stat-label { font-weight: 600; color: var(--danger); }
 .stat.review .stat-value { color: var(--warn); }
 
 /* Work area: queue on the paper, the open account on a framed sheet */
 .work { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(440px, 1fr); gap: 24px; align-items: start; }
 .panel { background: var(--surface); border: var(--frame); min-width: 0; }
-.panel.empty { display: grid; place-items: center; min-height: 280px; padding: 24px; text-align: center; color: var(--muted); border-style: dashed; border-width: 1px; background: transparent; }
-.panel.empty p { max-width: 34ch; }
+.map-key { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 12px; }
+.map-key h2 { font-size: 20px; font-weight: 700; }
+.map-key ul { list-style: none; margin: 4px 0 0; padding: 0; border-top: 1px solid var(--ink); }
+.map-key li { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.key-mark { display: inline-grid; place-items: center; line-height: 0; }
+.key-mark.contour { color: var(--contour); }
+.key-mark.course { color: var(--course); }
+.key-mark.ok { color: var(--ok); }
 
 .queue { position: sticky; top: 16px; max-height: calc(100vh - 32px); display: flex; flex-direction: column; overflow: hidden; background: transparent; border: none; border-top: var(--frame); }
 .table-wrap { overflow: auto; }
@@ -220,9 +230,13 @@ tbody tr:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; 
 tbody tr.selected { background: var(--selected); }
 tbody tr.selected td { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
 td.num { font-weight: 600; font-size: 15px; white-space: nowrap; }
-td.col-height { width: 1%; color: var(--contour); line-height: 0; }
+.col-height { width: 1%; }
+td.col-height { color: var(--contour); }
+.height { display: inline-flex; align-items: center; gap: 6px; }
+.height b { font-family: var(--font-num); font-size: 15px; font-weight: 700; color: var(--contour); min-width: 1ch; }
 td.signals { white-space: nowrap; }
-td.signals .chip { margin: 0 4px 0 0; }
+td.signals .chip { margin: 0; }
+td.signals .chip.more { margin-left: 6px; }
 td.action { text-align: right; white-space: nowrap; width: 1%; }
 td.action button { padding: 5px 7px; }
 .skeleton-row { cursor: default; }
@@ -239,12 +253,10 @@ td.action button { padding: 5px 7px; }
 .status.pending { color: var(--muted); }
 .status .symbol { color: currentColor; }
 .status.big, .account-tags .tier { font-size: 14px; }
-.chip {
-  display: inline-block; font-size: 12px; line-height: 18px; padding: 1px 7px; cursor: help;
-  border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); white-space: nowrap;
-}
-.chip.more { color: var(--muted); font-family: var(--font-num); font-weight: 600; }
-.chip.sig-from_suspect { border-color: var(--course); }
+/* Signals are set like legend entries: the name in text type, a following count in figures; no boxed tags */
+.chip { display: inline; font-size: 14px; font-weight: 600; color: var(--ink); cursor: help; white-space: nowrap; text-decoration: underline dotted var(--line-strong); text-underline-offset: 4px; }
+.chip.more { font-family: var(--font-num); font-weight: 700; color: var(--muted); text-decoration: none; margin-left: 4px; }
+.chip.sig-from_suspect { color: var(--course); }
 
 /* The account sheet */
 .account { padding: 20px 22px 24px; display: flex; flex-direction: column; gap: 22px; }
@@ -351,7 +363,7 @@ td.action button { padding: 5px 7px; }
   .work { grid-template-columns: minmax(0, 1fr); }
   .queue { position: static; max-height: 540px; }
   .overview { grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr)); }
-  .stat.lead .stat-value { font-size: 52px; }
+  .stat.lead .stat-value { font-size: 60px; }
   .stat-value { font-size: 30px; }
 }
 @media (max-width: 860px) {

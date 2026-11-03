@@ -68,7 +68,7 @@ export function RiskContours({ rules, size = 22 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 22 22" aria-hidden="true" className="contours">
       {Array.from({ length: rings }, (_, i) => (
-        <circle key={i} cx="11" cy="11" r={10 - i * 2} fill="none" stroke="currentColor" strokeWidth="1.2" />
+        <circle key={i} cx="11" cy="11" r={10 - i * 2} fill="none" stroke="currentColor" strokeWidth={i === rings - 1 ? 1.8 : 1.1} />
       ))}
       {rings >= 3 && <circle cx="11" cy="11" r="1.4" fill="currentColor" />}
     </svg>

@@ -1,4 +1,4 @@
-import { streamRules, tier } from './api.js'
+import { groupNo, streamRules, tier } from './api.js'
 import { useT } from './i18n.js'
 import FreezeButton from './FreezeButton.jsx'
 import Signals from './Signals.jsx'
@@ -43,12 +43,13 @@ export default function Queue({ rows, statuses, selected, onSelect, onStatus, on
                 <tr key={r.no} className={r.no === selected ? 'selected' : ''} onClick={() => onSelect(r.no)}
                     tabIndex={0} aria-selected={r.no === selected} onKeyDown={(e) => e.key === 'Enter' && onSelect(r.no)}>
                   <td className="num">
-                    {r.no}
+                    {groupNo(r.no)}
                     {/* Phones drop the tier and status columns and show both here instead */}
                     <span className="row-meta"><Tier tier={r.tier} /><Status status={status} /></span>
                   </td>
                   <td className="col-height" title={t('rulesOf', streamRules(r.signals).length)}>
-                    <RiskContours rules={streamRules(r.signals).length} />
+                    <span className="height"><RiskContours rules={streamRules(r.signals).length} size={26} />
+                      <b aria-hidden="true">{streamRules(r.signals).length}</b></span>
                     <span className="visually-hidden">{t('rulesOf', streamRules(r.signals).length)}</span>
                   </td>
                   <td className="col-wide"><Tier tier={r.tier} /></td>

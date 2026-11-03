@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { api, bangkokTime, streamRules, thb, tier, FREEZE_THRESHOLD } from './api.js'
+import { api, bangkokTime, groupNo, streamRules, thb, tier, FREEZE_THRESHOLD } from './api.js'
 import { useT } from './i18n.js'
 import FreezeButton from './FreezeButton.jsx'
 import Signals from './Signals.jsx'
@@ -68,7 +68,7 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
       <header className="account-head">
         <div className="account-id">
           <span className="summit" title={t('rulesOf', fired)}><RiskContours rules={fired} size={44} /></span>
-          <h2 className="num">{no}</h2>
+          <h2 className="num">{groupNo(no)}</h2>
           <div className="account-tags">
             <span className="muted">{t(`type_${account.type}`)}</span>
             <Status status={status} big />
@@ -145,7 +145,7 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
         {community
           ? <p>{t('communityText', community.id, community.size, community.suspects.length)}
               {community.suspects.length > 0 && ': '}
-              {community.suspects.map((m) => <button key={m} className="link num" onClick={() => onSelect(m)}>{m}</button>)}
+              {community.suspects.map((m) => <button key={m} className="link num" onClick={() => onSelect(m)}>{groupNo(m)}</button>)}
             </p>
           : <button onClick={findCommunity} disabled={findingCommunity}>
               {findingCommunity ? t('loading') : t('runLouvain')}
