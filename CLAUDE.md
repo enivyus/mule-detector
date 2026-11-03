@@ -70,8 +70,10 @@ invariants. It must stay green.
 `transactions.csv`: `scenario` ∈ salary, bill, shopping, p2p, atm, funding, warmup, scam_victim, scam_layer, scam_cashout.
 Scam pattern: 5–15 victims → L1 mule (sometimes 00:00–04:59) → 90–98% forwarded in 2–20 min to 2–3 L2 mules
 → cash-out account → withdrawal. ~10% of genuine customers are also new accounts, so "new account" alone is not proof.
+Customers start with savings (40k–400k THB) and any transaction that would overdraw is dropped, so the CSV replays
+cleanly through the real ledger.
 
-Baseline (seed 42, 2,000 customers, 6 rings): precision ≈ 29%, recall 100%. Goal: raise precision without losing recall
+Baseline (seed 42, 2,000 customers, 6 rings): precision ≈ 33%, recall 100%. Goal: raise precision without losing recall
 (combine rules into a score, then add graph features).
 
 ## Detection rules (week 5 target, streaming)

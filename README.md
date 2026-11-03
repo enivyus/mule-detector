@@ -37,7 +37,7 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 
 | Version | Precision | Recall |
 |---|---|---|
-| Baseline rules (pass-through, fan-in, new-account burst) | 29% | 100% |
+| Baseline rules (pass-through, fan-in, new-account burst) | 33% | 100% |
 
 ## Run it
 

@@ -59,10 +59,11 @@ def detect(accounts: dict, txns: list) -> dict[str, list[str]]:
                 break
 
         # Rule 3: new account burst: opened < 30 days before receiving >= 20,000 THB in a day
+        # from other accounts (an own cash deposit is not a burst of transfers)
         opened = datetime.fromisoformat(accounts[acc_no]["opened_at"])
         by_day = defaultdict(int)
         for t in ins:
-            if t["ts"] - opened < timedelta(days=30):
+            if t["from_account"] != VAULT and t["ts"] - opened < timedelta(days=30):
                 by_day[t["ts"].date()] += t["amount"]
         if by_day and max(by_day.values()) >= 2_000_000:
             reasons[acc_no].append("new_account_burst")

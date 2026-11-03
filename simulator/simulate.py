@@ -96,6 +96,12 @@ class Simulator:
         ]
         # Friend groups for p2p transfers
         self.friends = {c.account_no: self.rng.sample(self.customers, k=min(6, len(self.customers))) for c in self.customers}
+        # Savings deposited before the window opens, so a month of spending before payday does not overdraw
+        self.savings = {}
+        for c in self.customers:
+            self.savings[c.account_no] = self._baht(40_000, 400_000)
+            t = max(c.opened_at, self.start - timedelta(days=1)) + timedelta(minutes=self.rng.randint(1, 600))
+            self._add(t, VAULT, c.account_no, self.savings[c.account_no], "DEPOSIT", "funding")
 
     # ---------- normal behaviour ----------
     def simulate_normal(self) -> None:
@@ -108,10 +114,8 @@ class Simulator:
             payday = self.rng.choice([25, 28, 30])
             for day in range(self.days):
                 date = self.start + timedelta(days=day)
-                if date.day == payday or (day == 0):
-                    # First day: opening balance so early spending is possible
-                    amount = salary if date.day == payday else self._baht(2_000, 30_000)
-                    self._add(self._at(day, 8, 10), employer.account_no, c.account_no, amount, "TRANSFER", "salary")
+                if date.day == payday:
+                    self._add(self._at(day, 8, 10), employer.account_no, c.account_no, salary, "TRANSFER", "salary")
                 if self.rng.random() < 0.55:
                     self._add(self._at(day), c.account_no, self.rng.choice(self.merchants).account_no,
                               self._baht(40, 1_500), "TRANSFER", "shopping")
@@ -148,12 +152,13 @@ class Simulator:
 
             # Victims pay first-layer mules over a few hours
             victims = self.rng.sample(self.customers, k=self.rng.randint(5, 15))
-            for v in victims:
-                mule = self.rng.choice(l1)
+            for i, v in enumerate(victims):
+                mule = l1[i] if i < len(l1) else self.rng.choice(l1)  # every L1 mule takes at least one victim
                 t_in = attack_start + timedelta(minutes=self.rng.randint(0, 6 * 60))
                 if self.rng.random() < 0.35:  # some scams happen late at night
                     t_in = attack_start.replace(hour=self.rng.randint(0, 4)) + timedelta(minutes=self.rng.randint(0, 59))
-                amount = self._baht(3_000, 60_000)
+                # A victim cannot lose more than they have; cap at half their savings (spending continues meanwhile)
+                amount = min(self._baht(3_000, 60_000), self.savings[v.account_no] // 2)
                 self._add(t_in, v.account_no, mule.account_no, amount, "TRANSFER", "scam_victim", ring)
 
                 # L1 forwards 90-98% within minutes, split across several L2 mules
@@ -179,8 +184,22 @@ class Simulator:
         self.simulate_normal()
         self.simulate_rings()
         self.txns.sort(key=lambda t: t.timestamp)
+        self._drop_overdrafts()
         for i, t in enumerate(self.txns, 1):
             t.txn_id = f"T{i:08d}"
+
+    def _drop_overdrafts(self) -> None:
+        """Replay balances in time order and drop what a real ledger would reject, so CSV and API agree."""
+        balance: dict[str, int] = {}
+        kept = []
+        for t in self.txns:
+            if t.from_account != VAULT and balance.get(t.from_account, 0) < t.amount_satang:
+                continue
+            balance[t.from_account] = balance.get(t.from_account, 0) - t.amount_satang
+            balance[t.to_account] = balance.get(t.to_account, 0) + t.amount_satang
+            kept.append(t)
+        self.dropped = len(self.txns) - len(kept)
+        self.txns = kept
 
     def write(self, out: Path) -> None:
         out.mkdir(parents=True, exist_ok=True)
@@ -200,7 +219,7 @@ class Simulator:
         mules = sum(a.is_mule for a in self.accounts.values())
         scam = sum(t.scenario.startswith("scam") for t in self.txns)
         return (f"accounts: {len(self.accounts):,} (mules: {mules}, rings: {self.n_rings})\n"
-                f"transactions: {len(self.txns):,} (scam-related: {scam:,})")
+                f"transactions: {len(self.txns):,} (scam-related: {scam:,}, dropped as overdraft: {self.dropped:,})")
 
 
 def main() -> None:
