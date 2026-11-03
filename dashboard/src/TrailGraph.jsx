@@ -50,12 +50,15 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
       return { data: { id: no, label: no === VAULT ? t('legendCash') : groupNo(no) }, classes: cls.join(' '), position: layout.positions.get(no) }
     })
     const max = Math.max(...hops.map((h) => h.amountSatang))
+    // Two transfers between the same pair draw as parallel curves; their labels go to opposite sides of the line
+    const seen = new Map()
     const edges = hops.map((h) => ({
       data: {
         id: `t${h.transferId}`, source: h.fromAccountNo, target: h.toAccountNo,
         // Amount and clock time only: short enough to sit between two columns; the full time is in the timeline
         label: `฿${thb(h.amountSatang)}\n${new Date(h.at).toLocaleTimeString(locale, { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' })}`,
         width: 1.5 + 6 * Math.sqrt(h.amountSatang / max),
+        side: (() => { const k = `${h.fromAccountNo}>${h.toAccountNo}`; const n = seen.get(k) ?? 0; seen.set(k, n + 1); return n % 2 ? 1 : -1 })(),
       },
     }))
 
@@ -71,14 +74,14 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
           label: 'data(label)', 'font-size': 14, 'font-family': css('--font'),
           // Vertical (phone) routes run downward, so labels sit beside the node instead of on the edge below it
           ...(vertical ? { 'text-valign': 'center', 'text-halign': 'right', 'text-margin-x': 8 } : { 'text-valign': 'bottom', 'text-margin-y': 5 }),
-          color: text,
+          color: text, 'text-background-color': panel, 'text-background-opacity': 1, 'text-background-padding': 3,
           width: 22, height: 22, 'background-color': panel, 'border-width': 3, 'border-color': course } },
         { selector: '.suspect', style: { 'background-color': css('--danger'), 'border-color': text } },
         // Frozen accounts become squares, the map's symbol for a closed point; the vault is a muted block
         { selector: '.frozen', style: { shape: 'rectangle' } },
         { selector: '.vault', style: { shape: 'rectangle', width: 40, height: 20, 'background-color': css('--muted'), 'border-width': 0 } },
         { selector: 'edge', style: {
-          label: 'data(label)', 'font-size': 12, 'font-family': css('--font'), 'text-wrap': 'wrap', ...(vertical ? { 'text-margin-x': -44 } : { 'text-margin-y': -14 }), color: text, 'curve-style': 'bezier',
+          label: 'data(label)', 'font-size': 12, 'font-family': css('--font'), 'text-wrap': 'wrap', ...(vertical ? { 'text-margin-x': (e) => e.data('side') * 44 } : { 'text-margin-y': (e) => e.data('side') * 16 }), color: text, 'curve-style': 'bezier', 'control-point-step-size': 46,
           'target-arrow-shape': 'triangle', width: 'data(width)', 'line-color': course, 'target-arrow-color': course,
           'text-background-color': panel, 'text-background-opacity': 0.85, 'text-background-padding': 2 } },
       ],
@@ -90,7 +93,7 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
     const bb = cy.elements().boundingBox()
     const zoom = cy.zoom()
     // Only a trail that really runs past the edge at the readable zoom gets the pan cue
-    setCropped(bb.w * zoom + 48 > cy.width())
+    setCropped(bb.w * zoom > cy.width() - 8)
     cy.pan({ x: Math.max(24, (cy.width() - bb.w * zoom) / 2) - bb.x1 * zoom, y: 24 - bb.y1 * zoom })
     setDrawnHeight(Math.ceil(bb.h * zoom + 48))
     cy.on('tap', 'node', (e) => e.target.id() !== VAULT && onSelect(e.target.id()))

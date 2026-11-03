@@ -196,10 +196,10 @@ button.link { border: none; background: none; color: var(--water); padding: 0 6p
 .stat:first-child { border-left: none; padding-left: 0; }
 /* Value first on a shared bottom line; every label reserves two lines so a wrapping label cannot lift its value */
 .stat-value { order: -1; display: flex; align-items: flex-end; gap: 8px; font-family: var(--font-num); font-size: 36px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
-.stat-label { font-size: 13px; color: var(--ink-2); line-height: 1.35; min-height: 2.7em; }
-.benchmark { flex: none; margin-bottom: 7px; color: var(--ink); }
+.stat-label { display: flex; align-items: flex-start; gap: 6px; font-size: 13px; color: var(--ink-2); line-height: 1.35; min-height: 2.7em; }
+.benchmark { flex: none; color: var(--ink); margin-top: 0.45em; }
 .stat.lead .stat-value { font-size: 76px; color: var(--danger); }
-.stat.lead .benchmark { color: var(--danger); width: 11px; height: 11px; margin-bottom: 12px; }
+.stat.lead .benchmark { color: var(--danger); }
 .stat.lead .stat-label { font-weight: 600; color: var(--danger); }
 .stat.review .stat-value { color: var(--warn); }
 
@@ -234,8 +234,8 @@ td.num { font-weight: 600; font-size: 15px; white-space: nowrap; }
 td.col-height { color: var(--contour); }
 .height { display: inline-flex; align-items: center; gap: 6px; }
 .height b { font-family: var(--font-num); font-size: 15px; font-weight: 700; color: var(--contour); min-width: 1ch; }
-td.signals { white-space: normal; line-height: 1.5; }
-td.signals .chip { white-space: normal; }  /* a long signal name wraps rather than pushing the lock buttons off the queue */
+.height-tier { display: inline-grid; place-items: center; margin-left: 2px; }
+td.signals { white-space: nowrap; width: 100%; }
 td.signals .chip { margin: 0; }
 td.signals .chip.more { margin-left: 6px; }
 td.action { text-align: right; white-space: nowrap; width: 1%; }

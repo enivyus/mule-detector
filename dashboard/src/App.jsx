@@ -138,9 +138,11 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
         <section className="overview" aria-label={t('overview')}>
           {overview.map(([key, value, tone]) => (
             <div key={key} className={`stat ${tone}`}>
-              <span className="stat-label">{t(key)}</span>
-              <span className="stat-value">
+              <span className="stat-label">
                 <svg className="benchmark" width="8" height="8" viewBox="0 0 8 8" aria-hidden="true"><circle cx="4" cy="4" r="3" fill="currentColor" /></svg>
+                {t(key)}
+              </span>
+              <span className="stat-value">
                 {loading ? <span className="skeleton num" /> : value}
               </span>
             </div>

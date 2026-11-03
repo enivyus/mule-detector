@@ -27,13 +27,13 @@ export default function Queue({ rows, statuses, selected, onSelect, onStatus, on
       <div className="table-wrap">
         <table>
           <thead>
-            <tr><th>{t('colAccount')}</th><th className="col-height">{t('colHeight')}</th><th className="col-wide">{t('colTier')}</th><th>{t('colSignals')}</th>
+            <tr><th>{t('colAccount')}</th><th className="col-height">{t('colHeight')}</th><th>{t('colSignals')}</th>
               <th className="col-wide">{t('colStatus')}</th><th className="col-wide"><span className="visually-hidden">{t('colAction')}</span></th></tr>
           </thead>
           <tbody>
             {loading && rows.length === 0 && Array.from({ length: SKELETON_ROWS }, (_, i) => (
               <tr key={i} className="skeleton-row" aria-hidden="true">
-                <td><span className="skeleton" style={{ width: 92 }} /></td><td className="col-height"><span className="skeleton" style={{ width: 22 }} /></td><td className="col-wide"><span className="skeleton" style={{ width: 70 }} /></td>
+                <td><span className="skeleton" style={{ width: 92 }} /></td><td className="col-height"><span className="skeleton" style={{ width: 52 }} /></td>
                 <td><span className="skeleton" style={{ width: 140 }} /></td><td className="col-wide"><span className="skeleton" style={{ width: 56 }} /></td><td className="col-wide" />
               </tr>
             ))}
@@ -47,12 +47,12 @@ export default function Queue({ rows, statuses, selected, onSelect, onStatus, on
                     {/* Phones drop the tier and status columns and show both here instead */}
                     <span className="row-meta"><Tier tier={r.tier} /><Status status={status} /></span>
                   </td>
-                  <td className="col-height" title={t('rulesOf', streamRules(r.signals).length)}>
+                  <td className="col-height" title={`${t('rulesOf', streamRules(r.signals).length)} · ${t(`tier_${r.tier}`)}`}>
                     <span className="height"><RiskContours rules={streamRules(r.signals).length} size={26} />
-                      <b aria-hidden="true">{streamRules(r.signals).length}</b></span>
-                    <span className="visually-hidden">{t('rulesOf', streamRules(r.signals).length)}</span>
+                      <b aria-hidden="true">{streamRules(r.signals).length}</b>
+                      <span className="height-tier" title={t(`tier_${r.tier}`)}><ViewSymbol kind={r.tier} size={12} /></span></span>
+                    <span className="visually-hidden">{t('rulesOf', streamRules(r.signals).length)}, {t(`tier_${r.tier}`)}</span>
                   </td>
-                  <td className="col-wide"><Tier tier={r.tier} /></td>
                   <td className="signals"><Signals names={r.signals} max={1} /></td>
                   <td className="col-wide"><Status status={status} /></td>
                   <td className="action col-wide"><FreezeButton no={r.no} status={status} onStatus={onStatus} onToast={onToast} /></td>
