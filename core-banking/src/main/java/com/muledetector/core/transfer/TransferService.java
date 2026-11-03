@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+
 /**
  * Moves money between accounts. Guarantees:
  *  1. Atomic: transfer row + DEBIT + CREDIT + cached balances commit together or not at all.
@@ -33,24 +35,42 @@ public class TransferService {
         this.events = events;
     }
 
+    // Overloads call through `this`, which bypasses the proxy, so each needs its own @Transactional.
     @Transactional
     public Transfer transfer(String idempotencyKey, String fromAccountNo, String toAccountNo, long amountSatang) {
-        Long fromId = idOf(fromAccountNo);
-        Long toId = idOf(toAccountNo);
-        return execute(idempotencyKey, fromId, toId, amountSatang, Transfer.Kind.TRANSFER);
+        return transfer(idempotencyKey, fromAccountNo, toAccountNo, amountSatang, null);
     }
 
     @Transactional
     public Transfer deposit(String idempotencyKey, String accountNo, long amountSatang) {
-        return execute(idempotencyKey, vaultId(), idOf(accountNo), amountSatang, Transfer.Kind.DEPOSIT);
+        return deposit(idempotencyKey, accountNo, amountSatang, null);
     }
 
     @Transactional
     public Transfer withdraw(String idempotencyKey, String accountNo, long amountSatang) {
-        return execute(idempotencyKey, idOf(accountNo), vaultId(), amountSatang, Transfer.Kind.WITHDRAWAL);
+        return withdraw(idempotencyKey, accountNo, amountSatang, null);
     }
 
-    private Transfer execute(String key, Long fromId, Long toId, long amount, Transfer.Kind kind) {
+    /** {@code occurredAt} overrides the booking time (simulation replay only); null means now. */
+    @Transactional
+    public Transfer transfer(String idempotencyKey, String fromAccountNo, String toAccountNo, long amountSatang,
+                             OffsetDateTime occurredAt) {
+        Long fromId = idOf(fromAccountNo);
+        Long toId = idOf(toAccountNo);
+        return execute(idempotencyKey, fromId, toId, amountSatang, Transfer.Kind.TRANSFER, occurredAt);
+    }
+
+    @Transactional
+    public Transfer deposit(String idempotencyKey, String accountNo, long amountSatang, OffsetDateTime occurredAt) {
+        return execute(idempotencyKey, vaultId(), idOf(accountNo), amountSatang, Transfer.Kind.DEPOSIT, occurredAt);
+    }
+
+    @Transactional
+    public Transfer withdraw(String idempotencyKey, String accountNo, long amountSatang, OffsetDateTime occurredAt) {
+        return execute(idempotencyKey, idOf(accountNo), vaultId(), amountSatang, Transfer.Kind.WITHDRAWAL, occurredAt);
+    }
+
+    private Transfer execute(String key, Long fromId, Long toId, long amount, Transfer.Kind kind, OffsetDateTime occurredAt) {
         if (key == null || key.isBlank()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "IDEMPOTENCY_KEY_REQUIRED", "Idempotency-Key header is required");
         }
@@ -88,9 +108,10 @@ public class TransferService {
             throw new ApiException(HttpStatus.UNPROCESSABLE_ENTITY, "INSUFFICIENT_FUNDS", "Insufficient funds");
         }
 
-        Transfer t = transfers.save(new Transfer(key, fromId, toId, amount, kind));
-        ledger.save(new LedgerEntry(t.getId(), fromId, LedgerEntry.Direction.DEBIT, amount));
-        ledger.save(new LedgerEntry(t.getId(), toId, LedgerEntry.Direction.CREDIT, amount));
+        OffsetDateTime at = occurredAt != null ? occurredAt : OffsetDateTime.now();
+        Transfer t = transfers.save(new Transfer(key, fromId, toId, amount, kind, at));
+        ledger.save(new LedgerEntry(t.getId(), fromId, LedgerEntry.Direction.DEBIT, amount, at));
+        ledger.save(new LedgerEntry(t.getId(), toId, LedgerEntry.Direction.CREDIT, amount, at));
         from.debit(amount);
         to.credit(amount);
 

@@ -27,11 +27,12 @@ public class LedgerEntry {
     private long amountSatang;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    private OffsetDateTime createdAt;
 
     protected LedgerEntry() {}
 
-    public LedgerEntry(Long transferId, Long accountId, Direction direction, long amountSatang) {
+    public LedgerEntry(Long transferId, Long accountId, Direction direction, long amountSatang, OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
         this.transferId = transferId;
         this.accountId = accountId;
         this.direction = direction;

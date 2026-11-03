@@ -33,11 +33,12 @@ public class Account {
     private long balanceSatang;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    private OffsetDateTime createdAt;
 
     protected Account() {}
 
-    public Account(String accountNo, String ownerName) {
+    public Account(String accountNo, String ownerName, OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
         this.accountNo = accountNo;
         this.ownerName = ownerName;
     }

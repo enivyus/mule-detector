@@ -35,11 +35,13 @@ public class Transfer {
     private Status status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    private OffsetDateTime createdAt;
 
     protected Transfer() {}
 
-    public Transfer(String idempotencyKey, Long fromAccountId, Long toAccountId, long amountSatang, Kind kind) {
+    public Transfer(String idempotencyKey, Long fromAccountId, Long toAccountId, long amountSatang, Kind kind,
+                    OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
         this.idempotencyKey = idempotencyKey;
         this.fromAccountId = fromAccountId;
         this.toAccountId = toAccountId;

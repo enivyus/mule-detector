@@ -10,22 +10,44 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Page;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 
 @RestController
 @RequestMapping("/api")
 public class BankingController {
 
+    /** Replays historical data with its original timestamps. Honored only under the "sim" profile. */
+    static final String SIM_TIME = "X-Simulated-Time";
+
     private final AccountService accountService;
     private final TransferService transferService;
     private final LedgerEntryRepository ledger;
+    private final Environment env;
 
-    public BankingController(AccountService accountService, TransferService transferService, LedgerEntryRepository ledger) {
+    public BankingController(AccountService accountService, TransferService transferService, LedgerEntryRepository ledger,
+                             Environment env) {
         this.accountService = accountService;
         this.transferService = transferService;
         this.ledger = ledger;
+        this.env = env;
+    }
+
+    private OffsetDateTime simTime(String requested) {
+        if (requested == null) return null;
+        if (!env.matchesProfiles("sim")) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "SIM_TIME_DISABLED", SIM_TIME + " is only accepted with the sim profile");
+        }
+        try {
+            return OffsetDateTime.parse(requested);
+        } catch (DateTimeParseException e) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_SIM_TIME", SIM_TIME + " must be ISO-8601 with an offset");
+        }
     }
 
     public record OpenAccountRequest(@NotBlank String ownerName) {}
@@ -39,8 +61,9 @@ public class BankingController {
 
     @PostMapping("/accounts")
     @ResponseStatus(HttpStatus.CREATED)
-    public AccountView open(@Valid @RequestBody OpenAccountRequest req) {
-        return AccountView.of(accountService.open(req.ownerName()));
+    public AccountView open(@Valid @RequestBody OpenAccountRequest req,
+                            @RequestHeader(value = SIM_TIME, required = false) String at) {
+        return AccountView.of(accountService.open(req.ownerName(), simTime(at)));
     }
 
     @GetMapping("/accounts/{accountNo}")
@@ -61,19 +84,22 @@ public class BankingController {
 
     @PostMapping("/accounts/{accountNo}/deposit")
     public Transfer deposit(@RequestHeader("Idempotency-Key") String key, @PathVariable String accountNo,
-                            @Valid @RequestBody AmountRequest req) {
-        return transferService.deposit(key, accountNo, req.amountSatang());
+                            @Valid @RequestBody AmountRequest req,
+                            @RequestHeader(value = SIM_TIME, required = false) String at) {
+        return transferService.deposit(key, accountNo, req.amountSatang(), simTime(at));
     }
 
     @PostMapping("/accounts/{accountNo}/withdraw")
     public Transfer withdraw(@RequestHeader("Idempotency-Key") String key, @PathVariable String accountNo,
-                             @Valid @RequestBody AmountRequest req) {
-        return transferService.withdraw(key, accountNo, req.amountSatang());
+                             @Valid @RequestBody AmountRequest req,
+                             @RequestHeader(value = SIM_TIME, required = false) String at) {
+        return transferService.withdraw(key, accountNo, req.amountSatang(), simTime(at));
     }
 
     @PostMapping("/transfers")
-    public Transfer transfer(@RequestHeader("Idempotency-Key") String key, @Valid @RequestBody TransferRequest req) {
-        return transferService.transfer(key, req.fromAccountNo(), req.toAccountNo(), req.amountSatang());
+    public Transfer transfer(@RequestHeader("Idempotency-Key") String key, @Valid @RequestBody TransferRequest req,
+                             @RequestHeader(value = SIM_TIME, required = false) String at) {
+        return transferService.transfer(key, req.fromAccountNo(), req.toAccountNo(), req.amountSatang(), simTime(at));
     }
 
     /** Admin: freeze / unfreeze. Later called by the risk-scoring service when an account is flagged. */

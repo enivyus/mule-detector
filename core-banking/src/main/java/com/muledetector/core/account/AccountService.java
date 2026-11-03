@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -18,11 +19,17 @@ public class AccountService {
 
     @Transactional
     public Account open(String ownerName) {
+        return open(ownerName, null);
+    }
+
+    /** {@code openedAt} overrides the opening time (simulation replay only); null means now. */
+    @Transactional
+    public Account open(String ownerName, OffsetDateTime openedAt) {
         String accountNo;
         do {
             accountNo = String.format("%010d", ThreadLocalRandom.current().nextLong(1_000_000_000L, 9_999_999_999L));
         } while (accounts.findByAccountNo(accountNo).isPresent());
-        return accounts.save(new Account(accountNo, ownerName));
+        return accounts.save(new Account(accountNo, ownerName, openedAt != null ? openedAt : OffsetDateTime.now()));
     }
 
     @Transactional(readOnly = true)
