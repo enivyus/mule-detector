@@ -1,10 +1,43 @@
 // Thin wrappers over the three services, reached through the Vite proxy (see vite.config.js).
 
-async function call(url, options) {
-  const res = await fetch(url, options)
-  if (!res.ok) throw new Error(`${options?.method ?? 'GET'} ${url}: HTTP ${res.status}`)
+// HTTP Basic for the investigator, kept in memory only: a reload or a closed tab means logging in again
+let authorization = null
+let onUnauthorized = () => {}
+
+export class LoginError extends Error {}
+
+async function call(url, options = {}) {
+  const headers = { ...options.headers, ...(authorization && { Authorization: authorization }) }
+  if (options.body) headers['Content-Type'] = 'application/json'
+  const res = await fetch(url, { ...options, headers })
+  if (res.status === 401) onUnauthorized()
+  if (!res.ok) throw new Error(`${options.method ?? 'GET'} ${url}: HTTP ${res.status}`)
   return res.status === 204 ? null : res.json()
 }
+
+// btoa only takes Latin-1; Spring decodes Basic credentials as UTF-8, so Thai passwords work too
+const basic = (user, password) =>
+  'Basic ' + btoa(String.fromCharCode(...new TextEncoder().encode(`${user}:${password}`)))
+
+/** Checks the login against core-banking; only the INVESTIGATOR role may use the dashboard. */
+export async function login(user, password, whenLoggedOut) {
+  const header = basic(user, password)
+  const res = await fetch('/bank/api/me', { headers: { Authorization: header } })
+  if (res.status === 401) throw new LoginError('badLogin')
+  if (!res.ok) throw new Error(`GET /bank/api/me: HTTP ${res.status}`)
+  const me = await res.json()
+  if (!me.roles.includes('INVESTIGATOR')) throw new LoginError('notInvestigator')
+  authorization = header
+  onUnauthorized = whenLoggedOut
+  return me
+}
+
+export function logout() {
+  authorization = null
+  onUnauthorized = () => {}
+}
+
+const reason = (text) => JSON.stringify({ reason: text })
 
 export const api = {
   // graph-service: suspects after suspicion has followed the money, account -> signals
@@ -16,8 +49,9 @@ export const api = {
   // core-banking
   account: (no) => call(`/bank/api/accounts/${no}`),
   statement: (no, size = 200) => call(`/bank/api/accounts/${no}/statement?size=${size}`),
-  freeze: (no) => call(`/bank/api/admin/accounts/${no}/freeze`, { method: 'POST' }),
-  unfreeze: (no) => call(`/bank/api/admin/accounts/${no}/unfreeze`, { method: 'POST' }),
+  freeze: (no, why) => call(`/bank/api/admin/accounts/${no}/freeze`, { method: 'POST', body: reason(why) }),
+  unfreeze: (no, why) => call(`/bank/api/admin/accounts/${no}/unfreeze`, { method: 'POST', body: reason(why) }),
+  audit: (no) => call(`/bank/api/admin/accounts/${no}/audit`),
 }
 
 // Same tiers as rule-engine: three different stream rules freeze; graph suspicion never does.

@@ -15,11 +15,15 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
   const [hops, setHops] = useState([])
   const [community, setCommunity] = useState(null)
   const [findingCommunity, setFindingCommunity] = useState(false)
+  const [audit, setAudit] = useState(null)
+  const liveStatus = statuses[no]?.status
 
   useEffect(() => {
     api.account(no).then((a) => { setAccount(a); onStatus(no, a) })
     api.statement(no).then((page) => setEntries(page.content))
   }, [no, onStatus])
+  // Reload whenever the status changes, from this panel or from the queue
+  useEffect(() => { api.audit(no).then(setAudit) }, [no, liveStatus])
 
   const follow = async (transferId) => {
     setFollowing(transferId)
@@ -66,6 +70,19 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
             <p className="muted small">{t('streamCount', streamRules(signals).length)}</p>
           </>
         : <p className="muted">{t('whyNone')}</p>}
+
+      <h3>{t('history')}</h3>
+      {audit?.length
+        ? <ol className="audit">
+            {audit.map((a, i) => (
+              <li key={i}>
+                <span className="when">{bangkokTime(a.at, locale)}</span>
+                <span className={`status ${a.action === 'FREEZE' ? 'FROZEN' : 'ACTIVE'}`}>{t(`action_${a.action}`)}</span>
+                <span><b>{a.actor}</b>: {a.reason}</span>
+              </li>
+            ))}
+          </ol>
+        : <p className="muted small">{audit ? t('historyNone') : t('loading')}</p>}
 
       <h3>{t('timeline')} <span className="muted small">{t('timelineHint')}</span></h3>
       <ol className="timeline">

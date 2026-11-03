@@ -10,10 +10,10 @@ export default function FreezeButton({ no, status, onStatus, onToast, size = 'sm
   if (!status) return null
   const frozen = status === 'FROZEN'
 
-  const run = async () => {
+  const run = async (reason) => {
     setBusy(true)
     try {
-      const account = await (frozen ? api.unfreeze(no) : api.freeze(no))
+      const account = await (frozen ? api.unfreeze(no, reason) : api.freeze(no, reason))
       onStatus(no, account)
       onToast({ tone: frozen ? 'ok' : 'warn', text: frozen ? t('unfroze', no) : t('froze', no) })
     } catch {
@@ -37,11 +37,13 @@ export default function FreezeButton({ no, status, onStatus, onToast, size = 'sm
   )
 }
 
+/** The reason is stored in core-banking's audit log next to the investigator's name. */
 function Confirm({ text, action, danger, busy, onYes, onNo }) {
   const { t } = useT()
-  const yes = useRef(null)
+  const [reason, setReason] = useState('')
+  const box = useRef(null)
   useEffect(() => {
-    yes.current?.focus()
+    box.current?.focus()
     const esc = (e) => e.key === 'Escape' && onNo()
     window.addEventListener('keydown', esc)
     return () => window.removeEventListener('keydown', esc)
@@ -50,9 +52,15 @@ function Confirm({ text, action, danger, busy, onYes, onNo }) {
     <div className="overlay" onClick={(e) => { e.stopPropagation(); onNo() }}>
       <div className="dialog" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
         <p>{text}</p>
+        <label className="field">
+          {t('reasonLabel')}
+          <textarea ref={box} rows={3} maxLength={500} value={reason} placeholder={t('reasonPlaceholder')}
+                    onChange={(e) => setReason(e.target.value)} />
+        </label>
         <div className="dialog-actions">
           <button onClick={onNo}>{t('cancel')}</button>
-          <button ref={yes} className={danger ? 'danger' : 'primary'} disabled={busy} onClick={onYes}>{action}</button>
+          <button className={danger ? 'danger' : 'primary'} disabled={busy || !reason.trim()}
+                  onClick={() => onYes(reason.trim())}>{action}</button>
         </div>
       </div>
     </div>

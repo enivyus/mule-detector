@@ -1,20 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { api, tier } from './api.js'
+import { api, logout, tier } from './api.js'
 import { LangContext, saveLang, savedLang, useT } from './i18n.js'
+import Login from './Login.jsx'
 import Queue from './Queue.jsx'
 import AccountPanel from './AccountPanel.jsx'
 
 export default function App() {
   const [lang, setLang] = useState(savedLang)
+  const [me, setMe] = useState(null)
   const switchLang = () => setLang((l) => { const next = l === 'en' ? 'th' : 'en'; saveLang(next); return next })
+  const signOut = useCallback(() => { logout(); setMe(null) }, [])
   return (
     <LangContext.Provider value={lang}>
-      <Dashboard onSwitchLang={switchLang} />
+      {me
+        ? <Dashboard me={me} onSignOut={signOut} onSwitchLang={switchLang} />
+        : <Login onLogin={setMe} onLoggedOut={signOut} onSwitchLang={switchLang} />}
     </LangContext.Provider>
   )
 }
 
-function Dashboard({ onSwitchLang }) {
+function Dashboard({ me, onSignOut, onSwitchLang }) {
   const { t, lang } = useT()
   const [suspects, setSuspects] = useState({})
   const [statuses, setStatuses] = useState({})
@@ -68,8 +73,10 @@ function Dashboard({ onSwitchLang }) {
           <p className="muted">{t('subtitle')}</p>
         </div>
         <div className="top-actions">
+          <span className="muted small">{t('signedInAs', me.username)}</span>
           <button onClick={load} disabled={loading}>{loading ? t('loading') : t('refresh')}</button>
           <button className="lang" onClick={onSwitchLang} aria-label="Switch language">{t('language')}</button>
+          <button onClick={onSignOut}>{t('signOut')}</button>
         </div>
       </header>
 
