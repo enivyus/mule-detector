@@ -50,12 +50,14 @@ public class BankingController {
         }
     }
 
-    public record OpenAccountRequest(@NotBlank String ownerName) {}
+    /** {@code type} is CUSTOMER (default) or BUSINESS. */
+    public record OpenAccountRequest(@NotBlank String ownerName, Account.Type type) {}
     public record AmountRequest(@Positive long amountSatang) {}
     public record TransferRequest(@NotBlank String fromAccountNo, @NotBlank String toAccountNo, @Positive long amountSatang) {}
-    public record AccountView(String accountNo, String ownerName, String status, long balanceSatang) {
+    public record AccountView(String accountNo, String ownerName, String type, String status, long balanceSatang) {
         static AccountView of(Account a) {
-            return new AccountView(a.getAccountNo(), a.getOwnerName(), a.getStatus().name(), a.getBalanceSatang());
+            return new AccountView(a.getAccountNo(), a.getOwnerName(), a.getType().name(), a.getStatus().name(),
+                    a.getBalanceSatang());
         }
     }
 
@@ -63,7 +65,8 @@ public class BankingController {
     @ResponseStatus(HttpStatus.CREATED)
     public AccountView open(@Valid @RequestBody OpenAccountRequest req,
                             @RequestHeader(value = SIM_TIME, required = false) String at) {
-        return AccountView.of(accountService.open(req.ownerName(), simTime(at)));
+        Account.Type type = req.type() != null ? req.type() : Account.Type.CUSTOMER;
+        return AccountView.of(accountService.open(req.ownerName(), type, simTime(at)));
     }
 
     @GetMapping("/accounts/{accountNo}")

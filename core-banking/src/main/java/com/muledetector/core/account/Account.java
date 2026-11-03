@@ -7,7 +7,8 @@ import java.time.OffsetDateTime;
 @Table(name = "accounts")
 public class Account {
 
-    public enum Type { CUSTOMER, SYSTEM }
+    /** BUSINESS: merchants and employers. Like CUSTOMER it can never go below zero; only SYSTEM can. */
+    public enum Type { CUSTOMER, BUSINESS, SYSTEM }
     public enum Status { ACTIVE, FROZEN }
 
     @Id
@@ -37,7 +38,8 @@ public class Account {
 
     protected Account() {}
 
-    public Account(String accountNo, String ownerName, OffsetDateTime createdAt) {
+    public Account(String accountNo, String ownerName, Type type, OffsetDateTime createdAt) {
+        this.type = type;
         this.createdAt = createdAt;
         this.accountNo = accountNo;
         this.ownerName = ownerName;

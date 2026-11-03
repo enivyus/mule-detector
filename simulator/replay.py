@@ -71,7 +71,10 @@ def open_accounts(api: Api, accounts: list[dict], map_path: Path) -> dict[str, s
             w.writerow(["sim_account_no", "api_account_no"])
         for i, a in enumerate(todo, 1):
             # Neutral owner name: the simulator's names ("Mule R01-A0") would leak labels into the bank
-            status, res = api.call("POST", "/api/accounts", {"ownerName": f"Holder {a['account_no'][-6:]}"},
+            # Banks know which accounts are businesses; mules are ordinary customer accounts
+            kind = "BUSINESS" if a["role"] in ("merchant", "employer") else "CUSTOMER"
+            status, res = api.call("POST", "/api/accounts",
+                                   {"ownerName": f"Holder {a['account_no'][-6:]}", "type": kind},
                                    {"X-Simulated-Time": a["opened_at"] + TZ})
             if status != 201:
                 fail(f"opening {a['account_no']}: HTTP {status} {res}")

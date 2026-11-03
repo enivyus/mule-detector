@@ -19,17 +19,20 @@ public class AccountService {
 
     @Transactional
     public Account open(String ownerName) {
-        return open(ownerName, null);
+        return open(ownerName, Account.Type.CUSTOMER, null);
     }
 
     /** {@code openedAt} overrides the opening time (simulation replay only); null means now. */
     @Transactional
-    public Account open(String ownerName, OffsetDateTime openedAt) {
+    public Account open(String ownerName, Account.Type type, OffsetDateTime openedAt) {
+        if (type == Account.Type.SYSTEM) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_ACCOUNT_TYPE", "SYSTEM accounts cannot be opened");
+        }
         String accountNo;
         do {
             accountNo = String.format("%010d", ThreadLocalRandom.current().nextLong(1_000_000_000L, 9_999_999_999L));
         } while (accounts.findByAccountNo(accountNo).isPresent());
-        return accounts.save(new Account(accountNo, ownerName, openedAt != null ? openedAt : OffsetDateTime.now()));
+        return accounts.save(new Account(accountNo, ownerName, type, openedAt != null ? openedAt : OffsetDateTime.now()));
     }
 
     @Transactional(readOnly = true)
