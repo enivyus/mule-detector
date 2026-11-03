@@ -43,6 +43,8 @@ public class GraphLoader {
     void createConstraint() {
         neo4j.executableQuery("CREATE CONSTRAINT account_no IF NOT EXISTS FOR (a:Account) REQUIRE a.accountNo IS UNIQUE")
                 .execute();
+        // Money trails start from one transfer
+        neo4j.executableQuery("CREATE INDEX sent_transfer_id IF NOT EXISTS FOR ()-[s:SENT]-() ON (s.transferId)").execute();
     }
 
     // shortcut: the consumer group's committed offsets live in Redpanda; if Neo4j is wiped but the topic is not,
