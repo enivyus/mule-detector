@@ -1,6 +1,6 @@
 """
 Score the streaming rule engine against the simulator's ground-truth labels, and check that it
-flags exactly the accounts the batch baseline (baseline_rules.py) flags for the same rules.
+flags exactly the accounts the batch reference (scored_rules.py) flags, rule by rule.
 
 Run after replay.py has pushed the dataset through core-banking with the kafka profile on:
 
@@ -19,7 +19,8 @@ from collections import defaultdict
 from pathlib import Path
 from urllib.request import urlopen
 
-from baseline_rules import detect, load
+from baseline_rules import load
+from scored_rules import SCORE_THRESHOLD, detect, suspects
 
 
 def get(url: str):
@@ -50,27 +51,33 @@ def main() -> None:
             streamed[to_sim[a["accountNo"]]].add(a["rule"])
 
     truth = {no for no, r in accounts.items() if r["is_mule"] == "1"}
-    flagged = set(streamed)
-    tp = len(truth & flagged)
-    print(f"flagged {len(flagged)} accounts | true mules {len(truth)}")
-    print(f"precision {tp / len(flagged) if flagged else 0:.2%} | recall {tp / len(truth) if truth else 0:.2%}")
-    hits = defaultdict(lambda: [0, 0])
-    for acc, rules in streamed.items():
-        for r in rules:
-            hits[r][0 if acc in truth else 1] += 1
-    for r, (good, bad) in sorted(hits.items()):
-        print(f"  {r:<18} true hits {good:>4}  false alarms {bad:>4}")
+    stream_suspects = {to_sim[no] for no in get(f"{args.rules}/suspects") if no in to_sim}
 
-    # Parity with the batch baseline, rule by rule
+    def score(label: str, predicted: set[str]) -> None:
+        tp = len(truth & predicted)
+        print(f"  {label:<18} flagged {len(predicted):>4} | precision {tp / len(predicted) if predicted else 0:7.2%}"
+              f" | recall {tp / len(truth) if truth else 0:7.2%}")
+
+    print(f"true mules {len(truth)}")
+    for rule in sorted({r for rs in streamed.values() for r in rs}):
+        score(rule, {a for a, rs in streamed.items() if rule in rs})
+    score("any rule", set(streamed))
+    score(f"score >= {SCORE_THRESHOLD}", stream_suspects)
+
+    # Parity with the batch reference, rule by rule and for the final suspects
     batch = detect(accounts, txns)
     ok = stats["processedEvents"] == len(txns)
-    for rule in sorted({r for rs in batch.values() for r in rs} | set(hits)):
+    for rule in sorted({r for rs in batch.values() for r in rs} | {r for rs in streamed.values() for r in rs}):
         b = {a for a, rs in batch.items() if rule in rs}
         s = {a for a, rs in streamed.items() if rule in rs}
         if b != s:
             ok = False
             print(f"  parity {rule}: batch only {sorted(b - s)[:5]} | stream only {sorted(s - b)[:5]}")
-    print("parity with baseline_rules.py: identical" if ok else "parity with baseline_rules.py: DIFFERENT")
+    if suspects(batch) != stream_suspects:
+        ok = False
+        print(f"  parity suspects: batch only {sorted(suspects(batch) - stream_suspects)[:5]}"
+              f" | stream only {sorted(stream_suspects - suspects(batch))[:5]}")
+    print("parity with scored_rules.py: identical" if ok else "parity with scored_rules.py: DIFFERENT")
     sys.exit(0 if ok else 1)
 
 

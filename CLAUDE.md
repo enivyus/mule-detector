@@ -33,8 +33,9 @@ Core banking API (Spring Boot, PostgreSQL, double-entry ledger)
 | `simulator/simulate.py` | Generates `data/accounts.csv` and `data/transactions.csv` with ground-truth labels. Stdlib only. |
 | `simulator/baseline_rules.py` | Simple rules scored against labels (precision/recall). The baseline to beat. |
 | `simulator/replay.py` | Replays the CSVs through the API (sim profile, `X-Simulated-Time`), writes `data/account_map_<hash>.csv`, verifies balances. |
-| `simulator/evaluate_stream.py` | Scores `rule-engine` alerts against labels and checks parity with `baseline_rules.py`. |
-| `rule-engine/` | Spring Boot :8082. Consumes topic `transactions`, streaming rules in `RuleEngine`, `GET /alerts`, `GET /stats`. |
+| `simulator/scored_rules.py` | Batch reference: baseline rules + fan_out + odd_hours, suspect when ≥ 2 rules fire. |
+| `simulator/evaluate_stream.py` | Scores `rule-engine` alerts against labels and checks parity with `scored_rules.py`. |
+| `rule-engine/` | Spring Boot :8082. Consumes topic `transactions`, streaming rules + score in `RuleEngine`, `GET /alerts`, `/suspects`, `/stats`. |
 | `docker-compose.yml` | postgres (default); redpanda, redpanda-console, neo4j under `--profile full`. |
 | `data/` | Generated CSVs (git-ignored). |
 
@@ -82,18 +83,23 @@ Scam pattern: 5–15 victims → L1 mule (sometimes 00:00–04:59) → 90–98% 
 Customers start with savings (40k–400k THB) and any transaction that would overdraw is dropped, so the CSV replays
 cleanly through the real ledger.
 
-Baseline (seed 42, 2,000 customers, 6 rings): precision ≈ 31%, recall 100%. Goal: raise precision without losing recall
-(combine rules into a score, then add graph features).
+Baseline (seed 42, 2,000 customers, 6 rings): precision ≈ 31%, recall 100%. Score (≥ 2 rules): precision ≈ 98%,
+recall 100% (seeds 7 and 123: 100% / 100%). These numbers are flattered by the simulator: every mule is a new account
+and genuine customers never transact at night. Next: make the simulator harder (old rented mule accounts, daytime
+rings, night-owl customers), then add graph features.
 
-## Detection rules (week 5 target, streaming)
+## Detection rules (streaming in `RuleEngine`, batch reference in `scored_rules.py` — keep them identical)
 
 | Rule | Signal |
 |---|---|
-| pass_through | ≥ 90% of an incoming amount leaves within a short window |
-| fan_in | money from ≥ N distinct, unrelated senders in a short window |
-| fan_out | money split to several accounts right after arriving |
-| new_account_burst | young account with unusually high inflow |
-| odd_hours | many transfers between 00:00 and 05:00 |
+| pass_through | ≥ 90% of an incoming ≥ 1,000 THB leaves within 2 h |
+| fan_in | ≥ 4 distinct senders (cash deposits excluded) within any 2 h |
+| fan_out | an incoming ≥ 1,000 THB followed within 1 h by transfers to ≥ 2 different personal accounts |
+| new_account_burst | account < 30 days old receives ≥ 20,000 THB from others in one Bangkok day |
+| odd_hours | ≥ 2 transfers in or out between 00:00 and 05:00 Bangkok |
+
+Only personal (CUSTOMER) accounts are judged. Suspected mule = at least 2 different rules (`SCORE_THRESHOLD`).
+Any rule change goes into both implementations; `evaluate_stream.py` must still print "identical".
 
 ## Plan (10 weeks)
 
@@ -102,7 +108,7 @@ Baseline (seed 42, 2,000 customers, 6 rings): precision ≈ 31%, recall 100%. Go
 | 1 | Research mule patterns, schema, docker-compose | ✅ scaffold done |
 | 2–3 | Core banking API: accounts, transfers, ledger, idempotency, tests | ✅ tests green, Swagger, paged statement, verified on Postgres |
 | 4 | Simulator: post generated transactions to the API (not only CSV) | ✅ replay.py, sim-time header, balances verified |
-| 5 | Publish events to Redpanda, streaming rule engine | 🟡 publisher + 3 baseline rules streaming, parity verified; next fan_out, odd_hours, score |
+| 5 | Publish events to Redpanda, streaming rule engine | ✅ publisher, 5 streaming rules + score, parity with batch verified |
 | 6–7 | Neo4j: load graph, community detection (Louvain), money-trail query | ⬜ |
 | 8 | Risk score, alerts, auto-freeze | ⬜ |
 | 9 | Investigator dashboard | ⬜ |

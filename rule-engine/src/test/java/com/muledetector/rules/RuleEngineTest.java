@@ -93,7 +93,48 @@ class RuleEngineTest {
         transfer("S2", "N", 1_500_000, lateEvening.plusHours(1), opened, "CUSTOMER");
         assertThat(rulesFor("N")).isEmpty();
         transfer("S3", "N", 500_000, lateEvening.plusHours(2), opened, "CUSTOMER");
-        assertThat(rulesFor("N")).containsExactly(NEW_ACCOUNT_BURST);
+        // 00:30 and 01:30 are also two night-time transfers
+        assertThat(rulesFor("N")).containsExactlyInAnyOrder(NEW_ACCOUNT_BURST, ODD_HOURS);
+    }
+
+    @Test
+    void fanOutToTwoPeopleWithinAnHour() {
+        transfer("V1", "M", 1_000_000, T0);
+        transfer("M", "P1", 300_000, T0.plusMinutes(10));
+        transfer("M", "SHOP", 100_000, T0.plusMinutes(20), OLD, "BUSINESS");  // paying a shop is not fanning out
+        transfer("M", VAULT, 100_000, T0.plusMinutes(30));                      // nor is a cash withdrawal
+        assertThat(rulesFor("M")).isEmpty();
+        transfer("M", "P2", 300_000, T0.plusHours(1));                          // exactly at the window edge
+        assertThat(rulesFor("M")).containsExactly(FAN_OUT);
+    }
+
+    @Test
+    void noFanOutAfterTheWindow() {
+        transfer("V1", "M", 1_000_000, T0);
+        transfer("M", "P1", 300_000, T0.plusMinutes(10));
+        transfer("M", "P2", 300_000, T0.plusHours(1).plusSeconds(1));
+        assertThat(rulesFor("M")).isEmpty();
+    }
+
+    @Test
+    void oddHoursNeedsTwoNightTransfersInOrOut() {
+        OffsetDateTime night = OffsetDateTime.parse("2026-10-10T02:00:00+07:00");
+        transfer("V1", "M", 1_000, night);
+        transfer("M", "X", 500, night.plusHours(3));  // 05:00 is morning
+        assertThat(rulesFor("M")).isEmpty();
+        transfer("M", "X", 500, night.plusHours(2).plusMinutes(59));
+        assertThat(rulesFor("M")).containsExactly(ODD_HOURS);
+    }
+
+    @Test
+    void suspectsNeedAtLeastTwoDifferentRules() {
+        transfer("V1", "ONE", 1_000_000, T0);
+        transfer("ONE", "X", 950_000, T0.plusMinutes(5));                      // pass_through only
+        OffsetDateTime night = OffsetDateTime.parse("2026-10-10T01:00:00+07:00");
+        transfer("V2", "TWO", 1_000_000, night);
+        transfer("TWO", "X", 950_000, night.plusMinutes(5));                  // pass_through + odd_hours
+        assertThat(engine.suspects()).containsOnlyKeys("TWO");
+        assertThat(engine.suspects().get("TWO")).containsExactlyInAnyOrder(PASS_THROUGH, ODD_HOURS);
     }
 
     @Test

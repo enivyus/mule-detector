@@ -38,16 +38,29 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 **Event stream + rule engine** (`rule-engine/`, Spring Boot, Redpanda)
 - core-banking publishes every committed transfer to topic `transactions` (after commit, so a rolled-back
   transfer is never published)
-- The rule engine consumes the stream and runs the rules per account in event time (Bangkok days)
+- The rule engine consumes the stream and runs five rules per account in event time (Bangkok days):
+  pass-through, fan-in, fan-out, new-account burst, odd hours
+- An account is a **suspected mule when at least two different rules fire** (`GET /suspects`): one rule
+  alone is a common coincidence for ordinary customers, two independent signals rarely are
 - Parity check: on the full month, all 52,815 events reach the engine (same count in the database, the
-  topic and the engine), and it flags exactly the same accounts as the batch script, rule by rule
+  topic and the engine), and it flags exactly the same accounts as the batch reference, rule by rule
 
-**Detection results** (seed 42: 2,000 customers, 6 rings, 43 mule accounts)
+**Detection results** (seed 42: 2,000 customers, 6 rings, 43 mule accounts; streaming and batch identical)
 
-| Version | Precision | Recall |
-|---|---|---|
-| Baseline rules, batch over CSV (pass-through, fan-in, new-account burst) | 31% | 100% |
-| Same rules, streaming over Redpanda | 31% | 100% (identical accounts) |
+| Version | Flagged | Precision | Recall |
+|---|---|---|---|
+| Baseline: any of pass-through, fan-in, new-account burst | 139 | 31% | 100% |
+| Any of the five rules | 139 | 31% | 100% |
+| **Score: at least two rules** | **44** | **98%** | **100%** |
+| Score on held-out seeds 7 / 123 (rules not tuned on them) | 46 / 52 | 100% / 100% | 100% / 100% |
+
+Single rules on seed 42: pass-through 32% precision at 100% recall (ordinary people also spend money they
+just received), new-account burst 86% / 100%, fan-in and fan-out 100% precision but only 16% / 30% recall.
+
+**Caveat: these numbers are flattered by the simulator.** Every simulated mule is a newly opened account,
+and simulated customers never transact at night, so odd-hours alone already separates them perfectly on
+seed 42. Real mule accounts are often older accounts rented from real people, and real customers do
+use their phones at 2 a.m. The next step is to make the simulator harder before trusting the score.
 
 ## Run it
 
@@ -74,6 +87,7 @@ curl -X POST localhost:8080/api/transfers -H "Idempotency-Key: tr-1" -H "Content
 cd simulator
 python simulate.py          # writes data/accounts.csv, data/transactions.csv
 python baseline_rules.py    # precision / recall of the baseline rules
+python scored_rules.py      # five rules + score (the batch reference for the rule engine)
 ```
 
 To load the same month into the bank, start the API with the `sim` profile. Only that profile
@@ -91,7 +105,7 @@ into a fresh database (replaying data the bank already holds publishes nothing, 
 docker compose up -d postgres redpanda redpanda-console      # console: http://localhost:8081
 cd core-banking && ./mvnw spring-boot:run -Dspring-boot.run.profiles=sim,kafka
 cd rule-engine && ./mvnw spring-boot:run                     # alerts: http://localhost:8082/alerts
-cd simulator && python replay.py && python evaluate_stream.py
+cd simulator && python replay.py && python evaluate_stream.py   # after a rule change, just restart the engine
 ```
 
 ## Roadmap
@@ -100,7 +114,8 @@ cd simulator && python replay.py && python evaluate_stream.py
 - [x] Labeled transaction simulator + baseline rules
 - [x] Simulator posts to the API
 - [x] Streaming rule engine on Redpanda (baseline rules, verified identical to batch)
-- [ ] More streaming rules (fan-out, odd hours) combined into a score
+- [x] More streaming rules (fan-out, odd hours) combined into a score
+- [ ] Harder simulator: old rented mule accounts, daytime rings, night-owl customers
 - [ ] Graph analysis in Neo4j (community detection, money trail)
 - [ ] Risk scoring, alerts, auto-freeze
 - [ ] Investigator dashboard
