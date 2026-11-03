@@ -3,18 +3,15 @@ import { api, bangkokTime, groupNo, streamRules, thb, tier, FREEZE_THRESHOLD } f
 import { useT } from './i18n.js'
 import FreezeButton from './FreezeButton.jsx'
 import Signals from './Signals.jsx'
-import TrailGraph from './TrailGraph.jsx'
 import { Status, Tier } from './Queue.jsx'
 import { ArrowLeftIcon, ArrowRightIcon, RiskContours } from './icons.jsx'
 
 const LARGE_SATANG = 100_000 // 1,000 THB, the same floor the rules use
 
-export default function AccountPanel({ no, suspects, statuses, onSelect, onStatus, onToast }) {
+export default function AccountPanel({ no, suspects, statuses, onSelect, onStatus, onToast, following, onFollow }) {
   const { t, signal, locale } = useT()
   const [account, setAccount] = useState(null)
   const [entries, setEntries] = useState(null)
-  const [following, setFollowing] = useState(null)
-  const [hops, setHops] = useState([])
   const [community, setCommunity] = useState(null)
   const [findingCommunity, setFindingCommunity] = useState(false)
   const [audit, setAudit] = useState(null)
@@ -32,11 +29,6 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
   }, [no, onStatus])
   // Reload whenever the status changes, from this panel or from the queue
   useEffect(() => { api.audit(no).then(setAudit) }, [no, liveStatus])
-
-  const follow = async (transferId) => {
-    setFollowing(transferId)
-    setHops(await api.trail(transferId))
-  }
 
   const findCommunity = async () => {
     setFindingCommunity(true)
@@ -124,7 +116,7 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
                 <span className="dir">{incoming ? t('in') : t('out')}</span>
                 <span className="amount num">{incoming ? '+' : '−'}฿{thb(e.amountSatang)}</span>
                 {followable
-                  ? <button className="small ghost" onClick={() => follow(e.transferId)}>{t('follow')}<ArrowRightIcon size={14} /></button>
+                  ? <button className="small ghost" onClick={() => onFollow(e.transferId)}>{t('follow')}<ArrowRightIcon size={14} /></button>
                   : <span />}
               </li>
             )
@@ -132,13 +124,6 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
         </ol>
       </section>
 
-      {hops.length > 0 && (
-        <section className="block">
-          <h3>{t('trail')}</h3>
-          <TrailGraph hops={hops} suspects={suspects} statuses={statuses} onSelect={onSelect} />
-          <p className="hint">{t('trailHint')}</p>
-        </section>
-      )}
 
       <section className="block">
         <h3>{t('community')}</h3>

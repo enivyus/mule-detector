@@ -6,7 +6,9 @@ import { FitIcon } from './icons.jsx'
 
 const VAULT = '0000000000'
 const MIN_READABLE_ZOOM = 0.8
-const COLUMN_GAP = 150  // four columns with grouped labels fit a ~460px detail column at the zoom floor; longer trails pan
+const COLUMN_GAP = 200  // the trail has the sheet's full width, so each step gets room for its labels
+const VERTICAL_COLUMN_GAP = 110  // phones: one step per row, money flowing down
+const VERTICAL_ROW_GAP = 150
 const ROW_GAP = 110
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 
@@ -19,7 +21,9 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
   const [drawnHeight, setDrawnHeight] = useState(null)
   const scheme = useColorScheme()
 
-  // Column = how many hops from where the money started; cash withdrawn always sits at the far right
+  const vertical = useNarrow()
+
+  // Column = how many hops from where the money started; cash withdrawn always sits at the far end
   const layout = useMemo(() => {
     if (!hops.length) return { positions: new Map(), height: 0 }
     const column = new Map([[hops[0].fromAccountNo, 0]])
@@ -31,11 +35,12 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
     const positions = new Map([...column].map(([no, c]) => {
       const r = rows.get(c) ?? 0
       rows.set(c, r + 1)
-      return [no, { x: c * COLUMN_GAP, y: r * ROW_GAP }]
+      return [no, vertical ? { x: r * VERTICAL_ROW_GAP, y: c * VERTICAL_COLUMN_GAP } : { x: c * COLUMN_GAP, y: r * ROW_GAP }]
     }))
     // As tall as the busiest column needs, so the trail does not float in empty space
-    return { positions, height: Math.max(180, (Math.max(...rows.values()) - 1) * ROW_GAP + 150) }
-  }, [hops])
+    const deepest = Math.max(...column.values())
+    return { positions, height: vertical ? deepest * VERTICAL_COLUMN_GAP + 120 : Math.max(180, (Math.max(...rows.values()) - 1) * ROW_GAP + 150) }
+  }, [hops, vertical])
 
   useEffect(() => {
     if (!hops.length) return
@@ -64,32 +69,34 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
       style: [
         { selector: 'node', style: {
           label: 'data(label)', 'font-size': 14, 'font-family': css('--font'),
-          'text-valign': 'bottom', 'text-margin-y': 5, color: text,
+          // Vertical (phone) routes run downward, so labels sit beside the node instead of on the edge below it
+          ...(vertical ? { 'text-valign': 'center', 'text-halign': 'right', 'text-margin-x': 8 } : { 'text-valign': 'bottom', 'text-margin-y': 5 }),
+          color: text,
           width: 22, height: 22, 'background-color': panel, 'border-width': 3, 'border-color': course } },
         { selector: '.suspect', style: { 'background-color': css('--danger'), 'border-color': text } },
         // Frozen accounts become squares, the map's symbol for a closed point; the vault is a muted block
         { selector: '.frozen', style: { shape: 'rectangle' } },
         { selector: '.vault', style: { shape: 'rectangle', width: 40, height: 20, 'background-color': css('--muted'), 'border-width': 0 } },
         { selector: 'edge', style: {
-          label: 'data(label)', 'font-size': 12, 'font-family': css('--font'), 'text-wrap': 'wrap', 'text-margin-y': -14, color: text, 'curve-style': 'bezier',
+          label: 'data(label)', 'font-size': 12, 'font-family': css('--font'), 'text-wrap': 'wrap', ...(vertical ? { 'text-margin-x': -44 } : { 'text-margin-y': -14 }), color: text, 'curve-style': 'bezier',
           'target-arrow-shape': 'triangle', width: 'data(width)', 'line-color': course, 'target-arrow-color': course,
           'text-background-color': panel, 'text-background-opacity': 0.85, 'text-background-padding': 2 } },
       ],
     })
     // On a narrow screen a long trail fits only at an unreadable size: keep labels legible and start at the
     // trail's top-left corner, where the money starts; "fit to screen" still shows the whole trail
-    const tooWide = cy.zoom() < MIN_READABLE_ZOOM
-    setCropped(tooWide)
-    if (tooWide) cy.zoom(MIN_READABLE_ZOOM)
+    if (cy.zoom() < MIN_READABLE_ZOOM) cy.zoom(MIN_READABLE_ZOOM)
     // Start at the top-left corner, where the money starts, and make the canvas exactly as tall as what it draws
     const bb = cy.elements().boundingBox()
     const zoom = cy.zoom()
+    // Only a trail that really runs past the edge at the readable zoom gets the pan cue
+    setCropped(bb.w * zoom + 48 > cy.width())
     cy.pan({ x: Math.max(24, (cy.width() - bb.w * zoom) / 2) - bb.x1 * zoom, y: 24 - bb.y1 * zoom })
     setDrawnHeight(Math.ceil(bb.h * zoom + 48))
     cy.on('tap', 'node', (e) => e.target.id() !== VAULT && onSelect(e.target.id()))
     cyRef.current = cy
     return () => cy.destroy()
-  }, [hops, layout, suspects, statuses, onSelect, t, locale, scheme])
+  }, [hops, layout, suspects, statuses, onSelect, t, locale, scheme, vertical])
 
   useEffect(() => { cyRef.current?.resize() }, [drawnHeight])
 
@@ -122,4 +129,17 @@ function useColorScheme() {
     return () => mq.removeEventListener('change', change)
   }, [])
   return scheme
+}
+
+/** True on phones (same breakpoint as the CSS), following window resizes. */
+function useNarrow() {
+  const query = '(max-width: 860px)'
+  const [narrow, setNarrow] = useState(() => window.matchMedia(query).matches)
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const change = () => setNarrow(mq.matches)
+    mq.addEventListener('change', change)
+    return () => mq.removeEventListener('change', change)
+  }, [])
+  return narrow
 }

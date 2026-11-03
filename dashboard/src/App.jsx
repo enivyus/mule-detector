@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { api, logout, bangkokDate } from './api.js'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { api, logout, bangkokDate, groupNo } from './api.js'
 import { LangContext, saveLang, savedLang, useT } from './i18n.js'
 import Login from './Login.jsx'
 import Queue, { VIEWS, queueRows } from './Queue.jsx'
 import SettingsMenu from './SettingsMenu.jsx'
 import AccountPanel from './AccountPanel.jsx'
 import MapKey from './MapKey.jsx'
+import TrailGraph from './TrailGraph.jsx'
 import { MarkIcon, RefreshIcon, SearchIcon, ViewSymbol } from './icons.jsx'
 
 export default function App() {
@@ -28,6 +29,7 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
   const [statuses, setStatuses] = useState({})
   const [autoFrozen, setAutoFrozen] = useState([])
   const [selected, setSelected] = useState(null)
+  const [trail, setTrail] = useState(null)  // { transferId, hops } for the open account
   const [view, setView] = useState('all')
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(true)
@@ -58,6 +60,12 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
   }, [toast])
 
   const setStatus = useCallback((no, account) => setStatuses((prev) => ({ ...prev, [no]: account })), [])
+  const select = useCallback((no) => { setSelected(no); setTrail(null) }, [])
+  const trailRef = useRef(null)
+  const follow = useCallback(async (transferId) => {
+    setTrail({ transferId, hops: await api.trail(transferId) })
+    requestAnimationFrame(() => trailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }, [])
 
   const rows = useMemo(() => queueRows(suspects), [suspects])
   const counts = useMemo(() => Object.fromEntries(VIEWS.map(([id, , keep]) =>
@@ -132,7 +140,7 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
             <div key={key} className={`stat ${tone}`}>
               <span className="stat-label">{t(key)}</span>
               <span className="stat-value">
-                <svg className="benchmark" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 10H1Z" fill="none" stroke="currentColor" strokeWidth="1.5" /><circle cx="6" cy="7" r="1.3" fill="currentColor" /></svg>
+                <svg className="benchmark" width="8" height="8" viewBox="0 0 8 8" aria-hidden="true"><circle cx="4" cy="4" r="3" fill="currentColor" /></svg>
                 {loading ? <span className="skeleton num" /> : value}
               </span>
             </div>
@@ -140,13 +148,22 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
         </section>
 
         <main className={`work ${selected ? 'has-selection' : ''}`}>
-          <Queue rows={shown} statuses={statuses} selected={selected} onSelect={setSelected}
+          <Queue rows={shown} statuses={statuses} selected={selected} onSelect={select}
                  onStatus={setStatus} onToast={setToast} loading={loading} query={query} onClearQuery={() => setQuery('')} />
           {selected
             ? <AccountPanel key={selected} no={selected} suspects={suspects} statuses={statuses}
-                            onSelect={setSelected} onStatus={setStatus} onToast={setToast} />
+                            onSelect={select} onStatus={setStatus} onToast={setToast}
+                            following={trail?.transferId} onFollow={follow} />
             : <MapKey />}
         </main>
+
+        {selected && trail?.hops.length > 0 && (
+          <section className="trail-sheet" ref={trailRef} aria-labelledby="trail-title">
+            <h2 id="trail-title">{t('trail')} <span className="num">{groupNo(selected)}</span></h2>
+            <TrailGraph hops={trail.hops} suspects={suspects} statuses={statuses} onSelect={select} />
+            <p className="hint">{t('trailHint')}</p>
+          </section>
+        )}
       </div>
 
       {toast && <div className={`toast ${toast.tone}`} role="status">{toast.text}</div>}

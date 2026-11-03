@@ -197,9 +197,9 @@ button.link { border: none; background: none; color: var(--water); padding: 0 6p
 /* Value first on a shared bottom line; every label reserves two lines so a wrapping label cannot lift its value */
 .stat-value { order: -1; display: flex; align-items: flex-end; gap: 8px; font-family: var(--font-num); font-size: 36px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
 .stat-label { font-size: 13px; color: var(--ink-2); line-height: 1.35; min-height: 2.7em; }
-.benchmark { flex: none; margin-bottom: 4px; color: var(--muted); }
+.benchmark { flex: none; margin-bottom: 7px; color: var(--ink); }
 .stat.lead .stat-value { font-size: 76px; color: var(--danger); }
-.stat.lead .benchmark { color: var(--danger); width: 16px; height: 16px; margin-bottom: 8px; }
+.stat.lead .benchmark { color: var(--danger); width: 11px; height: 11px; margin-bottom: 12px; }
 .stat.lead .stat-label { font-weight: 600; color: var(--danger); }
 .stat.review .stat-value { color: var(--warn); }
 
@@ -234,7 +234,8 @@ td.num { font-weight: 600; font-size: 15px; white-space: nowrap; }
 td.col-height { color: var(--contour); }
 .height { display: inline-flex; align-items: center; gap: 6px; }
 .height b { font-family: var(--font-num); font-size: 15px; font-weight: 700; color: var(--contour); min-width: 1ch; }
-td.signals { white-space: nowrap; }
+td.signals { white-space: normal; line-height: 1.5; }
+td.signals .chip { white-space: normal; }  /* a long signal name wraps rather than pushing the lock buttons off the queue */
 td.signals .chip { margin: 0; }
 td.signals .chip.more { margin-left: 6px; }
 td.action { text-align: right; white-space: nowrap; width: 1%; }
@@ -291,7 +292,10 @@ td.action button { padding: 5px 7px; }
 .timeline .amount { font-weight: 600; font-family: var(--font-num); }
 .timeline li.current { background: var(--contour-soft); }
 
-/* Trail graph: the purple route over faint contour lines */
+/* Trail graph: the purple route over faint contour lines, on its own sheet below the queue and account */
+.trail-sheet { background: var(--surface); border: var(--frame); padding: 18px 22px 20px; display: flex; flex-direction: column; gap: 10px; scroll-margin-top: 16px; }
+.trail-sheet h2 { font-size: 20px; font-weight: 700; display: flex; gap: 12px; align-items: baseline; }
+.trail-sheet h2 .num { font-size: 18px; color: var(--ink-2); }
 .graph-wrap { border: 1px solid var(--ink); }
 .graph-bar { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 8px 10px; border-bottom: 1px solid var(--ink); font-size: 13px; color: var(--ink-2); }
 .grow { flex: 1; }
