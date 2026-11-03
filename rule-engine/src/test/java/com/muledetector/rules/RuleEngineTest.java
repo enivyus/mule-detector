@@ -136,6 +136,18 @@ class RuleEngineTest {
     }
 
     @Test
+    void reportsTheEventThatTakesAnAccountToTheFreezeThreshold() {
+        OffsetDateTime night = OffsetDateTime.parse("2026-10-10T01:00:00+07:00");
+        engine.onEvent(new TransferEvent(1, "V1", "M", 3_000_000, night, "CUSTOMER", "CUSTOMER", night.minusDays(3)));
+        assertThat(rulesFor("M")).containsExactly(NEW_ACCOUNT_BURST);
+        // pass_through and odd_hours fire together: 1 -> 3 rules in one event still counts
+        assertThat(engine.onEvent(new TransferEvent(2, "M", "X", 2_900_000, night.plusMinutes(10),
+                "CUSTOMER", "CUSTOMER", OLD))).containsExactly("M");
+        assertThat(engine.onEvent(new TransferEvent(3, "M", "P1", 50_000, night.plusMinutes(20),
+                "CUSTOMER", "CUSTOMER", OLD))).isEmpty();  // a further rule must not report it again
+    }
+
+    @Test
     void suspectsNeedAtLeastTwoDifferentRules() {
         transfer("V1", "ONE", 1_000_000, T0);
         transfer("ONE", "X", 950_000, T0.plusMinutes(5));                      // pass_through only

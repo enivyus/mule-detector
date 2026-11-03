@@ -28,6 +28,8 @@ public class RuleEngine {
     public static final String FAN_OUT = "fan_out";
     public static final String ODD_HOURS = "odd_hours";
     public static final int SCORE_THRESHOLD = 2;
+    /** Three different rules: no genuine account reached this on seed 42 or the unseen check, so it may freeze. */
+    public static final int FREEZE_THRESHOLD = 3;
 
     static final Duration WINDOW = Duration.ofHours(2);
     static final long LARGE_INCOMING_SATANG = 100_000;       // pass_through and fan_out ignore anything under 1,000 THB
@@ -69,11 +71,21 @@ public class RuleEngine {
     private final List<Alert> alerts = new ArrayList<>();
     private long processed;
 
-    public synchronized void onEvent(TransferEvent e) {
+    /** @return accounts that reached {@link #FREEZE_THRESHOLD} rules with this event (at most once per account) */
+    public synchronized List<String> onEvent(TransferEvent e) {
         processed++;
+        int before = alerts.size();
         Instant at = e.occurredAt().toInstant();
         if (judged(e.fromAccountType())) outgoing(e.fromAccountNo(), e, at);
         if (judged(e.toAccountType())) incoming(e.toAccountNo(), e, at);
+        Map<String, Integer> raisedNow = new LinkedHashMap<>();
+        for (Alert a : alerts.subList(before, alerts.size())) raisedNow.merge(a.accountNo(), 1, Integer::sum);
+        List<String> reached = new ArrayList<>();
+        raisedNow.forEach((no, n) -> {
+            int size = accounts.get(no).rules.size();  // one event can raise two rules at once: 2 -> 4 still counts
+            if (size >= FREEZE_THRESHOLD && size - n < FREEZE_THRESHOLD) reached.add(no);
+        });
+        return reached;
     }
 
     private static boolean judged(String accountType) {

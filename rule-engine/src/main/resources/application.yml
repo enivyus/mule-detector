@@ -10,3 +10,6 @@ spring:
     consumer:
       group-id: rule-engine
       auto-offset-reset: earliest
+
+mulebank:
+  core-banking-url: ${CORE_BANKING_URL:http://127.0.0.1:8080}  # IPv4: core-banking listens on 127.0.0.1 only

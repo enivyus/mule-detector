@@ -1,5 +1,6 @@
 package com.muledetector.rules;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,9 +12,18 @@ import java.util.Set;
 public class AlertController {
 
     private final RuleEngine engine;
+    private final ObjectProvider<AutoFreeze> autoFreeze;
 
-    public AlertController(RuleEngine engine) {
+    public AlertController(RuleEngine engine, ObjectProvider<AutoFreeze> autoFreeze) {
         this.engine = engine;
+        this.autoFreeze = autoFreeze;
+    }
+
+    /** Accounts frozen automatically since this start (empty unless the autofreeze profile is on). */
+    @GetMapping("/freezes")
+    public List<AutoFreeze.Freeze> freezes() {
+        AutoFreeze f = autoFreeze.getIfAvailable();
+        return f == null ? List.of() : f.freezes();
     }
 
     @GetMapping("/alerts")
