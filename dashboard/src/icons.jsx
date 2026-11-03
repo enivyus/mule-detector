@@ -27,6 +27,9 @@ export const RefreshIcon = (p) => (
 export const ArrowRightIcon = (p) => (
   <Icon {...p}><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></Icon>
 )
+export const ArrowLeftIcon = (p) => (
+  <Icon {...p}><path d="M19 12H5" /><path d="m11 6-6 6 6 6" /></Icon>
+)
 export const GlobeIcon = (p) => (
   <Icon {...p}><circle cx="12" cy="12" r="9" /><path d="M3 12h18" /><path d="M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z" /></Icon>
 )

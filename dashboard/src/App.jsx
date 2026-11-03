@@ -128,7 +128,7 @@ function Dashboard({ me, onSignOut, onSwitchLang }) {
           ))}
         </section>
 
-        <main className="work">
+        <main className={`work ${selected ? 'has-selection' : ''}`}>
           <Queue rows={shown} statuses={statuses} selected={selected} onSelect={setSelected}
                  onStatus={setStatus} onToast={setToast} loading={loading} query={query} onClearQuery={() => setQuery('')} />
           {selected

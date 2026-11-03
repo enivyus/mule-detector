@@ -5,7 +5,7 @@ import FreezeButton from './FreezeButton.jsx'
 import Signals from './Signals.jsx'
 import TrailGraph from './TrailGraph.jsx'
 import { Status } from './Queue.jsx'
-import { ArrowRightIcon } from './icons.jsx'
+import { ArrowLeftIcon, ArrowRightIcon } from './icons.jsx'
 
 const LARGE_SATANG = 100_000 // 1,000 THB, the same floor the rules use
 
@@ -20,10 +20,11 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
   const [audit, setAudit] = useState(null)
   const liveStatus = statuses[no]?.status
   const panel = useRef(null)
-  // When the detail stacks under the queue, bring it into view on select
+  // When the detail stacks under the queue, bring it into view once loaded (the skeleton is too short to scroll to)
+  const loaded = account !== null
   useEffect(() => {
-    if (window.matchMedia('(max-width: 1180px)').matches) panel.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [])
+    if (loaded && window.matchMedia('(max-width: 1180px)').matches) panel.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [loaded])
 
   useEffect(() => {
     api.account(no).then((a) => { setAccount(a); onStatus(no, a) })
@@ -50,7 +51,7 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
 
   if (!account) {
     return (
-      <section className="panel account" aria-busy="true">
+      <section className="panel account" aria-busy="true" ref={panel}>
         <span className="skeleton" style={{ width: 180, height: 24 }} />
         <span className="skeleton" style={{ width: 260, marginTop: 12 }} />
         <span className="skeleton" style={{ width: '100%', height: 120, marginTop: 24 }} />
@@ -63,6 +64,7 @@ export default function AccountPanel({ no, suspects, statuses, onSelect, onStatu
 
   return (
     <section className="panel account" ref={panel}>
+      <button className="back ghost small icon-text" onClick={() => onSelect(null)}><ArrowLeftIcon size={14} />{t('backToQueue')}</button>
       <header className="account-head">
         <div className="account-id">
           <h2 className="num">{no}</h2>

@@ -45,7 +45,7 @@ const text = {
     badLogin: 'Wrong username or password.', notInvestigator: 'This user is not an investigator.',
     signedInAs: (name) => `Signed in as ${name}`, signOut: 'Sign out', settings: 'Settings',
     loginTitle: 'Sign in', queue: 'Review queue', roleInvestigator: 'Fraud investigator', synthetic: 'Synthetic demo data: no real people or accounts.', overview: 'Overview',
-    colAction: 'Action', noMatchQuery: (q) => `No suspect account contains "${q}".`, clearSearch: 'Clear search', moreSignals: (n) => `+${n}`,
+    colAction: 'Action', noMatchQuery: (q) => `No suspect account contains "${q}".`, clearSearch: 'Clear search', backToQueue: 'Back to queue', moreSignals: (n) => `+${n}`,
     language: 'ภาษาไทย',
   },
   th: {
@@ -91,7 +91,7 @@ const text = {
     badLogin: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', notInvestigator: 'ผู้ใช้นี้ไม่ใช่เจ้าหน้าที่สืบสวน',
     signedInAs: (name) => `เข้าสู่ระบบในชื่อ ${name}`, signOut: 'ออกจากระบบ', settings: 'ตั้งค่า',
     loginTitle: 'เข้าสู่ระบบ', queue: 'คิวตรวจสอบ', roleInvestigator: 'เจ้าหน้าที่ฝ่ายทุจริต', synthetic: 'ข้อมูลจำลองเพื่อสาธิต ไม่มีบุคคลหรือบัญชีจริง', overview: 'ภาพรวม',
-    colAction: 'การดำเนินการ', noMatchQuery: (q) => `ไม่พบบัญชีต้องสงสัยที่มีเลข "${q}"`, clearSearch: 'ล้างคำค้น', moreSignals: (n) => `+${n}`,
+    colAction: 'การดำเนินการ', noMatchQuery: (q) => `ไม่พบบัญชีต้องสงสัยที่มีเลข "${q}"`, clearSearch: 'ล้างคำค้น', backToQueue: 'กลับไปที่คิว', moreSignals: (n) => `+${n}`,
     language: 'English',
   },
 }

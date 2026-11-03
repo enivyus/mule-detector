@@ -6,7 +6,7 @@ import { FitIcon } from './icons.jsx'
 
 const VAULT = '0000000000'
 const MIN_READABLE_ZOOM = 0.8
-const COLUMN_GAP = 260
+const COLUMN_GAP = 200  // three columns fit a ~460px detail column at the zoom floor
 const ROW_GAP = 110
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 
@@ -32,7 +32,7 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
       return [no, { x: c * COLUMN_GAP, y: r * ROW_GAP }]
     }))
     // As tall as the busiest column needs, so the trail does not float in empty space
-    return { positions, height: Math.max(220, Math.max(...rows.values()) * ROW_GAP + 110) }
+    return { positions, height: Math.max(180, (Math.max(...rows.values()) - 1) * ROW_GAP + 150) }
   }, [hops])
 
   useEffect(() => {
@@ -73,13 +73,13 @@ export default function TrailGraph({ hops, suspects, statuses, onSelect }) {
       ],
     })
     // On a narrow screen a long trail fits only at an unreadable size: keep labels legible and start at the
-    // money's origin instead; "fit to screen" still shows the whole trail
+    // trail's top-left corner, where the money starts; "fit to screen" still shows the whole trail
     const tooWide = cy.zoom() < MIN_READABLE_ZOOM
     setCropped(tooWide)
     if (tooWide) {
       cy.zoom(MIN_READABLE_ZOOM)
-      const p = cy.getElementById(hops[0].fromAccountNo).renderedPosition()
-      cy.panBy({ x: 40 - p.x, y: cy.height() / 2 - p.y })
+      const bb = cy.elements().boundingBox()
+      cy.pan({ x: 30 - bb.x1 * MIN_READABLE_ZOOM, y: 30 - bb.y1 * MIN_READABLE_ZOOM })
     }
     cy.on('tap', 'node', (e) => e.target.id() !== VAULT && onSelect(e.target.id()))
     cyRef.current = cy
