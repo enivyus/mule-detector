@@ -28,11 +28,13 @@ Core banking API (Spring Boot, PostgreSQL, double-entry ledger)
 
 | Path | What |
 |---|---|
-| `core-banking/` | Spring Boot 3.3, Java 21, Maven. Accounts, deposits, withdrawals, transfers, ledger, freeze. |
+| `core-banking/` | Spring Boot 3.3, Java 21, Maven. Accounts (CUSTOMER/BUSINESS), transfers, ledger, freeze. Profiles: `sim`, `kafka`. |
 | `core-banking/src/main/resources/db/migration/` | Flyway migrations. Never edit an applied migration; add `V2__...sql`. |
 | `simulator/simulate.py` | Generates `data/accounts.csv` and `data/transactions.csv` with ground-truth labels. Stdlib only. |
 | `simulator/baseline_rules.py` | Simple rules scored against labels (precision/recall). The baseline to beat. |
 | `simulator/replay.py` | Replays the CSVs through the API (sim profile, `X-Simulated-Time`), writes `data/account_map_<hash>.csv`, verifies balances. |
+| `simulator/evaluate_stream.py` | Scores `rule-engine` alerts against labels and checks parity with `baseline_rules.py`. |
+| `rule-engine/` | Spring Boot :8082. Consumes topic `transactions`, streaming rules in `RuleEngine`, `GET /alerts`, `GET /stats`. |
 | `docker-compose.yml` | postgres (default); redpanda, redpanda-console, neo4j under `--profile full`. |
 | `data/` | Generated CSVs (git-ignored). |
 
@@ -46,6 +48,9 @@ cd simulator && python simulate.py            # generate data
 cd simulator && python baseline_rules.py      # score baseline rules
 cd simulator && python replay.py              # load CSVs into the API (API must run with -Dspring-boot.run.profiles=sim)
 docker compose --profile full up -d           # + Redpanda (:9092, console :8081) + Neo4j (:7474)
+cd core-banking && ./mvnw spring-boot:run -Dspring-boot.run.profiles=sim,kafka   # publish events
+cd rule-engine && ./mvnw spring-boot:run        # streaming rules on :8082
+cd simulator && python evaluate_stream.py      # precision/recall + parity with the batch baseline
 ```
 
 ## Core banking invariants — do not break these
@@ -97,7 +102,7 @@ Baseline (seed 42, 2,000 customers, 6 rings): precision ≈ 31%, recall 100%. Go
 | 1 | Research mule patterns, schema, docker-compose | ✅ scaffold done |
 | 2–3 | Core banking API: accounts, transfers, ledger, idempotency, tests | ✅ tests green, Swagger, paged statement, verified on Postgres |
 | 4 | Simulator: post generated transactions to the API (not only CSV) | ✅ replay.py, sim-time header, balances verified |
-| 5 | Publish events to Redpanda, streaming rule engine | ⬜ |
+| 5 | Publish events to Redpanda, streaming rule engine | 🟡 publisher + 3 baseline rules streaming, parity verified; next fan_out, odd_hours, score |
 | 6–7 | Neo4j: load graph, community detection (Louvain), money-trail query | ⬜ |
 | 8 | Risk score, alerts, auto-freeze | ⬜ |
 | 9 | Investigator dashboard | ⬜ |

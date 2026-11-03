@@ -35,11 +35,19 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 - Replay through the real API (`replay.py`) with the original timestamps: about 2,100 accounts and 53,000
   transactions in about 11 minutes, every balance checked against the CSV afterwards
 
-**Baseline rules** (`simulator/baseline_rules.py`)
+**Event stream + rule engine** (`rule-engine/`, Spring Boot, Redpanda)
+- core-banking publishes every committed transfer to topic `transactions` (after commit, so a rolled-back
+  transfer is never published)
+- The rule engine consumes the stream and runs the rules per account in event time (Bangkok days)
+- Parity check: on the full month, all 52,815 events reach the engine (same count in the database, the
+  topic and the engine), and it flags exactly the same accounts as the batch script, rule by rule
+
+**Detection results** (seed 42: 2,000 customers, 6 rings, 43 mule accounts)
 
 | Version | Precision | Recall |
 |---|---|---|
-| Baseline rules (pass-through, fan-in, new-account burst) | 31% | 100% |
+| Baseline rules, batch over CSV (pass-through, fan-in, new-account burst) | 31% | 100% |
+| Same rules, streaming over Redpanda | 31% | 100% (identical accounts) |
 
 ## Run it
 
@@ -76,12 +84,23 @@ cd core-banking && ./mvnw spring-boot:run -Dspring-boot.run.profiles=sim
 cd simulator && python replay.py   # safe to rerun: idempotency keys + data/account_map_<hash>.csv
 ```
 
+To run the streaming detector, add Redpanda and the `kafka` profile, start the rule engine, then replay
+into a fresh database (replaying data the bank already holds publishes nothing, by design):
+
+```bash
+docker compose up -d postgres redpanda redpanda-console      # console: http://localhost:8081
+cd core-banking && ./mvnw spring-boot:run -Dspring-boot.run.profiles=sim,kafka
+cd rule-engine && ./mvnw spring-boot:run                     # alerts: http://localhost:8082/alerts
+cd simulator && python replay.py && python evaluate_stream.py
+```
+
 ## Roadmap
 
 - [x] Core banking API with ledger, locking, idempotency
 - [x] Labeled transaction simulator + baseline rules
 - [x] Simulator posts to the API
-- [ ] Streaming rule engine on Redpanda
+- [x] Streaming rule engine on Redpanda (baseline rules, verified identical to batch)
+- [ ] More streaming rules (fan-out, odd hours) combined into a score
 - [ ] Graph analysis in Neo4j (community detection, money trail)
 - [ ] Risk scoring, alerts, auto-freeze
 - [ ] Investigator dashboard
