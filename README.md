@@ -3,7 +3,31 @@
 A mini core banking system and a detector for **mule accounts**: bank accounts that receive money
 from scam victims and quickly pass it through more accounts before it is cashed out.
 
-> Work in progress — portfolio project. All data is synthetic.
+> Portfolio project. All data is synthetic.
+
+## In one minute
+
+- **A real little bank:** Spring Boot + PostgreSQL, double-entry ledger, row locks in a fixed order,
+  idempotency keys. 1,000 concurrent transfers balance to the satang.
+- **A month of fake but hard data:** 2,000 customers, six scam rings. 40% of the mule accounts are old
+  accounts rented from real customers, half the rings work office hours, and some honest people bank at 2 a.m.
+- **Detection in three layers:** streaming rules over Redpanda, then a graph step in Neo4j (suspicion follows
+  the money), then two risk tiers: *freeze* now, or *review* by a person.
+- **Final result on a seed never looked at before (9999):**
+
+  | | Precision | Recall |
+  |---|---|---|
+  | Simple rules (baseline) | 32% | 100% |
+  | Two-rule score, one account at a time | 91% | 87% |
+  | **Score + graph** | **87%** | **100%** |
+  | **Auto-freeze tier** (3+ rules) | **100%** (27 mules, 0 genuine accounts frozen) | 59% |
+
+  Every mule lands in one of the two tiers; the review queue holds 26 accounts, 7 of them genuine.
+- **Money:** on seed 42, freezing at detection time would block at least 60% of what the rings cash out,
+  usually 8-52 minutes before their first withdrawal.
+- **Honest about the numbers:** each rule exists in two implementations (stream/graph and a batch script) that
+  must agree account by account; thresholds were chosen on seed 42, and each new result was scored once on a
+  fresh seed. The first, easier version of the simulator flattered the detector; this README says by how much.
 
 ## Why
 
@@ -177,6 +201,14 @@ Auto-freeze is off by default (a frozen account would break a replay). To turn i
 ```bash
 cd rule-engine && ./mvnw spring-boot:run -Dspring-boot.run.profiles=autofreeze   # frozen: GET :8082/freezes
 cd simulator && python evaluate_freeze.py   # what freezing would have stopped, from the alerts already there
+```
+
+For a live demo, replay a fresh dataset into an empty bank while auto-freeze is on. `--live` counts the transfers
+the bank refuses (frozen accounts, and accounts that never received the money a frozen one would have passed on)
+instead of stopping:
+
+```bash
+cd simulator && python simulate.py --seed 9999 --out ../data/demo && python replay.py --data ../data/demo --live
 ```
 
 ## Roadmap

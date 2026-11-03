@@ -10,7 +10,7 @@ __pycache__/
 .venv/
 
 # Generated data (regenerate with simulator/simulate.py)
-data/*.csv
+data/**/*.csv
 
 # IDE / OS
 .idea/

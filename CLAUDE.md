@@ -126,7 +126,7 @@ Any rule change goes into both implementations; `evaluate_stream.py` must still 
 | 6–7 | Neo4j: load graph, community detection (Louvain), money-trail query | ✅ from_suspect, trail, Louvain; parity verified |
 | 8 | Risk score, alerts, auto-freeze | ✅ freeze tier (≥ 3 stream rules) + review queue; ≥ 60% of cash-outs stopped |
 | 9 | Investigator dashboard | ✅ review queue, freeze/unfreeze, trail graph, community |
-| 10 | Measure, README with numbers, demo video | ⬜ |
+| 10 | Measure, README with numbers, demo video | 🟡 final numbers on unseen seed 9999, README summary, `replay.py --live`; live demo run not done |
 
 Keep the MVP working end-to-end before adding Kafka/Neo4j.
 

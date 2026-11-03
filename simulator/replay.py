@@ -19,7 +19,7 @@ import hashlib
 import http.client
 import json
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -85,7 +85,9 @@ def open_accounts(api: Api, accounts: list[dict], map_path: Path) -> dict[str, s
     return mapping
 
 
-def replay_txns(api: Api, txns: list[dict], mapping: dict[str, str], key_prefix: str) -> None:
+def replay_txns(api: Api, txns: list[dict], mapping: dict[str, str], key_prefix: str, live: bool) -> Counter:
+    """With live=True (auto-freeze on), a transfer the bank refuses is counted per scenario instead of stopping."""
+    blocked: Counter = Counter()
     for i, t in enumerate(txns, 1):  # file order: ties replay exactly as the simulator checked them
         src, dst, amount = mapping[t["from_account"]], mapping[t["to_account"]], int(t["amount_satang"])
         headers = {"Idempotency-Key": f"{key_prefix}-{t['txn_id']}", "X-Simulated-Time": t["timestamp"] + TZ}
@@ -96,10 +98,30 @@ def replay_txns(api: Api, txns: list[dict], mapping: dict[str, str], key_prefix:
         else:
             status, res = api.call("POST", "/api/transfers",
                                    {"fromAccountNo": src, "toAccountNo": dst, "amountSatang": amount}, headers)
-        if status != 200:
+        if live and status == 422 and res.get("code") in ("ACCOUNT_FROZEN", "INSUFFICIENT_FUNDS"):
+            # Frozen accounts, and accounts that never got the money a frozen account would have sent on
+            blocked[(t["scenario"], res["code"], "count")] += 1
+            blocked[(t["scenario"], res["code"], "satang")] += amount
+        elif status != 200:
             fail(f"{t['txn_id']} ({t['scenario']}): HTTP {status} {res}")
         if i % 5000 == 0 or i == len(txns):
             print(f"transactions: {i:,} / {len(txns):,}")
+    return blocked
+
+
+def report_blocked(blocked: Counter, txns: list[dict]) -> None:
+    if not blocked:
+        print("blocked: nothing")
+        return
+    print("blocked by the bank (scenario, reason, transfers, THB):")
+    for (scenario, code) in sorted({(s, c) for s, c, _ in blocked}):
+        print(f"  {scenario:<13} {code:<18} {blocked[(scenario, code, 'count')]:>5}"
+              f" {blocked[(scenario, code, 'satang')] / 100:>14,.2f}")
+    cashout = sum(int(t["amount_satang"]) for t in txns if t["scenario"] == "scam_cashout")
+    stopped = sum(v for (s, _, k), v in blocked.items() if s == "scam_cashout" and k == "satang")
+    genuine = sum(v for (s, _, k), v in blocked.items() if not s.startswith("scam") and k == "count")
+    print(f"cash-outs blocked: {stopped / 100:,.2f} of {cashout / 100:,.2f} THB ({stopped / cashout:.0%})")
+    print(f"genuine transfers blocked: {genuine}")
 
 
 def verify(api: Api, txns: list[dict], mapping: dict[str, str]) -> None:
@@ -126,6 +148,9 @@ def main() -> None:
     # 127.0.0.1, not localhost: the API listens on IPv4 only, and on Windows "localhost" tries IPv6 first,
     # costing ~2 s on every reconnect (Tomcat closes a keep-alive connection after 100 requests)
     p.add_argument("--api", default="http://127.0.0.1:8080")
+    p.add_argument("--live", action="store_true",
+                   help="rule-engine runs with auto-freeze: count refused transfers instead of stopping; "
+                        "the bank then no longer matches the CSV, so balances are not checked")
     args = p.parse_args()
 
     with open(args.data / "accounts.csv", encoding="utf-8") as f:
@@ -139,8 +164,11 @@ def main() -> None:
     api = Api(args.api)
     # One map per dataset: a regenerated CSV reuses many sim account numbers and must not inherit old accounts
     mapping = open_accounts(api, accounts, args.data / f"account_map_{key_prefix}.csv")
-    replay_txns(api, txns, mapping, key_prefix)
-    verify(api, txns, mapping)
+    blocked = replay_txns(api, txns, mapping, key_prefix, args.live)
+    if args.live:
+        report_blocked(blocked, txns)
+    else:
+        verify(api, txns, mapping)
 
 
 if __name__ == "__main__":
