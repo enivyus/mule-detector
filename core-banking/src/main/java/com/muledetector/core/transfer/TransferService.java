@@ -116,7 +116,8 @@ public class TransferService {
         to.credit(amount);
 
         events.publishEvent(new TransferCompletedEvent(
-                t.getId(), from.getAccountNo(), to.getAccountNo(), amount, kind, t.getCreatedAt()));
+                t.getId(), from.getAccountNo(), to.getAccountNo(), amount, kind, t.getCreatedAt(),
+                from.getType(), to.getType(), from.getCreatedAt(), to.getCreatedAt()));
         return t;
     }
 
