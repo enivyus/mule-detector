@@ -21,7 +21,7 @@ Transaction simulator ──► Core banking API ──► Event stream ──�
 ## What works today
 
 **Core banking API** (`core-banking/`, Spring Boot 3, Java 21, PostgreSQL)
-- Open account, deposit, withdraw, transfer, statement, freeze/unfreeze
+- Open account, deposit, withdraw, transfer, paged statement (`?page=0&size=50`, newest first), freeze/unfreeze
 - Double-entry ledger: every transfer is one DEBIT + one CREDIT; balances can be rebuilt from the ledger
 - Row-level locking in a fixed order: no lost updates, no deadlocks
 - Idempotency keys: a retried request never moves money twice

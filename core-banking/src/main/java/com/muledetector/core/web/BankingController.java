@@ -9,10 +9,10 @@ import com.muledetector.core.transfer.TransferService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -48,9 +48,15 @@ public class BankingController {
         return AccountView.of(accountService.get(accountNo));
     }
 
+    /** Newest first. shortcut: offset paging shifts rows when new entries arrive; switch to a cursor (before id) if clients page live accounts. */
     @GetMapping("/accounts/{accountNo}/statement")
-    public List<LedgerEntry> statement(@PathVariable String accountNo) {
-        return ledger.findByAccountIdOrderByCreatedAtDescIdDesc(accountService.get(accountNo).getId());
+    public Page<LedgerEntry> statement(@PathVariable String accountNo,
+                                       @RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "50") int size) {
+        if (page < 0 || size < 1 || size > 200) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_PAGE", "page must be >= 0 and size between 1 and 200");
+        }
+        return ledger.findByAccountIdOrderByCreatedAtDescIdDesc(accountService.get(accountNo).getId(), PageRequest.of(page, size));
     }
 
     @PostMapping("/accounts/{accountNo}/deposit")

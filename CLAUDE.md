@@ -89,7 +89,7 @@ Baseline (seed 42, 2,000 customers, 6 rings): precision ≈ 29%, recall 100%. Go
 | Week | Work | Status |
 |---|---|---|
 | 1 | Research mule patterns, schema, docker-compose | ✅ scaffold done |
-| 2–3 | Core banking API: accounts, transfers, ledger, idempotency, tests | 🟡 tests green, Swagger done, verified on Postgres; needs statement paging |
+| 2–3 | Core banking API: accounts, transfers, ledger, idempotency, tests | ✅ tests green, Swagger, paged statement, verified on Postgres |
 | 4 | Simulator: post generated transactions to the API (not only CSV) | 🟡 CSV version done |
 | 5 | Publish events to Redpanda, streaming rule engine | ⬜ |
 | 6–7 | Neo4j: load graph, community detection (Louvain), money-trail query | ⬜ |
