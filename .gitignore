@@ -1,0 +1,23 @@
+# Build output
+target/
+*.class
+node_modules/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Generated data (regenerate with simulator/simulate.py)
+data/*.csv
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
