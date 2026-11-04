@@ -1,905 +1,699 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-03T20:11:06+00:00",
+  "generatedAt": "2026-11-04T00:45:46+00:00",
   "title": "Design System: Mule Investigator",
   "extensions": {
     "colorMeta": {
       "canvas": {
         "role": "neutral",
-        "displayName": "Cool Canvas",
-        "scheme": "light",
-        "canonical": "#f5f7fa",
+        "displayName": "Map Paper",
+        "canonical": "#fafaf7",
         "tonalRamp": [
-          "oklch(15% 0.005 258)",
-          "oklch(26% 0.005 258)",
-          "oklch(38% 0.005 258)",
-          "oklch(49% 0.005 258)",
-          "oklch(61% 0.005 258)",
-          "oklch(72% 0.005 258)",
-          "oklch(84% 0.005 258)",
-          "oklch(95% 0.005 258)"
+          "oklch(15% 0.003 106.5)",
+          "oklch(27% 0.004 106.5)",
+          "oklch(39% 0.004 106.5)",
+          "oklch(51% 0.004 106.5)",
+          "oklch(63% 0.004 106.5)",
+          "oklch(75% 0.004 106.5)",
+          "oklch(86% 0.003 106.5)",
+          "oklch(95% 0.001 106.5)"
         ]
       },
       "surface": {
         "role": "neutral",
-        "displayName": "White Surface",
-        "scheme": "light",
+        "displayName": "Sheet White",
         "canonical": "#ffffff",
         "tonalRamp": [
-          "oklch(15% 0.000 90)",
-          "oklch(26% 0.000 90)",
-          "oklch(38% 0.000 90)",
-          "oklch(49% 0.000 90)",
-          "oklch(61% 0.000 90)",
-          "oklch(72% 0.000 90)",
-          "oklch(84% 0.000 90)",
-          "oklch(95% 0.000 90)"
+          "oklch(15% 0.000 89.9)",
+          "oklch(27% 0.000 89.9)",
+          "oklch(39% 0.000 89.9)",
+          "oklch(51% 0.000 89.9)",
+          "oklch(63% 0.000 89.9)",
+          "oklch(75% 0.000 89.9)",
+          "oklch(86% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
         ]
       },
       "sidebar": {
         "role": "neutral",
-        "displayName": "Sidebar Mist",
-        "scheme": "light",
-        "canonical": "#eef1f5",
+        "displayName": "Legend Buff",
+        "canonical": "#f1efe6",
         "tonalRamp": [
-          "oklch(15% 0.006 255)",
-          "oklch(26% 0.006 255)",
-          "oklch(38% 0.006 255)",
-          "oklch(49% 0.006 255)",
-          "oklch(61% 0.006 255)",
-          "oklch(72% 0.006 255)",
-          "oklch(84% 0.006 255)",
-          "oklch(95% 0.006 255)"
+          "oklch(15% 0.008 96.4)",
+          "oklch(27% 0.012 96.4)",
+          "oklch(39% 0.012 96.4)",
+          "oklch(51% 0.012 96.4)",
+          "oklch(63% 0.012 96.4)",
+          "oklch(75% 0.012 96.4)",
+          "oklch(86% 0.008 96.4)",
+          "oklch(95% 0.003 96.4)"
         ]
       },
       "ink": {
-        "role": "neutral",
-        "displayName": "Navy Ink",
-        "scheme": "light",
-        "canonical": "#0e1b2b",
+        "role": "primary",
+        "displayName": "Survey Ink",
+        "canonical": "#1b1b1b",
         "tonalRamp": [
-          "oklch(15% 0.017 254)",
-          "oklch(26% 0.024 254)",
-          "oklch(38% 0.029 254)",
-          "oklch(49% 0.034 254)",
-          "oklch(61% 0.034 254)",
-          "oklch(72% 0.029 254)",
-          "oklch(84% 0.024 254)",
-          "oklch(95% 0.017 254)"
+          "oklch(15% 0.000 89.9)",
+          "oklch(27% 0.000 89.9)",
+          "oklch(39% 0.000 89.9)",
+          "oklch(51% 0.000 89.9)",
+          "oklch(63% 0.000 89.9)",
+          "oklch(75% 0.000 89.9)",
+          "oklch(86% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
+        ]
+      },
+      "ink-deep": {
+        "role": "primary",
+        "displayName": "Deep Ink (primary hover)",
+        "canonical": "#000000",
+        "tonalRamp": [
+          "oklch(15% 0.000 0.0)",
+          "oklch(27% 0.000 0.0)",
+          "oklch(39% 0.000 0.0)",
+          "oklch(51% 0.000 0.0)",
+          "oklch(63% 0.000 0.0)",
+          "oklch(75% 0.000 0.0)",
+          "oklch(86% 0.000 0.0)",
+          "oklch(95% 0.000 0.0)"
         ]
       },
       "ink-2": {
         "role": "neutral",
-        "displayName": "Secondary Ink",
-        "scheme": "light",
-        "canonical": "#33414f",
+        "displayName": "Second Ink",
+        "canonical": "#3d3c36",
         "tonalRamp": [
-          "oklch(15% 0.014 249)",
-          "oklch(26% 0.020 249)",
-          "oklch(38% 0.024 249)",
-          "oklch(49% 0.028 249)",
-          "oklch(61% 0.028 249)",
-          "oklch(72% 0.024 249)",
-          "oklch(84% 0.020 249)",
-          "oklch(95% 0.014 249)"
+          "oklch(15% 0.007 99.2)",
+          "oklch(27% 0.010 99.2)",
+          "oklch(39% 0.010 99.2)",
+          "oklch(51% 0.010 99.2)",
+          "oklch(63% 0.010 99.2)",
+          "oklch(75% 0.010 99.2)",
+          "oklch(86% 0.007 99.2)",
+          "oklch(95% 0.003 99.2)"
         ]
       },
       "muted": {
         "role": "neutral",
-        "displayName": "Slate Muted",
-        "scheme": "light",
-        "canonical": "#586676",
+        "displayName": "Faded Ink",
+        "canonical": "#5c5b52",
         "tonalRamp": [
-          "oklch(15% 0.014 252)",
-          "oklch(26% 0.020 252)",
-          "oklch(38% 0.025 252)",
-          "oklch(49% 0.029 252)",
-          "oklch(61% 0.029 252)",
-          "oklch(72% 0.025 252)",
-          "oklch(84% 0.020 252)",
-          "oklch(95% 0.014 252)"
+          "oklch(15% 0.010 101.8)",
+          "oklch(27% 0.014 101.8)",
+          "oklch(39% 0.014 101.8)",
+          "oklch(51% 0.014 101.8)",
+          "oklch(63% 0.014 101.8)",
+          "oklch(75% 0.014 101.8)",
+          "oklch(86% 0.009 101.8)",
+          "oklch(95% 0.004 101.8)"
         ]
       },
       "line": {
         "role": "neutral",
-        "displayName": "Hairline",
-        "scheme": "light",
-        "canonical": "#e1e6ec",
+        "displayName": "Grid Line",
+        "canonical": "#dedacd",
         "tonalRamp": [
-          "oklch(15% 0.010 253)",
-          "oklch(26% 0.010 253)",
-          "oklch(38% 0.010 253)",
-          "oklch(49% 0.010 253)",
-          "oklch(61% 0.010 253)",
-          "oklch(72% 0.010 253)",
-          "oklch(84% 0.010 253)",
-          "oklch(95% 0.010 253)"
+          "oklch(15% 0.012 92.7)",
+          "oklch(27% 0.018 92.7)",
+          "oklch(39% 0.018 92.7)",
+          "oklch(51% 0.018 92.7)",
+          "oklch(63% 0.018 92.7)",
+          "oklch(75% 0.018 92.7)",
+          "oklch(86% 0.012 92.7)",
+          "oklch(95% 0.005 92.7)"
         ]
       },
       "line-strong": {
         "role": "neutral",
-        "displayName": "Control Hairline",
-        "scheme": "light",
-        "canonical": "#c3ccd6",
+        "displayName": "Strong Grid",
+        "canonical": "#b5b0a0",
         "tonalRamp": [
-          "oklch(15% 0.017 251)",
-          "oklch(26% 0.017 251)",
-          "oklch(38% 0.017 251)",
-          "oklch(49% 0.017 251)",
-          "oklch(61% 0.017 251)",
-          "oklch(72% 0.017 251)",
-          "oklch(84% 0.017 251)",
-          "oklch(95% 0.017 251)"
+          "oklch(15% 0.016 92.6)",
+          "oklch(27% 0.023 92.6)",
+          "oklch(39% 0.023 92.6)",
+          "oklch(51% 0.023 92.6)",
+          "oklch(63% 0.023 92.6)",
+          "oklch(75% 0.023 92.6)",
+          "oklch(86% 0.015 92.6)",
+          "oklch(95% 0.006 92.6)"
         ]
       },
       "hover": {
         "role": "neutral",
-        "displayName": "Hover Wash",
-        "scheme": "light",
-        "canonical": "#f1f4f8",
+        "displayName": "Hover Buff",
+        "canonical": "#f3f1e8",
         "tonalRamp": [
-          "oklch(15% 0.006 255)",
-          "oklch(26% 0.006 255)",
-          "oklch(38% 0.006 255)",
-          "oklch(49% 0.006 255)",
-          "oklch(61% 0.006 255)",
-          "oklch(72% 0.006 255)",
-          "oklch(84% 0.006 255)",
-          "oklch(95% 0.006 255)"
+          "oklch(15% 0.008 96.4)",
+          "oklch(27% 0.012 96.4)",
+          "oklch(39% 0.012 96.4)",
+          "oklch(51% 0.012 96.4)",
+          "oklch(63% 0.012 96.4)",
+          "oklch(75% 0.012 96.4)",
+          "oklch(86% 0.008 96.4)",
+          "oklch(95% 0.003 96.4)"
         ]
       },
       "selected": {
         "role": "neutral",
-        "displayName": "Selected Row",
-        "scheme": "light",
-        "canonical": "#eeeefe",
+        "displayName": "Selected Buff",
+        "canonical": "#efe9d8",
         "tonalRamp": [
-          "oklch(15% 0.010 286)",
-          "oklch(26% 0.014 286)",
-          "oklch(38% 0.017 286)",
-          "oklch(49% 0.020 286)",
-          "oklch(61% 0.020 286)",
-          "oklch(72% 0.017 286)",
-          "oklch(84% 0.014 286)",
-          "oklch(95% 0.010 286)"
-        ]
-      },
-      "accent": {
-        "role": "primary",
-        "displayName": "Signal Indigo",
-        "scheme": "light",
-        "canonical": "#4844d4",
-        "tonalRamp": [
-          "oklch(15% 0.098 276)",
-          "oklch(26% 0.137 276)",
-          "oklch(38% 0.170 276)",
-          "oklch(49% 0.199 276)",
-          "oklch(61% 0.199 276)",
-          "oklch(72% 0.170 276)",
-          "oklch(84% 0.137 276)",
-          "oklch(95% 0.098 276)"
-        ]
-      },
-      "accent-hover": {
-        "role": "primary",
-        "displayName": "Signal Indigo Deep",
-        "scheme": "light",
-        "canonical": "#3c38bd",
-        "tonalRamp": [
-          "oklch(15% 0.092 276)",
-          "oklch(26% 0.129 276)",
-          "oklch(38% 0.160 276)",
-          "oklch(49% 0.188 276)",
-          "oklch(61% 0.188 276)",
-          "oklch(72% 0.160 276)",
-          "oklch(84% 0.129 276)",
-          "oklch(95% 0.092 276)"
-        ]
-      },
-      "accent-ink": {
-        "role": "primary",
-        "displayName": "On Indigo",
-        "scheme": "light",
-        "canonical": "#ffffff",
-        "tonalRamp": [
-          "oklch(15% 0.000 90)",
-          "oklch(26% 0.000 90)",
-          "oklch(38% 0.000 90)",
-          "oklch(49% 0.000 90)",
-          "oklch(61% 0.000 90)",
-          "oklch(72% 0.000 90)",
-          "oklch(84% 0.000 90)",
-          "oklch(95% 0.000 90)"
+          "oklch(15% 0.016 90.8)",
+          "oklch(27% 0.023 90.8)",
+          "oklch(39% 0.023 90.8)",
+          "oklch(51% 0.023 90.8)",
+          "oklch(63% 0.023 90.8)",
+          "oklch(75% 0.023 90.8)",
+          "oklch(86% 0.015 90.8)",
+          "oklch(95% 0.006 90.8)"
         ]
       },
       "accent-soft": {
-        "role": "primary",
-        "displayName": "Indigo Tint",
-        "scheme": "light",
-        "canonical": "#e9e8fd",
+        "role": "neutral",
+        "displayName": "Selection Tint",
+        "canonical": "#e8e4d6",
         "tonalRamp": [
-          "oklch(15% 0.013 288)",
-          "oklch(26% 0.018 288)",
-          "oklch(38% 0.023 288)",
-          "oklch(49% 0.026 288)",
-          "oklch(61% 0.026 288)",
-          "oklch(72% 0.023 288)",
-          "oklch(84% 0.018 288)",
-          "oklch(95% 0.013 288)"
+          "oklch(15% 0.013 93.7)",
+          "oklch(27% 0.019 93.7)",
+          "oklch(39% 0.019 93.7)",
+          "oklch(51% 0.019 93.7)",
+          "oklch(63% 0.019 93.7)",
+          "oklch(75% 0.019 93.7)",
+          "oklch(86% 0.012 93.7)",
+          "oklch(95% 0.005 93.7)"
+        ]
+      },
+      "contour": {
+        "role": "secondary",
+        "displayName": "Contour Brown",
+        "canonical": "#9a5a24",
+        "tonalRamp": [
+          "oklch(15% 0.073 57.2)",
+          "oklch(27% 0.108 57.2)",
+          "oklch(39% 0.108 57.2)",
+          "oklch(51% 0.108 57.2)",
+          "oklch(63% 0.108 57.2)",
+          "oklch(75% 0.108 57.2)",
+          "oklch(86% 0.069 57.2)",
+          "oklch(95% 0.027 57.2)"
+        ]
+      },
+      "contour-soft": {
+        "role": "neutral",
+        "displayName": "Contour Tint",
+        "canonical": "#f3e8da",
+        "tonalRamp": [
+          "oklch(15% 0.015 74.1)",
+          "oklch(27% 0.022 74.1)",
+          "oklch(39% 0.022 74.1)",
+          "oklch(51% 0.022 74.1)",
+          "oklch(63% 0.022 74.1)",
+          "oklch(75% 0.022 74.1)",
+          "oklch(86% 0.014 74.1)",
+          "oklch(95% 0.006 74.1)"
         ]
       },
       "danger": {
-        "role": "state",
-        "displayName": "Freeze Red",
-        "scheme": "light",
-        "canonical": "#c42b3c",
+        "role": "secondary",
+        "displayName": "Road Red",
+        "canonical": "#c0322a",
         "tonalRamp": [
-          "oklch(15% 0.086 21)",
-          "oklch(26% 0.121 21)",
-          "oklch(38% 0.150 21)",
-          "oklch(49% 0.176 21)",
-          "oklch(61% 0.176 21)",
-          "oklch(72% 0.150 21)",
-          "oklch(84% 0.121 21)",
-          "oklch(95% 0.086 21)"
+          "oklch(15% 0.122 28.1)",
+          "oklch(27% 0.180 28.1)",
+          "oklch(39% 0.180 28.1)",
+          "oklch(51% 0.180 28.1)",
+          "oklch(63% 0.180 28.1)",
+          "oklch(75% 0.180 28.1)",
+          "oklch(86% 0.116 28.1)",
+          "oklch(95% 0.046 28.1)"
         ]
       },
       "danger-hover": {
-        "role": "state",
-        "displayName": "Freeze Red Deep",
-        "scheme": "light",
-        "canonical": "#a82232",
+        "role": "secondary",
+        "displayName": "Road Red, pressed",
+        "canonical": "#a3271f",
         "tonalRamp": [
-          "oklch(15% 0.077 21)",
-          "oklch(26% 0.109 21)",
-          "oklch(38% 0.135 21)",
-          "oklch(49% 0.158 21)",
-          "oklch(61% 0.158 21)",
-          "oklch(72% 0.135 21)",
-          "oklch(84% 0.109 21)",
-          "oklch(95% 0.077 21)"
+          "oklch(15% 0.110 28.6)",
+          "oklch(27% 0.162 28.6)",
+          "oklch(39% 0.162 28.6)",
+          "oklch(51% 0.162 28.6)",
+          "oklch(63% 0.162 28.6)",
+          "oklch(75% 0.162 28.6)",
+          "oklch(86% 0.104 28.6)",
+          "oklch(95% 0.041 28.6)"
         ]
       },
       "danger-soft": {
-        "role": "state",
-        "displayName": "Freeze Tint",
-        "scheme": "light",
-        "canonical": "#fdecee",
+        "role": "neutral",
+        "displayName": "Road Red Tint",
+        "canonical": "#fbe8e5",
         "tonalRamp": [
-          "oklch(15% 0.019 9)",
-          "oklch(26% 0.019 9)",
-          "oklch(38% 0.019 9)",
-          "oklch(49% 0.019 9)",
-          "oklch(61% 0.019 9)",
-          "oklch(72% 0.019 9)",
-          "oklch(84% 0.019 9)",
-          "oklch(95% 0.019 9)"
-        ]
-      },
-      "warn": {
-        "role": "state",
-        "displayName": "Review Amber",
-        "scheme": "light",
-        "canonical": "#8a5100",
-        "tonalRamp": [
-          "oklch(15% 0.050 65)",
-          "oklch(26% 0.071 65)",
-          "oklch(38% 0.088 65)",
-          "oklch(49% 0.103 65)",
-          "oklch(61% 0.103 65)",
-          "oklch(72% 0.088 65)",
-          "oklch(84% 0.071 65)",
-          "oklch(95% 0.050 65)"
-        ]
-      },
-      "warn-dot": {
-        "role": "state",
-        "displayName": "Review Marker",
-        "scheme": "light",
-        "canonical": "#d98a0b",
-        "tonalRamp": [
-          "oklch(15% 0.069 69)",
-          "oklch(26% 0.097 69)",
-          "oklch(38% 0.120 69)",
-          "oklch(49% 0.141 69)",
-          "oklch(61% 0.141 69)",
-          "oklch(72% 0.120 69)",
-          "oklch(84% 0.097 69)",
-          "oklch(95% 0.069 69)"
-        ]
-      },
-      "warn-soft": {
-        "role": "state",
-        "displayName": "Review Tint",
-        "scheme": "light",
-        "canonical": "#fff3d9",
-        "tonalRamp": [
-          "oklch(15% 0.017 86)",
-          "oklch(26% 0.023 86)",
-          "oklch(38% 0.029 86)",
-          "oklch(49% 0.034 86)",
-          "oklch(61% 0.034 86)",
-          "oklch(72% 0.029 86)",
-          "oklch(84% 0.023 86)",
-          "oklch(95% 0.017 86)"
+          "oklch(15% 0.014 28.3)",
+          "oklch(27% 0.021 28.3)",
+          "oklch(39% 0.021 28.3)",
+          "oklch(51% 0.021 28.3)",
+          "oklch(63% 0.021 28.3)",
+          "oklch(75% 0.021 28.3)",
+          "oklch(86% 0.014 28.3)",
+          "oklch(95% 0.005 28.3)"
         ]
       },
       "ok": {
-        "role": "state",
-        "displayName": "Active Green",
-        "scheme": "light",
-        "canonical": "#1c7547",
+        "role": "tertiary",
+        "displayName": "Forest Green",
+        "canonical": "#2f6b22",
         "tonalRamp": [
-          "oklch(15% 0.050 156)",
-          "oklch(26% 0.071 156)",
-          "oklch(38% 0.088 156)",
-          "oklch(49% 0.103 156)",
-          "oklch(61% 0.103 156)",
-          "oklch(72% 0.088 156)",
-          "oklch(84% 0.071 156)",
-          "oklch(95% 0.050 156)"
+          "oklch(15% 0.084 140.3)",
+          "oklch(27% 0.123 140.3)",
+          "oklch(39% 0.123 140.3)",
+          "oklch(51% 0.123 140.3)",
+          "oklch(63% 0.123 140.3)",
+          "oklch(75% 0.123 140.3)",
+          "oklch(86% 0.079 140.3)",
+          "oklch(95% 0.031 140.3)"
         ]
       },
-      "ok-soft": {
-        "role": "state",
-        "displayName": "Active Tint",
-        "scheme": "light",
-        "canonical": "#e4f4eb",
+      "water": {
+        "role": "tertiary",
+        "displayName": "Water Blue",
+        "canonical": "#1f6fa8",
         "tonalRamp": [
-          "oklch(15% 0.009 161)",
-          "oklch(26% 0.013 161)",
-          "oklch(38% 0.017 161)",
-          "oklch(49% 0.019 161)",
-          "oklch(61% 0.019 161)",
-          "oklch(72% 0.017 161)",
-          "oklch(84% 0.013 161)",
-          "oklch(95% 0.009 161)"
+          "oklch(15% 0.079 244.9)",
+          "oklch(27% 0.117 244.9)",
+          "oklch(39% 0.117 244.9)",
+          "oklch(51% 0.117 244.9)",
+          "oklch(63% 0.117 244.9)",
+          "oklch(75% 0.117 244.9)",
+          "oklch(86% 0.075 244.9)",
+          "oklch(95% 0.030 244.9)"
         ]
       },
-      "frozen": {
-        "role": "state",
-        "displayName": "Frozen Slate",
-        "scheme": "light",
-        "canonical": "#2f3d4d",
+      "course": {
+        "role": "tertiary",
+        "displayName": "Course Purple",
+        "canonical": "#8e2c8e",
         "tonalRamp": [
-          "oklch(15% 0.015 252)",
-          "oklch(26% 0.022 252)",
-          "oklch(38% 0.027 252)",
-          "oklch(49% 0.031 252)",
-          "oklch(61% 0.031 252)",
-          "oklch(72% 0.027 252)",
-          "oklch(84% 0.022 252)",
-          "oklch(95% 0.015 252)"
+          "oklch(15% 0.119 327.9)",
+          "oklch(27% 0.175 327.9)",
+          "oklch(39% 0.175 327.9)",
+          "oklch(51% 0.175 327.9)",
+          "oklch(63% 0.175 327.9)",
+          "oklch(75% 0.175 327.9)",
+          "oklch(86% 0.112 327.9)",
+          "oklch(95% 0.044 327.9)"
         ]
       },
-      "frozen-soft": {
-        "role": "state",
-        "displayName": "Frozen Tint",
-        "scheme": "light",
-        "canonical": "#e6eaf0",
-        "tonalRamp": [
-          "oklch(15% 0.009 258)",
-          "oklch(26% 0.009 258)",
-          "oklch(38% 0.009 258)",
-          "oklch(49% 0.009 258)",
-          "oklch(61% 0.009 258)",
-          "oklch(72% 0.009 258)",
-          "oklch(84% 0.009 258)",
-          "oklch(95% 0.009 258)"
-        ]
-      },
-      "person": {
-        "role": "graph",
-        "displayName": "Person Blue",
-        "scheme": "light",
-        "canonical": "#4a6fd4",
-        "tonalRamp": [
-          "oklch(15% 0.074 266)",
-          "oklch(26% 0.104 266)",
-          "oklch(38% 0.128 266)",
-          "oklch(49% 0.151 266)",
-          "oklch(61% 0.151 266)",
-          "oklch(72% 0.128 266)",
-          "oklch(84% 0.104 266)",
-          "oklch(95% 0.074 266)"
-        ]
-      },
-      "canvas-dark": {
+      "canvas-night": {
         "role": "neutral",
-        "displayName": "Cool Canvas (dark)",
-        "scheme": "dark",
-        "canonical": "#0b0f14",
+        "displayName": "Map Paper (night)",
+        "canonical": "#0f1215",
         "tonalRamp": [
-          "oklch(15% 0.012 254)",
-          "oklch(26% 0.012 254)",
-          "oklch(38% 0.012 254)",
-          "oklch(49% 0.012 254)",
-          "oklch(61% 0.012 254)",
-          "oklch(72% 0.012 254)",
-          "oklch(84% 0.012 254)",
-          "oklch(95% 0.012 254)"
+          "oklch(15% 0.005 248.3)",
+          "oklch(27% 0.008 248.3)",
+          "oklch(39% 0.008 248.3)",
+          "oklch(51% 0.008 248.3)",
+          "oklch(63% 0.008 248.3)",
+          "oklch(75% 0.008 248.3)",
+          "oklch(86% 0.005 248.3)",
+          "oklch(95% 0.002 248.3)"
         ]
       },
-      "surface-dark": {
+      "surface-night": {
         "role": "neutral",
-        "displayName": "White Surface (dark)",
-        "scheme": "dark",
-        "canonical": "#121820",
+        "displayName": "Sheet White (night)",
+        "canonical": "#161a1f",
         "tonalRamp": [
-          "oklch(15% 0.018 256)",
-          "oklch(26% 0.018 256)",
-          "oklch(38% 0.018 256)",
-          "oklch(49% 0.018 256)",
-          "oklch(61% 0.018 256)",
-          "oklch(72% 0.018 256)",
-          "oklch(84% 0.018 256)",
-          "oklch(95% 0.018 256)"
+          "oklch(15% 0.008 254.1)",
+          "oklch(27% 0.012 254.1)",
+          "oklch(39% 0.012 254.1)",
+          "oklch(51% 0.012 254.1)",
+          "oklch(63% 0.012 254.1)",
+          "oklch(75% 0.012 254.1)",
+          "oklch(86% 0.007 254.1)",
+          "oklch(95% 0.003 254.1)"
         ]
       },
-      "sidebar-dark": {
+      "sidebar-night": {
         "role": "neutral",
-        "displayName": "Sidebar Mist (dark)",
-        "scheme": "dark",
-        "canonical": "#0f141a",
+        "displayName": "Legend Buff (night)",
+        "canonical": "#191e24",
         "tonalRamp": [
-          "oklch(15% 0.015 253)",
-          "oklch(26% 0.015 253)",
-          "oklch(38% 0.015 253)",
-          "oklch(49% 0.015 253)",
-          "oklch(61% 0.015 253)",
-          "oklch(72% 0.015 253)",
-          "oklch(84% 0.015 253)",
-          "oklch(95% 0.015 253)"
+          "oklch(15% 0.009 253.1)",
+          "oklch(27% 0.014 253.1)",
+          "oklch(39% 0.014 253.1)",
+          "oklch(51% 0.014 253.1)",
+          "oklch(63% 0.014 253.1)",
+          "oklch(75% 0.014 253.1)",
+          "oklch(86% 0.009 253.1)",
+          "oklch(95% 0.003 253.1)"
         ]
       },
-      "ink-dark": {
-        "role": "neutral",
-        "displayName": "Navy Ink (dark)",
-        "scheme": "dark",
-        "canonical": "#e5ebf1",
-        "tonalRamp": [
-          "oklch(15% 0.010 248)",
-          "oklch(26% 0.010 248)",
-          "oklch(38% 0.010 248)",
-          "oklch(49% 0.010 248)",
-          "oklch(61% 0.010 248)",
-          "oklch(72% 0.010 248)",
-          "oklch(84% 0.010 248)",
-          "oklch(95% 0.010 248)"
-        ]
-      },
-      "ink-2-dark": {
-        "role": "neutral",
-        "displayName": "Secondary Ink (dark)",
-        "scheme": "dark",
-        "canonical": "#c3cdd7",
-        "tonalRamp": [
-          "oklch(15% 0.018 248)",
-          "oklch(26% 0.018 248)",
-          "oklch(38% 0.018 248)",
-          "oklch(49% 0.018 248)",
-          "oklch(61% 0.018 248)",
-          "oklch(72% 0.018 248)",
-          "oklch(84% 0.018 248)",
-          "oklch(95% 0.018 248)"
-        ]
-      },
-      "muted-dark": {
-        "role": "neutral",
-        "displayName": "Slate Muted (dark)",
-        "scheme": "dark",
-        "canonical": "#93a0ae",
-        "tonalRamp": [
-          "oklch(15% 0.012 250)",
-          "oklch(26% 0.016 250)",
-          "oklch(38% 0.020 250)",
-          "oklch(49% 0.024 250)",
-          "oklch(61% 0.024 250)",
-          "oklch(72% 0.020 250)",
-          "oklch(84% 0.016 250)",
-          "oklch(95% 0.012 250)"
-        ]
-      },
-      "line-dark": {
-        "role": "neutral",
-        "displayName": "Hairline (dark)",
-        "scheme": "dark",
-        "canonical": "#222b36",
-        "tonalRamp": [
-          "oklch(15% 0.011 254)",
-          "oklch(26% 0.015 254)",
-          "oklch(38% 0.019 254)",
-          "oklch(49% 0.022 254)",
-          "oklch(61% 0.022 254)",
-          "oklch(72% 0.019 254)",
-          "oklch(84% 0.015 254)",
-          "oklch(95% 0.011 254)"
-        ]
-      },
-      "line-strong-dark": {
-        "role": "neutral",
-        "displayName": "Control Hairline (dark)",
-        "scheme": "dark",
-        "canonical": "#3b4858",
-        "tonalRamp": [
-          "oklch(15% 0.015 254)",
-          "oklch(26% 0.021 254)",
-          "oklch(38% 0.026 254)",
-          "oklch(49% 0.030 254)",
-          "oklch(61% 0.030 254)",
-          "oklch(72% 0.026 254)",
-          "oklch(84% 0.021 254)",
-          "oklch(95% 0.015 254)"
-        ]
-      },
-      "hover-dark": {
-        "role": "neutral",
-        "displayName": "Hover Wash (dark)",
-        "scheme": "dark",
-        "canonical": "#18202a",
-        "tonalRamp": [
-          "oklch(15% 0.010 254)",
-          "oklch(26% 0.015 254)",
-          "oklch(38% 0.018 254)",
-          "oklch(49% 0.021 254)",
-          "oklch(61% 0.021 254)",
-          "oklch(72% 0.018 254)",
-          "oklch(84% 0.015 254)",
-          "oklch(95% 0.010 254)"
-        ]
-      },
-      "selected-dark": {
-        "role": "neutral",
-        "displayName": "Selected Row (dark)",
-        "scheme": "dark",
-        "canonical": "#1d1f3d",
-        "tonalRamp": [
-          "oklch(15% 0.026 279)",
-          "oklch(26% 0.036 279)",
-          "oklch(38% 0.045 279)",
-          "oklch(49% 0.053 279)",
-          "oklch(61% 0.053 279)",
-          "oklch(72% 0.045 279)",
-          "oklch(84% 0.036 279)",
-          "oklch(95% 0.026 279)"
-        ]
-      },
-      "accent-dark": {
+      "ink-night": {
         "role": "primary",
-        "displayName": "Signal Indigo (dark)",
-        "scheme": "dark",
-        "canonical": "#8f8dff",
+        "displayName": "Survey Ink (night)",
+        "canonical": "#ecebe3",
         "tonalRamp": [
-          "oklch(15% 0.075 282)",
-          "oklch(26% 0.106 282)",
-          "oklch(38% 0.131 282)",
-          "oklch(49% 0.154 282)",
-          "oklch(61% 0.154 282)",
-          "oklch(72% 0.131 282)",
-          "oklch(84% 0.106 282)",
-          "oklch(95% 0.075 282)"
+          "oklch(15% 0.007 100.8)",
+          "oklch(27% 0.011 100.8)",
+          "oklch(39% 0.011 100.8)",
+          "oklch(51% 0.011 100.8)",
+          "oklch(63% 0.011 100.8)",
+          "oklch(75% 0.011 100.8)",
+          "oklch(86% 0.007 100.8)",
+          "oklch(95% 0.003 100.8)"
         ]
       },
-      "accent-hover-dark": {
+      "ink-deep-night": {
         "role": "primary",
-        "displayName": "Signal Indigo Deep (dark)",
-        "scheme": "dark",
-        "canonical": "#a5a3ff",
-        "tonalRamp": [
-          "oklch(15% 0.060 284)",
-          "oklch(26% 0.084 284)",
-          "oklch(38% 0.105 284)",
-          "oklch(49% 0.123 284)",
-          "oklch(61% 0.123 284)",
-          "oklch(72% 0.105 284)",
-          "oklch(84% 0.084 284)",
-          "oklch(95% 0.060 284)"
-        ]
-      },
-      "accent-ink-dark": {
-        "role": "primary",
-        "displayName": "On Indigo (dark)",
-        "scheme": "dark",
-        "canonical": "#0b0f14",
-        "tonalRamp": [
-          "oklch(15% 0.012 254)",
-          "oklch(26% 0.012 254)",
-          "oklch(38% 0.012 254)",
-          "oklch(49% 0.012 254)",
-          "oklch(61% 0.012 254)",
-          "oklch(72% 0.012 254)",
-          "oklch(84% 0.012 254)",
-          "oklch(95% 0.012 254)"
-        ]
-      },
-      "accent-soft-dark": {
-        "role": "primary",
-        "displayName": "Indigo Tint (dark)",
-        "scheme": "dark",
-        "canonical": "#23244a",
-        "tonalRamp": [
-          "oklch(15% 0.032 280)",
-          "oklch(26% 0.044 280)",
-          "oklch(38% 0.055 280)",
-          "oklch(49% 0.064 280)",
-          "oklch(61% 0.064 280)",
-          "oklch(72% 0.055 280)",
-          "oklch(84% 0.044 280)",
-          "oklch(95% 0.032 280)"
-        ]
-      },
-      "danger-dark": {
-        "role": "state",
-        "displayName": "Freeze Red (dark)",
-        "scheme": "dark",
-        "canonical": "#ff6b7b",
-        "tonalRamp": [
-          "oklch(15% 0.083 16)",
-          "oklch(26% 0.116 16)",
-          "oklch(38% 0.144 16)",
-          "oklch(49% 0.169 16)",
-          "oklch(61% 0.169 16)",
-          "oklch(72% 0.144 16)",
-          "oklch(84% 0.116 16)",
-          "oklch(95% 0.083 16)"
-        ]
-      },
-      "danger-hover-dark": {
-        "role": "state",
-        "displayName": "Freeze Red Deep (dark)",
-        "scheme": "dark",
-        "canonical": "#ff8693",
-        "tonalRamp": [
-          "oklch(15% 0.067 14)",
-          "oklch(26% 0.095 14)",
-          "oklch(38% 0.117 14)",
-          "oklch(49% 0.138 14)",
-          "oklch(61% 0.138 14)",
-          "oklch(72% 0.117 14)",
-          "oklch(84% 0.095 14)",
-          "oklch(95% 0.067 14)"
-        ]
-      },
-      "danger-soft-dark": {
-        "role": "state",
-        "displayName": "Freeze Tint (dark)",
-        "scheme": "dark",
-        "canonical": "#3a1a20",
-        "tonalRamp": [
-          "oklch(15% 0.023 9)",
-          "oklch(26% 0.033 9)",
-          "oklch(38% 0.041 9)",
-          "oklch(49% 0.048 9)",
-          "oklch(61% 0.048 9)",
-          "oklch(72% 0.041 9)",
-          "oklch(84% 0.033 9)",
-          "oklch(95% 0.023 9)"
-        ]
-      },
-      "warn-dark": {
-        "role": "state",
-        "displayName": "Review Amber (dark)",
-        "scheme": "dark",
-        "canonical": "#f0b55a",
-        "tonalRamp": [
-          "oklch(15% 0.059 76)",
-          "oklch(26% 0.082 76)",
-          "oklch(38% 0.102 76)",
-          "oklch(49% 0.119 76)",
-          "oklch(61% 0.119 76)",
-          "oklch(72% 0.102 76)",
-          "oklch(84% 0.082 76)",
-          "oklch(95% 0.059 76)"
-        ]
-      },
-      "warn-dot-dark": {
-        "role": "state",
-        "displayName": "Review Marker (dark)",
-        "scheme": "dark",
-        "canonical": "#f0b55a",
-        "tonalRamp": [
-          "oklch(15% 0.059 76)",
-          "oklch(26% 0.082 76)",
-          "oklch(38% 0.102 76)",
-          "oklch(49% 0.119 76)",
-          "oklch(61% 0.119 76)",
-          "oklch(72% 0.102 76)",
-          "oklch(84% 0.082 76)",
-          "oklch(95% 0.059 76)"
-        ]
-      },
-      "warn-soft-dark": {
-        "role": "state",
-        "displayName": "Review Tint (dark)",
-        "scheme": "dark",
-        "canonical": "#33270f",
-        "tonalRamp": [
-          "oklch(15% 0.019 83)",
-          "oklch(26% 0.027 83)",
-          "oklch(38% 0.033 83)",
-          "oklch(49% 0.039 83)",
-          "oklch(61% 0.039 83)",
-          "oklch(72% 0.033 83)",
-          "oklch(84% 0.027 83)",
-          "oklch(95% 0.019 83)"
-        ]
-      },
-      "ok-dark": {
-        "role": "state",
-        "displayName": "Active Green (dark)",
-        "scheme": "dark",
-        "canonical": "#5ccb90",
-        "tonalRamp": [
-          "oklch(15% 0.061 158)",
-          "oklch(26% 0.086 158)",
-          "oklch(38% 0.107 158)",
-          "oklch(49% 0.125 158)",
-          "oklch(61% 0.125 158)",
-          "oklch(72% 0.107 158)",
-          "oklch(84% 0.086 158)",
-          "oklch(95% 0.061 158)"
-        ]
-      },
-      "ok-soft-dark": {
-        "role": "state",
-        "displayName": "Active Tint (dark)",
-        "scheme": "dark",
-        "canonical": "#12301f",
-        "tonalRamp": [
-          "oklch(15% 0.022 156)",
-          "oklch(26% 0.031 156)",
-          "oklch(38% 0.038 156)",
-          "oklch(49% 0.045 156)",
-          "oklch(61% 0.045 156)",
-          "oklch(72% 0.038 156)",
-          "oklch(84% 0.031 156)",
-          "oklch(95% 0.022 156)"
-        ]
-      },
-      "frozen-dark": {
-        "role": "state",
-        "displayName": "Frozen Slate (dark)",
-        "scheme": "dark",
-        "canonical": "#cfd8e1",
-        "tonalRamp": [
-          "oklch(15% 0.016 248)",
-          "oklch(26% 0.016 248)",
-          "oklch(38% 0.016 248)",
-          "oklch(49% 0.016 248)",
-          "oklch(61% 0.016 248)",
-          "oklch(72% 0.016 248)",
-          "oklch(84% 0.016 248)",
-          "oklch(95% 0.016 248)"
-        ]
-      },
-      "frozen-soft-dark": {
-        "role": "state",
-        "displayName": "Frozen Tint (dark)",
-        "scheme": "dark",
-        "canonical": "#26303b",
-        "tonalRamp": [
-          "oklch(15% 0.011 251)",
-          "oklch(26% 0.016 251)",
-          "oklch(38% 0.019 251)",
-          "oklch(49% 0.023 251)",
-          "oklch(61% 0.023 251)",
-          "oklch(72% 0.019 251)",
-          "oklch(84% 0.016 251)",
-          "oklch(95% 0.011 251)"
-        ]
-      },
-      "person-dark": {
-        "role": "graph",
-        "displayName": "Person Blue (dark)",
-        "scheme": "dark",
-        "canonical": "#7b9cf0",
-        "tonalRamp": [
-          "oklch(15% 0.059 267)",
-          "oklch(26% 0.083 267)",
-          "oklch(38% 0.103 267)",
-          "oklch(49% 0.121 267)",
-          "oklch(61% 0.121 267)",
-          "oklch(72% 0.103 267)",
-          "oklch(84% 0.083 267)",
-          "oklch(95% 0.059 267)"
-        ]
-      },
-      "overlay": {
-        "role": "neutral",
-        "displayName": "Scrim",
-        "scheme": "light",
-        "canonical": "rgba(14, 27, 43, 0.44)"
-      },
-      "overlay-dark": {
-        "role": "neutral",
-        "displayName": "Scrim (dark)",
-        "scheme": "dark",
-        "canonical": "rgba(0, 0, 0, 0.6)"
-      },
-      "danger-ink": {
-        "role": "state",
-        "displayName": "Danger Ink",
-        "scheme": "light",
+        "displayName": "Deep Ink (primary hover) (night)",
         "canonical": "#ffffff",
         "tonalRamp": [
-          "oklch(15% 0.000 90)",
-          "oklch(26% 0.000 90)",
-          "oklch(38% 0.000 90)",
-          "oklch(49% 0.000 90)",
-          "oklch(61% 0.000 90)",
-          "oklch(72% 0.000 90)",
-          "oklch(84% 0.000 90)",
-          "oklch(95% 0.000 90)"
+          "oklch(15% 0.000 89.9)",
+          "oklch(27% 0.000 89.9)",
+          "oklch(39% 0.000 89.9)",
+          "oklch(51% 0.000 89.9)",
+          "oklch(63% 0.000 89.9)",
+          "oklch(75% 0.000 89.9)",
+          "oklch(86% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
         ]
       },
-      "danger-ink-dark": {
-        "role": "state",
-        "displayName": "Danger Ink",
-        "scheme": "dark",
-        "canonical": "#1a0a0d",
+      "ink-2-night": {
+        "role": "neutral",
+        "displayName": "Second Ink (night)",
+        "canonical": "#c9c7bc",
         "tonalRamp": [
-          "oklch(15% 0.012 254)",
-          "oklch(26% 0.012 254)",
-          "oklch(38% 0.012 254)",
-          "oklch(49% 0.012 254)",
-          "oklch(61% 0.012 254)",
-          "oklch(72% 0.012 254)",
-          "oklch(84% 0.012 254)",
-          "oklch(95% 0.012 254)"
+          "oklch(15% 0.010 98.3)",
+          "oklch(27% 0.015 98.3)",
+          "oklch(39% 0.015 98.3)",
+          "oklch(51% 0.015 98.3)",
+          "oklch(63% 0.015 98.3)",
+          "oklch(75% 0.015 98.3)",
+          "oklch(86% 0.010 98.3)",
+          "oklch(95% 0.004 98.3)"
+        ]
+      },
+      "muted-night": {
+        "role": "neutral",
+        "displayName": "Faded Ink (night)",
+        "canonical": "#9e9c90",
+        "tonalRamp": [
+          "oklch(15% 0.012 99.1)",
+          "oklch(27% 0.017 99.1)",
+          "oklch(39% 0.017 99.1)",
+          "oklch(51% 0.017 99.1)",
+          "oklch(63% 0.017 99.1)",
+          "oklch(75% 0.017 99.1)",
+          "oklch(86% 0.011 99.1)",
+          "oklch(95% 0.004 99.1)"
+        ]
+      },
+      "line-night": {
+        "role": "neutral",
+        "displayName": "Grid Line (night)",
+        "canonical": "#262b31",
+        "tonalRamp": [
+          "oklch(15% 0.009 253.0)",
+          "oklch(27% 0.013 253.0)",
+          "oklch(39% 0.013 253.0)",
+          "oklch(51% 0.013 253.0)",
+          "oklch(63% 0.013 253.0)",
+          "oklch(75% 0.013 253.0)",
+          "oklch(86% 0.008 253.0)",
+          "oklch(95% 0.003 253.0)"
+        ]
+      },
+      "line-strong-night": {
+        "role": "neutral",
+        "displayName": "Strong Grid (night)",
+        "canonical": "#444b54",
+        "tonalRamp": [
+          "oklch(15% 0.012 254.7)",
+          "oklch(27% 0.018 254.7)",
+          "oklch(39% 0.018 254.7)",
+          "oklch(51% 0.018 254.7)",
+          "oklch(63% 0.018 254.7)",
+          "oklch(75% 0.018 254.7)",
+          "oklch(86% 0.011 254.7)",
+          "oklch(95% 0.004 254.7)"
+        ]
+      },
+      "hover-night": {
+        "role": "neutral",
+        "displayName": "Hover Buff (night)",
+        "canonical": "#1b2026",
+        "tonalRamp": [
+          "oklch(15% 0.009 253.1)",
+          "oklch(27% 0.014 253.1)",
+          "oklch(39% 0.014 253.1)",
+          "oklch(51% 0.014 253.1)",
+          "oklch(63% 0.014 253.1)",
+          "oklch(75% 0.014 253.1)",
+          "oklch(86% 0.009 253.1)",
+          "oklch(95% 0.003 253.1)"
+        ]
+      },
+      "selected-night": {
+        "role": "neutral",
+        "displayName": "Selected Buff (night)",
+        "canonical": "#1e242b",
+        "tonalRamp": [
+          "oklch(15% 0.011 252.4)",
+          "oklch(27% 0.016 252.4)",
+          "oklch(39% 0.016 252.4)",
+          "oklch(51% 0.016 252.4)",
+          "oklch(63% 0.016 252.4)",
+          "oklch(75% 0.016 252.4)",
+          "oklch(86% 0.010 252.4)",
+          "oklch(95% 0.004 252.4)"
+        ]
+      },
+      "accent-soft-night": {
+        "role": "neutral",
+        "displayName": "Selection Tint (night)",
+        "canonical": "#2b3138",
+        "tonalRamp": [
+          "oklch(15% 0.010 252.3)",
+          "oklch(27% 0.015 252.3)",
+          "oklch(39% 0.015 252.3)",
+          "oklch(51% 0.015 252.3)",
+          "oklch(63% 0.015 252.3)",
+          "oklch(75% 0.015 252.3)",
+          "oklch(86% 0.010 252.3)",
+          "oklch(95% 0.004 252.3)"
+        ]
+      },
+      "contour-night": {
+        "role": "secondary",
+        "displayName": "Contour Brown (night)",
+        "canonical": "#e0a46a",
+        "tonalRamp": [
+          "oklch(15% 0.070 64.3)",
+          "oklch(27% 0.103 64.3)",
+          "oklch(39% 0.103 64.3)",
+          "oklch(51% 0.103 64.3)",
+          "oklch(63% 0.103 64.3)",
+          "oklch(75% 0.103 64.3)",
+          "oklch(86% 0.066 64.3)",
+          "oklch(95% 0.026 64.3)"
+        ]
+      },
+      "contour-soft-night": {
+        "role": "neutral",
+        "displayName": "Contour Tint (night)",
+        "canonical": "#2e2418",
+        "tonalRamp": [
+          "oklch(15% 0.018 71.5)",
+          "oklch(27% 0.026 71.5)",
+          "oklch(39% 0.026 71.5)",
+          "oklch(51% 0.026 71.5)",
+          "oklch(63% 0.026 71.5)",
+          "oklch(75% 0.026 71.5)",
+          "oklch(86% 0.017 71.5)",
+          "oklch(95% 0.007 71.5)"
+        ]
+      },
+      "danger-night": {
+        "role": "secondary",
+        "displayName": "Road Red (night)",
+        "canonical": "#ff7a6b",
+        "tonalRamp": [
+          "oklch(15% 0.112 28.3)",
+          "oklch(27% 0.165 28.3)",
+          "oklch(39% 0.165 28.3)",
+          "oklch(51% 0.165 28.3)",
+          "oklch(63% 0.165 28.3)",
+          "oklch(75% 0.165 28.3)",
+          "oklch(86% 0.106 28.3)",
+          "oklch(95% 0.042 28.3)"
+        ]
+      },
+      "danger-hover-night": {
+        "role": "secondary",
+        "displayName": "Road Red, pressed (night)",
+        "canonical": "#ff978b",
+        "tonalRamp": [
+          "oklch(15% 0.086 27.3)",
+          "oklch(27% 0.127 27.3)",
+          "oklch(39% 0.127 27.3)",
+          "oklch(51% 0.127 27.3)",
+          "oklch(63% 0.127 27.3)",
+          "oklch(75% 0.127 27.3)",
+          "oklch(86% 0.082 27.3)",
+          "oklch(95% 0.032 27.3)"
+        ]
+      },
+      "danger-soft-night": {
+        "role": "neutral",
+        "displayName": "Road Red Tint (night)",
+        "canonical": "#3a1b17",
+        "tonalRamp": [
+          "oklch(15% 0.034 28.5)",
+          "oklch(27% 0.050 28.5)",
+          "oklch(39% 0.050 28.5)",
+          "oklch(51% 0.050 28.5)",
+          "oklch(63% 0.050 28.5)",
+          "oklch(75% 0.050 28.5)",
+          "oklch(86% 0.032 28.5)",
+          "oklch(95% 0.013 28.5)"
+        ]
+      },
+      "danger-ink-night": {
+        "role": "neutral",
+        "displayName": "Text on Road Red (night)",
+        "canonical": "#170b09",
+        "tonalRamp": [
+          "oklch(15% 0.015 30.0)",
+          "oklch(27% 0.022 30.0)",
+          "oklch(39% 0.022 30.0)",
+          "oklch(51% 0.022 30.0)",
+          "oklch(63% 0.022 30.0)",
+          "oklch(75% 0.022 30.0)",
+          "oklch(86% 0.014 30.0)",
+          "oklch(95% 0.005 30.0)"
+        ]
+      },
+      "ok-night": {
+        "role": "tertiary",
+        "displayName": "Forest Green (night)",
+        "canonical": "#8ccb72",
+        "tonalRamp": [
+          "oklch(15% 0.093 137.1)",
+          "oklch(27% 0.136 137.1)",
+          "oklch(39% 0.136 137.1)",
+          "oklch(51% 0.136 137.1)",
+          "oklch(63% 0.136 137.1)",
+          "oklch(75% 0.136 137.1)",
+          "oklch(86% 0.088 137.1)",
+          "oklch(95% 0.035 137.1)"
+        ]
+      },
+      "water-night": {
+        "role": "tertiary",
+        "displayName": "Water Blue (night)",
+        "canonical": "#6fb0e6",
+        "tonalRamp": [
+          "oklch(15% 0.070 244.9)",
+          "oklch(27% 0.103 244.9)",
+          "oklch(39% 0.103 244.9)",
+          "oklch(51% 0.103 244.9)",
+          "oklch(63% 0.103 244.9)",
+          "oklch(75% 0.103 244.9)",
+          "oklch(86% 0.066 244.9)",
+          "oklch(95% 0.026 244.9)"
+        ]
+      },
+      "course-night": {
+        "role": "tertiary",
+        "displayName": "Course Purple (night)",
+        "canonical": "#d37ad3",
+        "tonalRamp": [
+          "oklch(15% 0.107 327.1)",
+          "oklch(27% 0.158 327.1)",
+          "oklch(39% 0.158 327.1)",
+          "oklch(51% 0.158 327.1)",
+          "oklch(63% 0.158 327.1)",
+          "oklch(75% 0.158 327.1)",
+          "oklch(86% 0.101 327.1)",
+          "oklch(95% 0.040 327.1)"
         ]
       }
     },
     "typographyMeta": {
+      "spot-height-lead": {
+        "displayName": "Spot height, lead",
+        "purpose": "The freeze-tier total only, road red; 60px at 1180px and below."
+      },
+      "spot-height": {
+        "displayName": "Spot height",
+        "purpose": "The other overview totals; 30px at 1180px and below."
+      },
+      "account-number": {
+        "displayName": "Account number",
+        "purpose": "Heading of the account sheet, grouped 4-3-3."
+      },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Account number in the detail panel and overview figures."
+        "purpose": "View title in the title block; login title."
       },
       "title": {
         "displayName": "Title",
-        "purpose": "Page title and login heading."
+        "purpose": "Sheet heads: map key, Follow the money, dialog."
       },
-      "title-sm": {
-        "displayName": "Title small",
-        "purpose": "Dialog headings and fact values."
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Account facts row: balance, rules fired, auto-freeze threshold."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "Block heads inside the account sheet."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Root size, block headings at 600, field input text. Thai: line-height 1.65."
-      },
-      "body-sm": {
-        "displayName": "Body small",
-        "purpose": "Tables, buttons, nav, search, timeline, audit, toasts."
+        "purpose": "Running text, rows, signal names; Thai text at line-height 1.65."
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Headers, stat labels, pills, chips, hints, timestamps; sentence case."
+        "purpose": "Buttons, tier and status labels, field labels."
+      },
+      "table-head": {
+        "displayName": "Table head",
+        "purpose": "Queue column heads and the legend view-group head, on a 1px ink rule."
       }
     },
     "shadows": [
       {
         "name": "float",
-        "value": "0 8px 24px rgba(14, 27, 43, 0.12), 0 2px 6px rgba(14, 27, 43, 0.06)",
-        "purpose": "Menu, dialog, toast, login card (light)."
+        "value": "0 10px 30px rgba(27, 27, 27, 0.14), 0 2px 6px rgba(27, 27, 27, 0.08)",
+        "purpose": "Layers above the sheet only: settings menu, dialog, toast, login card."
       },
       {
-        "name": "float-dark",
-        "value": "0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.35)",
-        "purpose": "Same layers in dark mode."
+        "name": "float-night",
+        "value": "0 10px 30px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4)",
+        "purpose": "The float shadow under prefers-color-scheme: dark."
+      }
+    ],
+    "borders": [
+      {
+        "name": "frame",
+        "value": "2px solid var(--ink)",
+        "purpose": "Closes a sheet: panels, dialog, menu, login card, legend panel edge, title block."
       },
       {
-        "name": "focus-ring",
-        "value": "0 0 0 3px var(--accent-soft)",
-        "purpose": "Fields and search on focus, with an accent border."
+        "name": "rule",
+        "value": "1px solid var(--ink)",
+        "purpose": "Divides sections: table heads, tick band, facts, audit and timeline bounds."
       },
       {
-        "name": "nav-active-hairline",
-        "value": "0 0 0 1px var(--line)",
-        "purpose": "The active sidebar view."
+        "name": "grid",
+        "value": "1px solid var(--line)",
+        "purpose": "Row dividers inside a sheet."
       }
     ],
     "motion": [
       {
-        "name": "state",
+        "name": "control",
         "value": "150ms ease-out",
         "purpose": "Button background, border and colour changes."
       },
@@ -911,209 +705,191 @@
       {
         "name": "rise",
         "value": "180ms cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "Dialog enters 6px up from transparent."
-      },
-      {
-        "name": "pulse",
-        "value": "1.4s ease-in-out infinite",
-        "purpose": "Skeleton loading."
+        "purpose": "Dialog entrance: fade in from 6px below."
       },
       {
         "name": "spin",
         "value": "900ms linear infinite",
-        "purpose": "Busy refresh icon."
+        "purpose": "Refresh icon while loading."
+      },
+      {
+        "name": "pulse",
+        "value": "1.4s ease-in-out infinite",
+        "purpose": "Skeleton placeholders."
       },
       {
         "name": "reduced-motion",
-        "value": "none",
-        "purpose": "prefers-reduced-motion disables all animation and transition."
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Disables every animation and transition."
       }
     ],
     "breakpoints": [
       {
         "name": "stack",
         "value": "1180px",
-        "purpose": "Detail drops under the queue; queue no longer sticky."
+        "purpose": "Account sheet drops under the queue; spot heights step down to 60px / 30px."
       },
       {
-        "name": "compact",
+        "name": "phone",
         "value": "860px",
-        "purpose": "Sidebar becomes a top bar; one view at a time; 2-column overview."
+        "purpose": "Legend becomes a top strip, one pane at a time, trail runs top to bottom (also read by TrailGraph)."
       }
-    ],
-    "icons": {
-      "grid": "24px",
-      "stroke": 1.5,
-      "linecap": "round",
-      "linejoin": "round",
-      "fill": "none",
-      "color": "currentColor",
-      "renderSizes": [
-        "12px",
-        "14px",
-        "16px"
-      ],
-      "exception": "Product mark uses stroke 1.75."
-    },
-    "canvasTheming": {
-      "reads": [
-        "--ink",
-        "--line-strong",
-        "--surface",
-        "--person",
-        "--danger",
-        "--muted"
-      ],
-      "when": "At Cytoscape mount, and again on a prefers-color-scheme change, via getComputedStyle(document.documentElement)."
-    }
+    ]
   },
   "components": [
-    {
-      "name": "Default Button",
-      "kind": "button",
-      "refersTo": "button-default",
-      "description": "Secondary actions: refresh, cancel, unfreeze in compact rows.",
-      "html": "<button class=\"ds-btn\">Refresh</button>",
-      "css": ".ds-btn { font-family: var(--font); font-size: 13px; font-weight: 500; line-height: 20px; padding: 5px 12px; border: 1px solid var(--line-strong); border-radius: var(--radius); cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; background: var(--surface); color: var(--ink); } .ds-btn:hover { background: var(--hover); } .ds-btn:active { background: var(--line); } .ds-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
-    },
     {
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The one primary action: sign in, unfreeze, confirm.",
-      "html": "<button class=\"ds-btn-primary\">Sign in</button>",
-      "css": ".ds-btn-primary { font-family: var(--font); font-size: 13px; font-weight: 500; line-height: 20px; padding: 5px 12px; border: 1px solid var(--line-strong); border-radius: var(--radius); cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; background: var(--accent); border-color: var(--accent); color: var(--accent-ink); } .ds-btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); } .ds-btn-primary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+      "description": "Solid ink: sign-in, unfreeze, and confirming an unfreeze.",
+      "html": "<button class=\"ds-btn-primary\">Unfreeze</button>",
+      "css": ".ds-btn-primary { font-family: var(--font); font-size: 13px; font-weight: 600; line-height: 20px; padding: 5px 12px; border-radius: 0; cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; background: var(--accent); border: 1px solid var(--accent); color: var(--accent-ink); } .ds-btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); } .ds-btn-primary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }"
     },
     {
-      "name": "Danger Button",
+      "name": "Freeze Button",
       "kind": "button",
       "refersTo": "button-danger",
-      "description": "Freeze and its confirmation only.",
-      "html": "<button class=\"ds-btn-danger\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"5\" y=\"10.5\" width=\"14\" height=\"10\" rx=\"2\"/><path d=\"M8 10.5V7.5a4 4 0 0 1 8 0v3\"/></svg>Freeze</button>",
-      "css": ".ds-btn-danger { font-family: var(--font); font-size: 13px; font-weight: 500; line-height: 20px; padding: 5px 12px; border: 1px solid var(--line-strong); border-radius: var(--radius); cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; display: inline-flex; align-items: center; gap: 6px; background: var(--danger); border-color: var(--danger); color: var(--danger-ink); } .ds-btn-danger:hover { background: var(--danger-hover); border-color: var(--danger-hover); } .ds-btn-danger:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+      "description": "Solid road red with a square-capped lock: the freeze action and its confirm.",
+      "html": "<button class=\"ds-btn-danger\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" stroke-linejoin=\"miter\"><rect x=\"4\" y=\"11\" width=\"16\" height=\"10\"/><path d=\"M8 11V7h8v4\"/></svg>Freeze</button>",
+      "css": ".ds-btn-danger { font-family: var(--font); font-size: 13px; font-weight: 600; line-height: 20px; padding: 5px 12px; border-radius: 0; cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; display: inline-flex; align-items: center; gap: 6px; background: var(--danger); border: 1px solid var(--danger); color: var(--danger-ink); } .ds-btn-danger:hover { background: var(--danger-hover); border-color: var(--danger-hover); } .ds-btn-danger:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Sheet white ruled in 1px ink: refresh, clear search.",
+      "html": "<button class=\"ds-btn\">Refresh</button>",
+      "css": ".ds-btn { font-family: var(--font); font-size: 13px; font-weight: 600; line-height: 20px; padding: 5px 12px; border-radius: 0; cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; background: var(--surface); border: 1px solid var(--ink); color: var(--ink); } .ds-btn:hover { background: var(--hover); } .ds-btn:active { background: var(--line); } .ds-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }"
     },
     {
       "name": "Ghost Button",
       "kind": "button",
       "refersTo": "button-ghost",
-      "description": "Low-emphasis toolbar actions such as Fit in the graph bar.",
-      "html": "<button class=\"ds-btn-ghost\">Fit to screen</button>",
-      "css": ".ds-btn-ghost { font-family: var(--font); font-size: 13px; font-weight: 500; line-height: 20px; padding: 5px 12px; border: 1px solid var(--line-strong); border-radius: var(--radius); cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; border-color: transparent; background: transparent; color: var(--ink-2); } .ds-btn-ghost:hover { background: var(--hover); color: var(--ink); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+      "description": "No border, second ink: back, follow, fit, language.",
+      "html": "<button class=\"ds-btn-ghost\">Follow</button>",
+      "css": ".ds-btn-ghost { font-family: var(--font); font-size: 13px; font-weight: 600; line-height: 20px; padding: 5px 12px; border-radius: 0; cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; background: transparent; border: 1px solid transparent; color: var(--ink-2); } .ds-btn-ghost:hover { background: var(--hover); color: var(--ink); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }"
     },
     {
-      "name": "Text Field",
+      "name": "Field",
       "kind": "input",
       "refersTo": "input-field",
-      "description": "Labelled field for sign-in and the freeze reason.",
-      "html": "<label class=\"ds-field\">Reason<input placeholder=\"Why freeze this account\" /></label>",
-      "css": ".ds-field { display: grid; gap: 6px; font-family: var(--font); font-size: 13px; font-weight: 500; color: var(--ink-2); } .ds-field input { font: inherit; font-size: 14px; font-weight: 400; padding: 8px 10px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); color: var(--ink); } .ds-field input::placeholder { color: var(--muted); } .ds-field input:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }"
+      "description": "Square field ruled in 1px ink, label above, water-blue focus.",
+      "html": "<label class=\"ds-field\">Reason<input placeholder=\"Why this account\"></label>",
+      "css": ".ds-field { display: grid; gap: 6px; font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--ink-2); } .ds-field input { font: inherit; font-size: 15px; font-weight: 400; padding: 9px 10px; border: 1px solid var(--ink); border-radius: 0; background: var(--surface); color: var(--ink); } .ds-field input::placeholder { color: var(--muted); } .ds-field input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }"
     },
     {
-      "name": "Account Search",
-      "kind": "input",
-      "refersTo": "search",
-      "description": "Top-bar search with a leading icon; ring via focus-within.",
-      "html": "<label class=\"ds-search\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"m20 20-4.4-4.4\"/></svg><input placeholder=\"Search account\" /></label>",
-      "css": ".ds-search { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; width: 240px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); color: var(--muted); } .ds-search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); } .ds-search input { flex: 1; min-width: 0; border: none; background: none; font-family: var(--font); font-size: 13px; color: var(--ink); outline: none; }"
-    },
-    {
-      "name": "Queue Views",
+      "name": "Legend Views",
       "kind": "nav",
-      "refersTo": "nav-item",
-      "description": "Sidebar views with state dots and tabular counts.",
-      "html": "<nav class=\"ds-views\"><button class=\"ds-view ds-active\"><i class=\"ds-vdot\"></i><span>All</span><b>48</b></button><button class=\"ds-view\"><i class=\"ds-vdot ds-freeze\"></i><span>Freeze tier</span><b>23</b></button><button class=\"ds-view\"><i class=\"ds-vdot ds-review\"></i><span>Review</span><b>25</b></button><button class=\"ds-view\"><i class=\"ds-vdot ds-frozen\"></i><span>Frozen</span><b>23</b></button></nav>",
-      "css": ".ds-views { display: flex; flex-direction: column; gap: 2px; width: 216px; padding: 12px; background: var(--sidebar); } .ds-view { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: none; background: none; padding: 7px 8px; border-radius: var(--radius); font-family: var(--font); font-size: 13px; color: var(--ink-2); cursor: pointer; } .ds-view span { flex: 1; } .ds-view b { font-weight: 500; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; } .ds-view:hover { background: var(--hover); color: var(--ink); } .ds-view:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; } .ds-view.ds-active { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 0 0 1px var(--line); } .ds-vdot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); } .ds-vdot.ds-freeze { background: var(--danger); } .ds-vdot.ds-review { background: var(--warn-dot); } .ds-vdot.ds-frozen { background: var(--frozen); }"
+      "refersTo": "nav-view",
+      "description": "The queue views as map-legend rows: symbol, name, count; the active view reversed to ink.",
+      "html": "<nav class=\"ds-views\"><span class=\"ds-views-head\">Queue</span><button class=\"ds-view active\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\"><circle cx=\"8\" cy=\"8\" r=\"5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg><span>All suspects</span><b>48</b></button><button class=\"ds-view\"><span class=\"ds-freeze\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\"><path d=\"M8 1.5 15 14H1Z\" fill=\"currentColor\"/></svg></span><span>Freeze tier</span><b>12</b></button><button class=\"ds-view\"><span class=\"ds-review\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\"><path d=\"M8 3.5 13.5 13h-11Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linejoin=\"miter\"/></svg></span><span>Review</span><b>30</b></button><button class=\"ds-view\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\"><rect x=\"2\" y=\"2\" width=\"12\" height=\"12\" fill=\"currentColor\"/></svg><span>Frozen</span><b>6</b></button></nav>",
+      "css": ".ds-views { display: flex; flex-direction: column; width: 220px; background: var(--sidebar); padding: 14px; font-family: var(--font); } .ds-views-head { font-family: var(--font-num); font-size: 12px; font-weight: 600; color: var(--muted); padding: 0 6px 6px; border-bottom: 1px solid var(--ink); margin-bottom: 4px; } .ds-view { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: none; border-radius: 0; background: none; padding: 8px 6px; color: var(--ink-2); font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; } .ds-view span:nth-of-type(2), .ds-view > span:not([class]) { flex: 1; } .ds-view b { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-weight: 600; } .ds-view .ds-freeze { color: var(--danger); display: inline-flex; flex: none; } .ds-view .ds-review { color: var(--warn); display: inline-flex; flex: none; } .ds-view:hover { background: var(--hover); color: var(--ink); } .ds-view.active { background: var(--ink); color: var(--canvas); } .ds-view:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }"
     },
     {
-      "name": "Tier and Status Pills",
-      "kind": "chip",
-      "refersTo": "tier-freeze",
-      "description": "Soft-tint pills; FROZEN always carries the lock.",
-      "html": "<span class=\"ds-pill ds-freeze\">Freeze tier</span> <span class=\"ds-pill ds-review\">Review</span> <span class=\"ds-pill ds-active\"><i class=\"ds-sdot\"></i>Active</span> <span class=\"ds-pill ds-frozen\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"5\" y=\"10.5\" width=\"14\" height=\"10\" rx=\"2\"/><path d=\"M8 10.5V7.5a4 4 0 0 1 8 0v3\"/></svg>Frozen</span>",
-      "css": ".ds-pill { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font); font-size: 12px; font-weight: 500; line-height: 18px; padding: 1px 8px; border-radius: 999px; white-space: nowrap; } .ds-freeze { background: var(--danger-soft); color: var(--danger); } .ds-review { background: var(--warn-soft); color: var(--warn); } .ds-active { background: var(--ok-soft); color: var(--ok); } .ds-frozen { background: var(--frozen-soft); color: var(--frozen); } .ds-sdot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }"
+      "name": "Spot Heights",
+      "kind": "custom",
+      "refersTo": "spot-height-lead",
+      "description": "Overview strip: the freeze-tier total leads at 76px in road red; the rest read second at 36px.",
+      "html": "<div class=\"ds-heights\"><div class=\"ds-stat lead\"><span class=\"ds-stat-value\">12</span><span class=\"ds-stat-label\"><svg width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><circle cx=\"4\" cy=\"4\" r=\"3\" fill=\"currentColor\"/></svg>Freeze tier</span></div><div class=\"ds-stat\"><span class=\"ds-stat-value\">48</span><span class=\"ds-stat-label\"><svg width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><circle cx=\"4\" cy=\"4\" r=\"3\" fill=\"currentColor\"/></svg>Suspects</span></div><div class=\"ds-stat review\"><span class=\"ds-stat-value\">30</span><span class=\"ds-stat-label\"><svg width=\"8\" height=\"8\" viewBox=\"0 0 8 8\"><circle cx=\"4\" cy=\"4\" r=\"3\" fill=\"currentColor\"/></svg>Review</span></div></div>",
+      "css": ".ds-heights { display: grid; grid-template-columns: 1.6fr 1fr 1fr; align-items: end; border-bottom: 1px solid var(--ink); font-family: var(--font); } .ds-stat { display: flex; flex-direction: column; gap: 4px; padding: 4px 18px 12px; border-left: 1px solid var(--line-strong); } .ds-stat:first-child { border-left: none; padding-left: 0; } .ds-stat-value { font-family: var(--font-num); font-size: 36px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; color: var(--ink); } .ds-stat-label { display: flex; gap: 6px; align-items: flex-start; font-size: 13px; color: var(--ink-2); } .ds-stat-label svg { color: var(--ink); margin-top: 0.45em; flex: none; } .ds-stat.lead .ds-stat-value { font-size: 76px; color: var(--danger); } .ds-stat.lead .ds-stat-label, .ds-stat.lead .ds-stat-label svg { color: var(--danger); font-weight: 600; } .ds-stat.review .ds-stat-value { color: var(--warn); }"
     },
     {
-      "name": "Signal Chip",
-      "kind": "chip",
-      "refersTo": "chip-signal",
-      "description": "A fired rule, with its plain-language reason as a title.",
-      "html": "<span class=\"ds-chip\" title=\"90% of an incoming amount left within 2 h\">pass_through</span> <span class=\"ds-chip ds-graph\" title=\"Received from a suspect and passed it on\">from_suspect</span>",
-      "css": ".ds-chip { display: inline-block; font-family: var(--font); font-size: 12px; line-height: 18px; padding: 1px 7px; border: 1px solid var(--line); border-radius: 4px; background: var(--canvas); color: var(--ink-2); cursor: help; } .ds-chip.ds-graph { border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); }"
+      "name": "Queue Row",
+      "kind": "custom",
+      "refersTo": "table-head",
+      "description": "Chakra Petch heads on an ink rule; 4-3-3 account number, contour glyph with its figure and tier triangle, signals as legend type.",
+      "html": "<table class=\"ds-queue\"><thead><tr><th>Account</th><th>Height</th><th>Signals</th></tr></thead><tbody><tr class=\"selected\"><td class=\"ds-no\">1042 377 019</td><td><span class=\"ds-height\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 22 22\"><circle cx=\"11\" cy=\"11\" r=\"10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.1\"/><circle cx=\"11\" cy=\"11\" r=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.1\"/><circle cx=\"11\" cy=\"11\" r=\"6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.1\"/><circle cx=\"11\" cy=\"11\" r=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><circle cx=\"11\" cy=\"11\" r=\"1.4\" fill=\"currentColor\"/></svg><b>4</b><span class=\"ds-freeze\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\"><path d=\"M8 1.5 15 14H1Z\" fill=\"currentColor\"/></svg></span></span></td><td><span class=\"ds-signal\">Pass-through</span><span class=\"ds-more\">+3</span></td></tr><tr><td class=\"ds-no\">2210 584 663</td><td><span class=\"ds-height\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 22 22\"><circle cx=\"11\" cy=\"11\" r=\"10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.1\"/><circle cx=\"11\" cy=\"11\" r=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/></svg><b>2</b></span></td><td><span class=\"ds-signal ds-graph\">From a suspect</span></td></tr></tbody></table>",
+      "css": ".ds-queue { border-collapse: collapse; width: 100%; font-family: var(--font); font-size: 14px; color: var(--ink); border-top: var(--frame); } .ds-queue th { background: var(--canvas); text-align: left; font-family: var(--font-num); font-size: 12px; font-weight: 600; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--ink); } .ds-queue td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; } .ds-queue tbody tr { cursor: pointer; transition: background-color 120ms ease-out; } .ds-queue tbody tr:hover { background: var(--hover); } .ds-queue tr.selected { background: var(--selected); } .ds-queue tr.selected td { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); } .ds-no { font-family: var(--font-num); font-size: 15px; font-weight: 600; letter-spacing: 0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; } .ds-height { display: inline-flex; align-items: center; gap: 6px; color: var(--contour); } .ds-height b { font-family: var(--font-num); font-size: 15px; font-weight: 700; } .ds-height .ds-freeze { color: var(--danger); display: inline-flex; } .ds-signal { font-size: 14px; font-weight: 600; color: var(--ink); text-decoration: underline dotted var(--line-strong); text-underline-offset: 4px; white-space: nowrap; } .ds-signal.ds-graph { color: var(--course); } .ds-more { font-family: var(--font-num); font-weight: 700; color: var(--muted); margin-left: 6px; }"
     },
     {
-      "name": "Overview Strip",
+      "name": "Sheet",
       "kind": "card",
-      "refersTo": "panel",
-      "description": "One bordered surface divided into stat cells; no separate cards.",
-      "html": "<div class=\"ds-overview\"><div class=\"ds-stat\"><span>Suspects</span><b>48</b></div><div class=\"ds-stat ds-f\"><span>Freeze tier</span><b>23</b></div><div class=\"ds-stat ds-r\"><span>Review</span><b>25</b></div></div>",
-      "css": ".ds-overview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); font-family: var(--font); } .ds-stat { padding: 12px 16px; display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--line); } .ds-stat:first-child { border-left: none; } .ds-stat span { font-size: 12px; font-weight: 500; color: var(--muted); } .ds-stat b { font-size: 24px; font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; color: var(--ink); } .ds-f b { color: var(--danger); } .ds-r b { color: var(--warn); }"
+      "refersTo": "sheet-panel",
+      "description": "A framed sheet: 2px ink frame, square, no shadow; here the map key shown when nothing is selected.",
+      "html": "<section class=\"ds-sheet\"><h2>Map key</h2><ul><li><span class=\"ds-mark contour\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 22 22\"><circle cx=\"11\" cy=\"11\" r=\"10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.1\"/><circle cx=\"11\" cy=\"11\" r=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.1\"/><circle cx=\"11\" cy=\"11\" r=\"6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.1\"/><circle cx=\"11\" cy=\"11\" r=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><circle cx=\"11\" cy=\"11\" r=\"1.4\" fill=\"currentColor\"/></svg></span>Rules fired: one ring each</li><li><span class=\"ds-mark freeze\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\"><path d=\"M8 1.5 15 14H1Z\" fill=\"currentColor\"/></svg></span>Freeze tier</li><li><span class=\"ds-mark\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\"><rect x=\"2\" y=\"2\" width=\"12\" height=\"12\" fill=\"currentColor\"/></svg></span>Frozen</li><li><span class=\"ds-mark ok\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\"><circle cx=\"8\" cy=\"8\" r=\"5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg></span>Active</li><li><span class=\"ds-mark course\"><svg width=\"30\" height=\"12\"><path d=\"M1 6h22\" stroke=\"currentColor\" stroke-width=\"3\"/><path d=\"m21 1 8 5-8 5Z\" fill=\"currentColor\"/></svg></span>Money route</li></ul></section>",
+      "css": ".ds-sheet { background: var(--surface); border: var(--frame); border-radius: 0; padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 12px; font-family: var(--font); color: var(--ink); max-width: 420px; } .ds-sheet h2 { margin: 0; font-size: 20px; font-weight: 700; } .ds-sheet ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); } .ds-sheet li { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; } .ds-mark { display: inline-grid; place-items: center; line-height: 0; } .ds-mark.contour { color: var(--contour); } .ds-mark.freeze { color: var(--danger); } .ds-mark.ok { color: var(--ok); } .ds-mark.course { color: var(--course); }"
+    },
+    {
+      "name": "Login Cover",
+      "kind": "card",
+      "refersTo": "sheet-panel",
+      "description": "The one floating sheet on the page: 2px frame, float shadow, ink crop marks 10px outside each corner.",
+      "html": "<div class=\"ds-cover\"><strong>Mule Investigator</strong><span>Sign in to the review queue</span></div>",
+      "css": ".ds-cover { position: relative; max-width: 320px; display: grid; gap: 8px; padding: 30px; margin: 16px; background: var(--surface); border: var(--frame); box-shadow: var(--shadow-float); font-family: var(--font); color: var(--ink); } .ds-cover strong { font-size: 28px; line-height: 1.2; } .ds-cover span { color: var(--muted); font-size: 14px; } .ds-cover::before { content: ''; position: absolute; inset: -10px; pointer-events: none; background: linear-gradient(var(--ink), var(--ink)) top left / 14px 1px no-repeat, linear-gradient(var(--ink), var(--ink)) top left / 1px 14px no-repeat, linear-gradient(var(--ink), var(--ink)) top right / 14px 1px no-repeat, linear-gradient(var(--ink), var(--ink)) top right / 1px 14px no-repeat, linear-gradient(var(--ink), var(--ink)) bottom left / 14px 1px no-repeat, linear-gradient(var(--ink), var(--ink)) bottom left / 1px 14px no-repeat, linear-gradient(var(--ink), var(--ink)) bottom right / 14px 1px no-repeat, linear-gradient(var(--ink), var(--ink)) bottom right / 1px 14px no-repeat; }"
     }
   ],
   "narrative": {
-    "northStar": "The Case Ledger",
-    "overview": "A fraud investigator's working console in the fintech category standard, built to the craft level of Stripe Dashboard and fraud consoles such as Sardine and Unit21. It plays the category straight, with no themed costume. The screen holds a case queue, a reason for every flag and the money's path. Everything else stays quiet so that those three read first.\n\nThe world is restrained and dense. A cool canvas carries white working surfaces, and a second, cooler neutral layer holds the sidebar. Text is navy ink. One indigo accent marks primary action, selection and focus. Colour appears only where it carries state: red for the freeze tier, amber for review, green for active, and slate with a lock for frozen. Light and dark are both first-class and follow the system setting (`prefers-color-scheme`). There is no toggle.",
+    "northStar": "The Survey Sheet",
+    "overview": "**Creative North Star: \"The Survey Sheet\"**\n\nThe dashboard is a printed survey map. Risk is elevation, the money trail is a route, and each queue view is one sheet of a numbered series. Every surface is map paper ruled in ink: heavy 2px frames close a sheet, 1px rules divide it, corners stay square, and a strip of coordinate ticks runs along the top edge of the working sheet. Colour is never decoration. Each hue is a map ink with one job, so a viewer who has read the map key can read every row.\n\nDensity follows a reference map rather than a marketing page: a legend panel on the left, a title block with sheet number and date, a strip of spot heights where the freeze-tier total stands far above the rest, then the queue beside a framed account sheet. Before any account is opened that place holds the map key, which explains every symbol on the page. Following the money opens a separate full-width sheet below, where the route is drawn in course purple over faint contour lines.\n\nThe world rejects the generic SaaS arrangement it replaced: tinted canvas, white rounded cards and one indigo accent. Night mode is the same sheet printed for the dark: the same inks lifted for contrast, never a different palette.",
     "keyCharacteristics": [
-      "One indigo accent; every other hue is a state.",
-      "1px borders and tonal layers carry structure. Shadows appear only on floating layers.",
-      "One gently rounded corner (6px) across controls and surfaces.",
-      "One sans family (Inter for Latin, Noto Sans Thai for Thai) with tabular numerals for every figure.",
-      "A compact type scale (12/13/14/16/20/24) with no display size.",
-      "Light and dark token sets with identical roles."
+      "Map paper with ink frames (2px) and ink rules (1px); square corners on every box.",
+      "Six inks with fixed meanings: ink, contour brown, road red, forest green, water blue, course purple.",
+      "Map-legend symbols (circle, triangle, square) always paired with words; colour never carries a state alone.",
+      "Bai Jamjuree sets the words; Chakra Petch sets figures, account numbers, sheet data and table heads.",
+      "Risk drawn as contour rings, one per real-time rule fired.",
+      "Light and night follow `prefers-color-scheme`; the graph canvas follows the scheme too."
     ],
     "rules": [
       {
-        "name": "The One Accent Rule",
-        "body": "Indigo is used only for primary action, selection and focus. It never marks a state, a category or decoration.",
+        "name": "The One Ink, One Meaning Rule",
+        "body": "Each coloured ink marks one kind of fact: red the freeze tier and refusals, brown risk height and review, green active, blue money in and focus, purple the money graph. A new surface uses the ink of the fact it shows, or ink.",
         "section": "colors"
       },
       {
-        "name": "The State-Carries-Meaning Rule",
-        "body": "Red, amber, green and slate appear only where they encode tier, status or money direction; red also marks destructive actions (freeze, sign-out) and errors. Each state comes as a solid for text or marks and a soft tint for the pill behind it.",
+        "name": "The Course Is the Graph Rule",
+        "body": "Course purple appears only where the money graph is shown or cited: the route, its nodes and legend, and the graph-derived signal. It never marks a button, a state or a heading.",
         "section": "colors"
       },
       {
-        "name": "The Twin Theme Rule",
-        "body": "Every colour token has a dark counterpart with the same role. In dark mode the accent and danger buttons take dark text. Never add a colour that exists in only one scheme.",
+        "name": "The Symbol Beside Colour Rule",
+        "body": "Every tier and status is a map symbol plus a word. Colour alone never carries meaning.",
         "section": "colors"
       },
       {
-        "name": "The Tabular Figures Rule",
-        "body": "Every amount, count, account number and timestamp uses `font-variant-numeric: tabular-nums` so columns align.",
+        "name": "The Figures in Chakra Rule",
+        "body": "Anything a reader compares or copies (counts, amounts, account numbers, times, sheet numbers) is set in Chakra Petch with tabular numerals; account numbers and amounts add 0.03em spacing. Words stay in Bai Jamjuree.",
         "section": "typography"
       },
       {
-        "name": "The Thai Leading Rule",
-        "body": "Thai text (`:lang(th)`) gets line-height 1.65 instead of 1.55, so stacked vowels and tone marks never collide.",
+        "name": "The 4-3-3 Rule",
+        "body": "Account numbers always display grouped four, three and three digits with spaces (0000 000 000): in the queue, the sheet head, the trail labels and links. Search ignores the spaces.",
         "section": "typography"
       },
       {
-        "name": "The No Display Rule",
-        "body": "The scale stops at 24px. This is a working console, and no hero type belongs in it.",
-        "section": "typography"
+        "name": "The Lead Height Rule",
+        "body": "In the overview the freeze-tier total is the single largest figure on the page (76px against 36px). No other number competes with it.",
+        "section": "layout"
       },
       {
-        "name": "The Floating-Only Shadow Rule",
-        "body": "Panels, tables and cards sit flat on borders. Only layers above the page (menu, dialog, toast, login card) cast the soft float shadow. Hard or offset-only shadows never appear.",
+        "name": "The Key First Rule",
+        "body": "When no account is open, the account sheet's place shows the map key. It is never left empty or filled with a generic empty state.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Sheet Rule",
+        "body": "Nothing on the sheet casts a shadow. Only a layer that floats above the sheet does, and it still carries its 2px ink frame (the toast is solid ink instead).",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do use the indigo accent only for primary action, selection and focus.",
-      "Do pair every state colour with its soft tint, and pair FROZEN with the lock icon.",
-      "Do set every figure in tabular numerals, and give Thai text its 1.65 line height.",
-      "Do define every new colour in both the light and the dark token set.",
-      "Do read theme colours from CSS variables at mount for anything drawn on canvas, rather than hard-coding hex.",
-      "Do keep the 6px radius and 1px borders on new controls and surfaces.",
-      "Do draw new icons on the 24px grid with a 1.5 round-capped stroke in currentColor.",
-      "Do honour `prefers-reduced-motion`: animations and transitions switch off."
+      "**Do** frame every sheet with a 2px ink border and divide it with 1px ink rules and grid lines.",
+      "**Do** keep every box square (0px radius); let only map symbols be round.",
+      "**Do** pair each tier and status with its map symbol and a word: open circle, filled triangle, outlined triangle, filled square.",
+      "**Do** set every figure, account number, time and table head in Chakra Petch with tabular numerals.",
+      "**Do** display account numbers as 4-3-3.",
+      "**Do** keep the freeze-tier total the largest figure on the page, in road red.",
+      "**Do** draw risk as contour rings in contour brown followed by the rule count.",
+      "**Do** read colours from the CSS tokens for any canvas drawing, and redraw on a colour-scheme change.",
+      "**Do** keep night mode as the same inks lifted, defined under `prefers-color-scheme: dark`."
     ],
     "donts": [
-      "Don't put shadows on panels, tables or cards. The float shadow is for menus, dialogs, toasts and the login card only.",
-      "Don't add a second accent hue, or use a state colour for decoration.",
-      "Don't add uppercase tracked labels or kicker lines above headings. Labels are 12px/500 sentence case.",
-      "Don't set type above 24px.",
-      "Don't use emoji or text glyphs as icons. Use the stroke set.",
-      "Don't add a manual theme toggle. The scheme follows the system setting."
+      "**Don't** round the corners of boxes, buttons, fields or menus.",
+      "**Don't** box signals as pill or tag chips; set them as legend text.",
+      "**Don't** use course purple outside the money graph.",
+      "**Don't** give an ink a meaning another ink already carries, or show a state by colour alone.",
+      "**Don't** put shadows on sheets; only floating layers get the float shadow.",
+      "**Don't** use filled, rounded or soft-cornered icon sets; icons are 2px, square-capped and mitred on a 24px grid.",
+      "**Don't** leave the account area empty when nothing is selected; show the map key."
     ]
   }
 }
